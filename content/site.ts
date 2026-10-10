@@ -236,7 +236,7 @@ const ATTIRE = {
 // NEXT_PUBLIC_SITE_URL (env) overrides this when set.
 const SITE_URL = "https://yohana-debut.weddinginvitationrsvp.com/" // ⚠ check — set the live domain
 // Image shown when the link is shared (Facebook, Messenger, Viber, X, …) — 1200×630 JPG in /public
-const LINK_PREVIEW_IMAGE = "/Details/linpre.png" // ⚠ check — replace with a debut preview image
+const LINK_PREVIEW_IMAGE = "/Details/LinkPreview.png" // ⚠ check — replace with a debut preview image
 
 // Site address with env override applied and no trailing slash — no need to edit
 export const canonicalSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? SITE_URL).replace(/\/$/, "")
@@ -255,7 +255,7 @@ const BRAND = {
   nameImage: "",
   seal: "/monogram/seal.png", // envelope wax seal
   // Theme song — drop the MP3 into /public/background_music with this exact name
-  backgroundMusic: "/background_music/Goth - Sidewalks and Skeletons.mp3", // ⚠ check — file not added yet
+  backgroundMusic: "/background_music/Sidewalks and Skeletons - GOTH (Lyrics) (1).mp3", // ⚠ check — file not added yet
 }
 
 // Celebrant photos used in "photos" mode (loader, envelope, hero, reminders,
@@ -304,7 +304,7 @@ const SECTION_DECOS = {
 
 // Principal sponsors Google Apps Script — used by the main page and /inviteone
 // ⚠ check — every googleAPI URL below still points to the template's sheets.
-const SPONSORS_API = "https://script.google.com/macros/s/AKfycbw7FEGNwHGTxSy41k_cMZP3fzbQZFDG6Iq5Rs9K4Pwm8z1IglNj1Isl3d0rdhzVEuU1/exec"
+const SPONSORS_API = "https://script.google.com/macros/s/AKfycbz0Ndy92Ddr9oFPKABEOYsvsO6KUXl4kk-JaPhewoYgMpmW_wGIrel0P7-Vx6elbcs/exec"
 
 export const siteConfig = {
   siteUrl: SITE_URL,
@@ -347,16 +347,16 @@ export const siteConfig = {
     backgroundMusic: BRAND.backgroundMusic,
   },
   googleAPI:{
-    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSeKU3VDbGp78i8cG3IcsAS8bu4lE2bK7hJGqxmaDdqSHwnfhQ/formResponse", // ⚠ check
-    message: "https://script.google.com/macros/s/AKfycbxGujZOqAlCyFxztMaxIezUpylUODNgI4W4mmps6Ot0C1Ka8sPEKIr22ywMcpX2ItET/exec", // ⚠ check
-    guestList: "https://script.google.com/macros/s/AKfycbzjNZHSIZw8ccDdWiZHD0uGl6cZJb1Fgqdq3Q2yGZPNWGzfhWT9ISJBJOpTEm5vQDEI/exec", // ⚠ check
-    guestRequest: "https://script.google.com/macros/s/AKfycbwI0mx9ufWHIHYBSyzE9gORBOnM9IN4rm-9IsJd9J1NWhjueA8wlrpQ30TzplPSWCh4/exec", // ⚠ check
-    entourage: "https://script.google.com/macros/s/AKfycbzI4PblFCc3axw_cICTywpXDx9ETQdL7COx30Mrvo8aFvNQJThBgC5X_tMI5jArRM4G/exec", // ⚠ check
+    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSeiWYHZH0Cikyw56VpmboL81080FtEM2qTA5wk37GRde7MEMQ/formResponse", // ⚠ check
+    message: "https://script.google.com/macros/s/AKfycbwJopsjlONOJgczhBqj-NT89Vxo5RiBCN5OIxVd5ZNJeb5h4oDAZCLZO9d66C56NR81HA/exec", // ⚠ check
+    guestList: "https://script.google.com/macros/s/AKfycbyAql9Jraj7bDw0tOa17fRPXzZafjPqCrNSkBXyZi1iBSf2cPE5vH6CCqbzx1Qwx_j9wg/exec", // ⚠ check
+    guestRequest: "https://script.google.com/macros/s/AKfycbx8v7bDxuk45mf_HLYhpE4T_jjJH8tVuJTDwq6vf3UDXOv0hnSMfZ3Wv2X2eFUs7EIehA/exec", // ⚠ check
+    entourage: "https://script.google.com/macros/s/AKfycbwmtA5nr4Qd-r_4GUzDl-FN139c9YHZ7Ji5ckyDemdN7NfRtXtZ3kzlSmwqMR0zlwPm2w/exec", // ⚠ check
     sponsors: SPONSORS_API,
     // Principal sponsors shown on /inviteone and /invitetwo (entourage section)
     sponsorsInviteOne: SPONSORS_API,
-    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbwJ6eQvghyTlCd_0fCr8kThFxCIE94UzxE9KjHcnGMkKeLQnT0PGCRQ3Xlt_H8RruWu/exec",
-    googleShare: "https://docs.google.com/spreadsheets/d/1tNrAdJJQDMQtVl9I6ncbw5wLpsiER5UA4ELCMDI4nfw/edit?usp=sharing", // ⚠ check
+    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbz0Ndy92Ddr9oFPKABEOYsvsO6KUXl4kk-JaPhewoYgMpmW_wGIrel0P7-Vx6elbcs/exec",
+    googleShare: "https://docs.google.com/spreadsheets/d/1uNdninGTgugmzspWeI0UdSXtSNWIUprPsLVjHMl-inM/edit?usp=sharing", // ⚠ check
     videoMessageForm:
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform",
   },
@@ -1190,7 +1190,7 @@ export const siteConfig = {
     // {celebrant} → nickname. "" hides a line or image.
     qrCard: {
       coupleNameImage: BRAND.nameImage, // name lettering; "" shows the name as text
-      coupleImage: BRAND.monogram, // illustration beside the text
+      coupleImage: "/Details/debutant.png", // illustration beside the text
       eyebrow: "The debut of",
       title: "Find Your Table",
       script: "please be seated",
@@ -1214,7 +1214,7 @@ export const siteConfig = {
   proposal: {
     decos: { ...CORNER_DECOS },
     coupleNameImage: BRAND.nameImage, // name lettering at the top of the card; "" shows the name as text
-    coupleImage: BRAND.monogram, // illustration above the question
+    coupleImage: "/Details/debutant.png", // illustration above the question
     ornament: DECOR.headerOrnament, // small sprig at the top of the card; "" to hide
     // Eucalyptus sprigs on either side of the couple name; "" to hide one
     nameDecos: { left: DECOR.sideLeft, right: DECOR.sideRight },
@@ -1622,7 +1622,7 @@ export const siteConfig = {
   snapShare: {
     // ⚠ check — Google Drive upload folder + its QR are still from the template
     googleDriveLink:
-      "https://drive.google.com/drive/folders/1He7ZrfQI357gHcd0nLD7O56nou11fIk_?usp=sharing",
+      "https://drive.google.com/drive/folders/1gtJslPNpyWQUtmd9wBvunbTxdYrO1kzT?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
     hashtag: HASHTAGS,
     instructions: "Please scan this QR code and upload the photos and videos you took during the debut. I'd love to see the night through your eyes!",

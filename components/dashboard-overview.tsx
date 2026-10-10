@@ -84,9 +84,9 @@ const GUIDE: {
     tab: "entourage",
     title: "Entourage & Sponsors",
     icon: <Crown className="h-5 w-5" />,
-    about: "Your wedding party and principal sponsors, exactly as shown on the invitation.",
+    about: "The debutante's 18 Roses, Candles, Treasures and Cheers, plus her sponsors — exactly as shown on the invitation.",
     highlights: [
-      "Add members by role (e.g., Bridesmaids) and title",
+      "Add members by role (e.g., 18 Roses) and title",
       "Add Ninong & Ninang pairs",
       "Filter by role; updates show on the invitation",
     ],
@@ -95,11 +95,11 @@ const GUIDE: {
     tab: "proposals",
     title: "Proposal Invites",
     icon: <Heart className="h-5 w-5" />,
-    about: "Personal “Will you be my…?” links for your entourage and sponsors.",
+    about: "Personal “Will you be one of my 18…?” links for the debut entourage and sponsors.",
     highlights: [
       "Personalize a link with the person's name",
       "Share by Messenger, Viber or text in one tap",
-      "A yes adds them to your entourage automatically",
+      "A yes adds them to the debut entourage automatically",
     ],
   },
 ]
@@ -129,7 +129,7 @@ export function DashboardOverview({ stats, onNavigate }: DashboardOverviewProps)
       {/* Heading */}
       <div>
         <p className={`${cinzel.className} text-[10px] font-semibold uppercase tracking-[0.24em] text-dash-faint`}>At a glance</p>
-        <h1 className="mt-0.5 text-2xl font-bold text-dash-ink sm:text-3xl">Wedding Overview</h1>
+        <h1 className="mt-0.5 text-2xl font-bold text-dash-ink sm:text-3xl">Debut Overview</h1>
       </div>
 
       {/* RSVP progress */}

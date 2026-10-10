@@ -5,6 +5,7 @@ import { Cinzel, Playfair_Display } from "next/font/google"
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 import { Button } from "@/components/ui/button"
 import { proposalRoleDefinitions } from "@/content/proposal-roles"
+import { siteConfig } from "@/content/site"
 import {
   AlertCircle,
   AlertTriangle,
@@ -58,14 +59,13 @@ type Done = { title: string; eyebrow: string; name: string; text: string; delete
 const EMPTY_MEMBER = { Name: "", RoleCategory: "", RoleTitle: "", Email: "" }
 const EMPTY_SPONSOR = { MalePrincipalSponsor: "", FemalePrincipalSponsor: "" }
 
-// Suggestions for the role field: categories used by the proposal invites + common ones
+// Suggestions for the role field: the debut's own categories (content/site.ts →
+// entourage.categoryOrder, e.g. Parents of the Debutante, Escort, 18 Roses…) + the
+// categories used by the proposal invites
 const DEFAULT_ROLE_CATEGORIES = [
   ...new Set([
+    ...(siteConfig.entourage.categoryOrder ?? []),
     ...proposalRoleDefinitions.map((r) => r.roleCategory).filter((c): c is string => Boolean(c) && c !== "Principal Sponsors"),
-    "Maid of Honor",
-    "Matron of Honor",
-    "Parents of the Groom",
-    "Parents of the Bride",
   ]),
 ]
 
@@ -719,7 +719,7 @@ export function EntourageSponsors({
               ? "Loading entourage..."
               : query || roleFilter !== "all"
                 ? "Try a different name or role."
-                : "Add your wedding party, or send proposal invites — confirmed roles appear here.",
+                : "Add the debut entourage (18 Roses, Candles, Treasures…), or send proposal invites — confirmed roles appear here.",
             <Crown className="h-7 w-7" />,
           )
         ) : (
@@ -860,7 +860,7 @@ export function EntourageSponsors({
       {/* ── Forms ──────────────────────────────────────────────────────── */}
       {entourageFormOpen && (
         <FormSheet
-          eyebrow="Wedding Party"
+          eyebrow="Debut Entourage"
           title={editingEntourage ? "Edit Member" : "Add Member"}
           subtitle={editingEntourage ? "Update this member's name or role." : "Add someone to your entourage."}
           onClose={closeEntourageForm}
@@ -876,10 +876,10 @@ export function EntourageSponsors({
             ),
             points: [
               <>
-                <span className="font-medium">Role</span> is the group heading they&apos;re listed under (e.g., Bridesmaids).
+                <span className="font-medium">Role</span> is the group heading they&apos;re listed under (e.g., 18 Roses).
               </>,
               <>
-                <span className="font-medium">Title</span> is their own label within the group (e.g., Maid of Honor).
+                <span className="font-medium">Title</span> is their own label within the group (e.g., Father, Godmother, Rose 1).
               </>,
               "Pick a role from the list so they land in the right group; a new role shows as its own group.",
               "People who accept a proposal invite are added here automatically.",
@@ -913,7 +913,7 @@ export function EntourageSponsors({
                 id="ent-title"
                 value={entourageFormData.RoleTitle}
                 onChange={(e) => setEntourageFormData({ ...entourageFormData, RoleTitle: e.target.value })}
-                placeholder="e.g., Maid of Honor"
+                placeholder="e.g., Father, Godmother, Rose 1"
                 className={FIELD}
               />
             </div>

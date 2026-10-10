@@ -446,15 +446,15 @@ export default function DashboardPage() {
                 <Lock className="h-8 w-8 text-white" />
               </div>
               <div className="mb-2">
-                <span className="font-serif text-sm text-dash-accent">♥</span>
-                <span className="font-serif text-2xl font-bold text-dash-ink mx-2">Wedding Invitation</span>
-                <span className="font-serif text-sm text-dash-accent">♥</span>
+                <span className="font-serif text-sm text-dash-accent">✦</span>
+                <span className="font-serif text-2xl font-bold text-dash-ink mx-2">Debut Invitation</span>
+                <span className="font-serif text-sm text-dash-accent">✦</span>
               </div>
               <h1 className="text-2xl font-bold text-dash-ink mb-2">
                 Admin Dashboard
               </h1>
               <p className="text-dash-muted text-sm">
-                Enter password to access the wedding management panel
+                Enter the password to manage the debut celebration
               </p>
             </div>
 

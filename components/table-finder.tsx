@@ -18,7 +18,9 @@ import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
-import { sectionBackground } from "@/lib/section-background"
+import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -37,15 +39,23 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+// Red velvet page (wine + red circle pattern + crimson corners). Text on the background
+// is white / gold (ON_BG*); the cards are ivory paper with wine ink and gold accents.
+const PAGE_BG = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
+const TEXT_LIFT =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+const ON_BG = "#fff"
+const ON_BG_SOFT = "color-mix(in srgb, white 88%, var(--color-welcome-gold))"
 const IVORY = "var(--color-motif-soft)"
 const GOLD = "var(--color-welcome-gold)"
-const NAVY = "var(--color-welcome-navy)"
-const SCRIPT = "var(--color-welcome-green)"
-const BODY = "var(--color-welcome-text)"
-const NAV_GOLD = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 55%, var(--color-welcome-navy) 100%)"
-const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
-const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
-const CHAMPAGNE = "var(--color-motif-silver)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const NAVY = "var(--color-motif-deep)" // card headings / names: wine
+const SCRIPT = GOLD
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const NAV_GOLD = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 25%, transparent)"
+const CHAMPAGNE = "var(--color-motif-blush)"
 
 const goldDividerStyle = {
   background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
@@ -61,7 +71,7 @@ const cardStyle = {
   borderWidth: "1px",
   borderStyle: "solid" as const,
   boxShadow:
-    "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
+    "0 22px 44px -22px color-mix(in srgb, var(--color-coastal-deep) 75%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
 } as const
 
 const innerSurfaceStyle = {
@@ -71,13 +81,13 @@ const innerSurfaceStyle = {
 
 const primaryButtonStyle = {
   background: NAV_GOLD,
-  borderColor: GOLD_BORDER,
-  color: IVORY,
-  boxShadow: "0 8px 18px color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+  color: "#fff",
+  boxShadow: "0 10px 22px -10px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+  "red-corner-deco block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
 
 type RsvpStatus = "pending" | "confirmed" | "declined" | "request"
 
@@ -173,7 +183,7 @@ function nameTokens(value: string) {
   return foldName(value).split(/\s+/).filter(Boolean)
 }
 
-function scoreSeatMatch(entry: SeatEntry, query: string) {
+function scoreSeatMatch(entry: SeatEntry, query: string): number | null {
   const foldedQuery = foldName(query)
   if (!foldedQuery) return null
 
@@ -268,7 +278,7 @@ function RsvpBadge({ status, compact = false }: { status: RsvpStatus; compact?: 
           : "px-2 py-0.5 text-[0.55rem] sm:px-2.5 sm:text-[0.625rem]"
       }`}
       style={{
-        color: isConfirmed ? "var(--color-welcome-navy)" : isDeclined ? "var(--color-welcome-text-soft)" : BODY,
+        color: isConfirmed ? NAVY : isDeclined ? "color-mix(in srgb, var(--color-motif-deep) 55%, transparent)" : GOLD_INK,
         borderColor: isConfirmed
           ? "color-mix(in srgb, var(--color-motif-deep) 35%, transparent)"
           : isDeclined
@@ -459,9 +469,11 @@ export function TableFinder() {
 
   return (
     <main
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
-      style={{ background: sectionBackground }}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
+      style={{ background: PAGE_BG }}
     >
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
+      <PlainBubbles />
       <div className="pointer-events-none absolute left-0 top-0 z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {tfDecos.topLeft ? <img src={tfDecos.topLeft} alt="" aria-hidden="true" className={CORNER_DECO_CLASS} /> : null}
@@ -487,7 +499,7 @@ export function TableFinder() {
 
           <p
             className={`${cinzel.className} ${sectionType.label} font-semibold uppercase leading-normal tracking-[0.18em] min-[400px]:tracking-[0.28em] sm:tracking-[0.36em]`}
-            style={{ color: GOLD }}
+            style={{ color: GOLD, textShadow: TEXT_LIFT }}
           >
             {celebrant}&rsquo;s Debut
           </p>
@@ -504,7 +516,7 @@ export function TableFinder() {
           >
             <span
               className={`${theSeasons.className} block uppercase leading-[0.76] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
-              style={{ fontSize: "var(--title-size)", color: NAVY }}
+              style={{ fontSize: "var(--title-size)", color: ON_BG, textShadow: TEXT_LIFT }}
             >
               Find Your Table
             </span>
@@ -514,8 +526,7 @@ export function TableFinder() {
               style={{
                 fontSize: "var(--script-size)",
                 color: SCRIPT,
-                textShadow:
-                  "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
+                textShadow: TEXT_LIFT,
               }}
             >
               Please be seated
@@ -525,7 +536,7 @@ export function TableFinder() {
 
           <p
             className={`font-goudy-italic mx-auto mt-4 max-w-md px-2 sm:mt-5 ${sectionType.textRelaxed}`}
-            style={{ color: BODY }}
+            style={{ color: ON_BG, textShadow: TEXT_LIFT }}
           >
             Search your name to find your table, then walk in and take your seat.
           </p>
@@ -566,7 +577,7 @@ export function TableFinder() {
                   borderColor: GOLD_BORDER,
                   color: NAVY,
                   backgroundColor: IVORY,
-                  boxShadow: "0 10px 28px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent)",
+                  boxShadow: "0 14px 30px -12px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)",
                 }}
                 autoComplete="off"
                 autoCorrect="off"
@@ -650,8 +661,8 @@ export function TableFinder() {
                 }}
               >
                 <p className={`font-goudy-italic ${sectionType.textSnug}`} style={{ color: BODY }}>
-                  We couldn&apos;t find that name. Try another spelling, or ask the couple if
-                  you&apos;re not on the list.
+                  We couldn&apos;t find that name. Try another spelling, or ask
+                  the family if you&apos;re not on the list.
                 </p>
               </div>
             )}
@@ -663,7 +674,11 @@ export function TableFinder() {
             className="relative mx-auto mt-5 max-w-xl overflow-hidden rounded-2xl border px-5 py-6 text-center sm:mt-7 sm:px-8 sm:py-8"
             style={cardStyle}
           >
-            <div className="wedding-frame-inner hidden min-[400px]:block" aria-hidden />
+            <div
+              className="wedding-frame-inner hidden min-[400px]:block"
+              style={{ borderColor: GOLD_BORDER_SOFT }}
+              aria-hidden
+            />
             <p className={`font-goudy-italic ${sectionType.text}`} style={{ color: BODY }}>
               Hello{" "}
               <span className="font-semibold" style={{ color: NAVY }}>
@@ -712,7 +727,7 @@ export function TableFinder() {
                 : selectedSeat.status === "confirmed"
                   ? "You're confirmed. Your table will appear here once seating is posted."
                   : selectedSeat.status === "declined"
-                    ? "You've let us know you can't attend. If plans change, please tell the couple."
+                    ? "You've let us know you can't attend. If plans change, please let the family know."
                     : selectedSeat.tableNumber
                       ? "A seat is waiting for you. Please RSVP so we can confirm it."
                       : "Please RSVP first. Your table will appear here once seating is posted."}
@@ -761,17 +776,17 @@ export function TableFinder() {
             </div>
             <h2
               className={`${theSeasons.className} text-xl uppercase tracking-[0.12em] sm:text-3xl`}
-              style={{ color: NAVY }}
+              style={{ color: ON_BG, textShadow: TEXT_LIFT }}
             >
               Seating Chart
             </h2>
             <p
               className={`${aboveTheBeyond.className} mx-auto mt-1 block w-fit`}
-              style={{ color: SCRIPT, fontSize: "clamp(1.05rem, 3.4vw, 1.75rem)" }}
+              style={{ color: SCRIPT, fontSize: "clamp(1.05rem, 3.4vw, 1.75rem)", textShadow: TEXT_LIFT }}
             >
               everyone together
             </p>
-            <p className={`font-goudy-italic mx-auto mt-2 max-w-xl px-2 ${sectionType.text}`} style={{ color: BODY }}>
+            <p className={`font-goudy-italic mx-auto mt-2 max-w-xl px-2 ${sectionType.text}`} style={{ color: ON_BG_SOFT, textShadow: TEXT_LIFT }}>
               Everyone is grouped by table. RSVP status sits beside each name.
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
@@ -782,7 +797,7 @@ export function TableFinder() {
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-10" style={{ color: BODY }}>
+            <div className="flex items-center justify-center gap-2 py-10" style={{ color: ON_BG, textShadow: TEXT_LIFT }}>
               <RefreshCw className="h-4 w-4 animate-spin" style={{ color: GOLD }} />
               <span className={`font-goudy-italic ${sectionType.text}`}>Loading seating...</span>
             </div>
@@ -803,7 +818,7 @@ export function TableFinder() {
               </button>
             </div>
           ) : tables.length === 0 ? (
-            <p className={`font-goudy-italic text-center ${sectionType.text}`} style={{ color: BODY }}>
+            <p className={`font-goudy-italic text-center ${sectionType.text}`} style={{ color: ON_BG, textShadow: TEXT_LIFT }}>
               Seating is still being arranged. Search your name above, or check back soon.
             </p>
           ) : (
@@ -821,7 +836,7 @@ export function TableFinder() {
                       ...cardStyle,
                       borderColor: isSelectedTable ? "var(--color-welcome-gold)" : GOLD_BORDER,
                       boxShadow: isSelectedTable
-                        ? "0 12px 36px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)"
+                        ? "0 0 0 2px color-mix(in srgb, var(--color-welcome-gold) 55%, transparent), 0 18px 40px -16px color-mix(in srgb, var(--color-coastal-deep) 75%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)"
                         : cardStyle.boxShadow,
                     }}
                   >
@@ -896,17 +911,17 @@ export function TableFinder() {
 
         <div
           className="mx-auto mt-12 max-w-4xl border-t pt-8 sm:mt-16 sm:pt-10"
-          style={{ borderColor: GOLD_BORDER }}
+          style={{ borderColor: "color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)" }}
         >
           <p
             className={`${cinzel.className} mb-2 text-center text-[0.65rem] font-semibold uppercase tracking-[0.2em] sm:text-[0.6875rem] sm:tracking-[0.22em]`}
-            style={{ color: GOLD }}
+            style={{ color: GOLD, textShadow: TEXT_LIFT }}
           >
             How it works
           </p>
           <p
             className={`font-goudy-italic mx-auto mb-5 max-w-md px-2 text-center sm:mb-6 ${sectionType.textSnug}`}
-            style={{ color: BODY }}
+            style={{ color: ON_BG_SOFT, textShadow: TEXT_LIFT }}
           >
             Three simple steps from the doorway to your seat.
           </p>

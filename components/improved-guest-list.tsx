@@ -642,7 +642,7 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
                         value={formAddedBy} 
                         onChange={e => setFormAddedBy(e.target.value)} 
                         type="text" 
-                        placeholder="e.g., Bride, Groom, Family"
+                        placeholder="e.g., Family, Friends, Classmates"
                         className="w-full border border-dash-border rounded-xl bg-dash-bg px-3 py-2.5 transition-colors focus:bg-white focus:border-dash-focus focus:ring-2 focus:ring-dash-focus/40 outline-none" 
                       />
                     </div>
@@ -739,7 +739,7 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
                 </div>
               </div>
 
-              {/* Guest's RSVP response — only when editing, so the couple can fix details
+              {/* Guest's RSVP response — only when editing, so the family can fix details
                   a guest asks them to correct. New invitations leave these to the guest. */}
               {editingGuest && (
                 <div className="space-y-4 rounded-2xl border border-dash-border bg-dash-bg p-3.5 sm:p-5">
@@ -834,7 +834,7 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
                   )}
 
                   <div className="space-y-1">
-                    <FieldLabel htmlFor="guest-message">Message to the couple</FieldLabel>
+                    <FieldLabel htmlFor="guest-message">Message to the debutante</FieldLabel>
                     <textarea
                       id="guest-message"
                       rows={3}

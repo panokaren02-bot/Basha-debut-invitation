@@ -23,7 +23,8 @@ import { Hero as InvitationHero } from "@/components/loader/Hero"
 import { LoadingScreen } from "@/components/loader/LoadingScreen"
 import { InvitePhotoBackdrop } from "@/components/loader/invite-photo-backdrop"
 import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
-import { sectionBackground } from "@/lib/section-background"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import { parseWeddingDate } from "@/lib/wedding-date"
 import type { ProposalRole } from "@/lib/proposal-types"
@@ -35,7 +36,7 @@ const proposalEntryEase = [0.22, 1, 0.36, 1] as const
 const CINEMATIC_ENTRY_MS = 3000
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[52px] min-[380px]:max-w-[60px] sm:max-w-[130px] md:max-w-[185px] lg:max-w-[220px] select-none pointer-events-none opacity-90 sm:opacity-100"
+  "red-corner-deco block h-auto w-auto max-w-[52px] min-[380px]:max-w-[60px] sm:max-w-[130px] md:max-w-[185px] lg:max-w-[220px] select-none pointer-events-none opacity-90 sm:opacity-100"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -62,19 +63,24 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+// Red velvet page (wine + crimson glows, crimson Silk folds, crimson corners) with the
+// invitation on ivory paper: wine ink, gold labels / script, crimson → wine buttons.
+const PAGE_BG =
+  "radial-gradient(70% 40% at 20% 10%, color-mix(in srgb, var(--color-motif-accent) 40%, transparent) 0%, transparent 70%), radial-gradient(60% 35% at 85% 60%, color-mix(in srgb, var(--color-motif-accent) 28%, transparent) 0%, transparent 70%), linear-gradient(180deg, var(--color-motif-deep) 0%, color-mix(in srgb, var(--color-motif-deep) 60%, var(--color-coastal-deep)) 100%)"
 const IVORY = "var(--color-motif-soft)"
 const CHAMPAGNE = "var(--color-welcome-gold)"
-const INK = "var(--color-welcome-navy)"
-const CREAM = "var(--color-welcome-text)"
-const LABEL_GOLD = "var(--color-welcome-heading)"
-const SCRIPT_GREEN = "var(--color-welcome-green)"
+const INK = "var(--color-motif-deep)"
+const CREAM = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const LABEL_GOLD = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+// keeps its template name; now the gold script colour
+const SCRIPT_GREEN = "color-mix(in srgb, var(--color-welcome-gold) 82%, var(--color-motif-deep))"
 const GOLD_BORDER = "color-mix(in srgb, var(--color-welcome-gold) 38%, transparent)"
 const GOLD_BORDER_SOFT = "color-mix(in srgb, var(--color-welcome-gold) 22%, transparent)"
-const INNER_SURFACE = "var(--color-welcome-bg-soft)"
+const INNER_SURFACE = "color-mix(in srgb, var(--color-motif-blush) 20%, var(--color-motif-soft))"
 
 const goldGradientText: CSSProperties = {
   background:
-    "linear-gradient(168deg, var(--color-welcome-navy) 0%, var(--color-welcome-heading) 55%, color-mix(in srgb, var(--color-welcome-green) 70%, var(--color-welcome-navy)) 100%)",
+    "linear-gradient(168deg, var(--color-motif-deep) 0%, var(--color-motif-accent) 55%, color-mix(in srgb, var(--color-welcome-gold) 75%, var(--color-motif-deep)) 100%)",
   WebkitBackgroundClip: "text",
   backgroundClip: "text",
   color: "transparent",
@@ -82,7 +88,7 @@ const goldGradientText: CSSProperties = {
 
 const palette = {
   body: CREAM,
-  bodySoft: "var(--color-welcome-text-soft)",
+  bodySoft: "color-mix(in srgb, var(--color-motif-deep) 70%, transparent)",
   heading: INK,
   label: LABEL_GOLD,
   script: SCRIPT_GREEN,
@@ -100,15 +106,15 @@ const dividerLineStyle = {
 
 const primaryBtnStyle: CSSProperties = {
   background:
-    "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 55%, var(--color-welcome-navy) 100%)",
-  borderColor: GOLD_BORDER,
-  color: IVORY,
+    "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+  color: "#fff",
   boxShadow: "0 12px 24px -12px color-mix(in srgb, var(--color-welcome-navy) 70%, transparent)",
 }
 
 const secondaryBtnStyle: CSSProperties = {
   color: INK,
-  backgroundColor: "color-mix(in srgb, var(--color-welcome-bg-soft) 85%, transparent)",
+  backgroundColor: "color-mix(in srgb, var(--color-motif-soft) 92%, transparent)",
   borderColor: GOLD_BORDER,
 }
 
@@ -278,10 +284,10 @@ function ProposalCard({ children }: { children: ReactNode }) {
       <div
         className="relative overflow-hidden rounded-[1.5rem] border sm:rounded-[1.85rem]"
         style={{
-          background: `linear-gradient(170deg, ${IVORY} 0%, var(--color-welcome-bg-soft) 50%, var(--color-motif-cream) 100%)`,
+          background: `radial-gradient(120% 40% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(170deg, ${IVORY} 0%, var(--color-motif-cream) 100%)`,
           borderColor: GOLD_BORDER,
           boxShadow:
-            "0 24px 56px -30px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent), inset 0 1px 0 rgb(255 255 255 / 85%)",
+            "0 32px 64px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 1px 0 rgb(255 255 255 / 85%)",
         }}
       >
         {/* Double hairline frame, with a small diamond on the top and bottom edge */}
@@ -330,7 +336,7 @@ function CoupleNameLockup({ src, alt }: { src: string; alt: string }) {
           WebkitMaskPosition: "center",
           maskPosition: "center",
           filter:
-            "drop-shadow(0 1px 0 rgb(255 255 255 / 70%)) drop-shadow(0 6px 14px color-mix(in srgb, var(--color-welcome-navy) 18%, transparent))",
+            "drop-shadow(0 1px 0 rgb(255 255 255 / 70%)) drop-shadow(0 6px 14px color-mix(in srgb, var(--color-motif-deep) 18%, transparent))",
         }}
       />
     </div>
@@ -580,7 +586,7 @@ function ProposalAsk({
   return (
     <div
       className="relative mx-auto mt-8 w-full max-w-lg rounded-2xl border px-5 py-8 sm:mt-10 sm:px-8 sm:py-10"
-      style={{ borderColor: GOLD_BORDER_SOFT, background: "color-mix(in srgb, var(--color-welcome-bg-soft) 60%, transparent)" }}
+      style={{ borderColor: GOLD_BORDER_SOFT, background: "color-mix(in srgb, var(--color-motif-blush) 12%, transparent)" }}
     >
       {coupleImage ? (
         <div className="relative mx-auto mb-5 w-[7.5rem] sm:mb-7 sm:w-[9.5rem]">
@@ -588,8 +594,8 @@ function ProposalAsk({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={coupleImage}
-            alt="The couple"
-            className="relative mx-auto block h-auto w-full select-none drop-shadow-[0_14px_28px_rgba(48,74,52,0.18)]"
+            alt={`${celebrantName(siteConfig)} monogram`}
+            className="relative mx-auto block h-auto w-full select-none drop-shadow-[0_14px_28px_color-mix(in_srgb,var(--color-motif-deep)_25%,transparent)]"
           />
         </div>
       ) : null}
@@ -827,12 +833,13 @@ function ProposalPageInner({ role }: ProposalPageProps) {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-[100dvh] select-none px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:py-16 md:py-20 ${pageScrollLocked ? "overflow-hidden" : "overflow-x-hidden"}`}
-      style={{ background: sectionBackground, color: CREAM }}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-[100dvh] select-none px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:py-16 md:py-20 ${pageScrollLocked ? "overflow-hidden" : "overflow-x-hidden"}`}
+      style={{ background: PAGE_BG, color: CREAM }}
     >
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.22]" aria-hidden>
-        <Suspense fallback={<div className="h-full w-full" style={{ background: sectionBackground }} />}>
-          <Silk speed={6} scale={1} color="#9EAF91" noiseIntensity={0} rotation={0.25} />
+      {/* Crimson Silk folds drifting over the wine background */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.28]" aria-hidden>
+        <Suspense fallback={<div className="h-full w-full" style={{ background: PAGE_BG }} />}>
+          <Silk speed={6} scale={1} color="#A3172A" noiseIntensity={0} rotation={0.25} />
         </Suspense>
       </div>
 
@@ -857,7 +864,7 @@ function ProposalPageInner({ role }: ProposalPageProps) {
 
       {cinematicEntry && (
         <motion.div
-          className="pointer-events-none fixed inset-0 z-[28] bg-[var(--color-welcome-bg)]"
+          className="pointer-events-none fixed inset-0 z-[28] bg-[var(--color-motif-deep)]"
           aria-hidden="true"
           initial={{ clipPath: "circle(0% at 50% 46%)", opacity: 0.98 }}
           animate={{ clipPath: "circle(145% at 50% 46%)", opacity: 0 }}
@@ -934,7 +941,7 @@ function ProposalPageInner({ role }: ProposalPageProps) {
                       color: INK,
                       backgroundColor: IVORY,
                       border: `1px solid ${GOLD_BORDER}`,
-                      boxShadow: "inset 0 1px 2px color-mix(in srgb, var(--color-welcome-navy) 6%, transparent)",
+                      boxShadow: "inset 0 1px 2px color-mix(in srgb, var(--color-motif-deep) 8%, transparent)",
                     }}
                   />
                 </div>
@@ -1057,7 +1064,7 @@ export function ProposalPage(props: ProposalPageProps) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center px-6" style={{ background: sectionBackground, color: CREAM }}>
+        <div className="flex min-h-screen items-center justify-center px-6" style={{ background: PAGE_BG, color: "#fff" }}>
           <p className={`${cinzel.className} text-sm uppercase tracking-[0.2em]`}>Loading invitation…</p>
         </div>
       }
