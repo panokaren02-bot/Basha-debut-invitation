@@ -893,10 +893,15 @@ export const siteConfig = {
       "Parents of the Debutante",
       "Escort",
       "18 Roses",
+      "One of My 18 Roses",
       "18 Candles",
+      "One of My 18 Candles",
       "18 Treasures",
+      "One of My 18 Treasures",
       "18 Cheers",
+      "One of My 18 Cheers",
       "Cotillion",
+      "Cotillion Dancer",
     ],
     // Leave any path "" to hide that decoration
     decos: { ...SECTION_DECOS },
@@ -909,6 +914,12 @@ export const siteConfig = {
       "18 Treasures": "18 Treasures",
       "18 Cheers": "18 Cheers",
       Cotillion: "Cotillion Dancers",
+      // Category names as written in the entourage sheet
+      "One of My 18 Roses": "18 Roses",
+      "One of My 18 Candles": "18 Candles",
+      "One of My 18 Treasures": "18 Treasures",
+      "One of My 18 Cheers": "18 Cheers",
+      "Cotillion Dancer": "Cotillion Dancers",
     } as Record<string, string>,
   },
   // RSVP / guest list (components/sections/guest-list.tsx) — card, search, RSVP form and all modals.

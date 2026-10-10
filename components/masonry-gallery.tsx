@@ -116,7 +116,8 @@ function RetryableGalleryImage({
           width={width}
           height={height}
           sizes={sizes}
-          unoptimized
+          // Let Next resize: the originals are ~25MP each, and decoding dozens of them
+          // at full size runs phones out of memory (white screen on /gallery)
           priority={priority}
           loading="eager"
           decoding="async"
