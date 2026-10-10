@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef, type CSSProperties } from "react"
+import { celebrantName } from "@/lib/celebrant"
+import { useState, useEffect, useMemo, useRef, type CSSProperties } from "react"
 import { createPortal } from "react-dom"
 import {
   Search,
@@ -46,38 +47,44 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Containers are plain light with teal text; buttons are coral (#D0899A) with light text.
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
+// Red velvet vibe (same as the sections around it): the RSVP card and its modals are
+// ivory paper with wine headings, gold accents and crimson → wine buttons. The area
+// around the card is left without a background or corner decorations.
+// TEAL keeps its name from the template but is now the wine ink used on ivory.
+const TEAL = "var(--color-motif-deep)"
+const BUTTON = "var(--color-motif-accent)"
 const IVORY = "var(--color-motif-soft)"
-const PAPER = "var(--color-motif-soft)"
-const DEEP_GRADIENT = BUTTON
-const SAGE_GRADIENT = TEAL
-const HAIRLINE = "color-mix(in srgb, #1F3460 22%, transparent)"
-const TEAL_SOFT = "color-mix(in srgb, #1F3460 65%, transparent)"
-// Teal-tinted veil behind modals
-const LIGHT_OVERLAY = "color-mix(in srgb, var(--color-welcome-navy) 38%, transparent)"
-const DARK_OVERLAY = "color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)"
+const PAPER =
+  "radial-gradient(120% 50% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)"
+const DEEP_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const SAGE_GRADIENT = "linear-gradient(180deg, var(--color-motif-deep) 0%, color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep)) 100%)"
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const TEAL_SOFT = "color-mix(in srgb, var(--color-motif-deep) 65%, transparent)"
+// Wine-tinted veil behind modals
+const LIGHT_OVERLAY = "color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 50%, var(--color-coastal-deep)) 45%, transparent)"
+const DARK_OVERLAY = "color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 40%, var(--color-coastal-deep)) 65%, transparent)"
 
 const palette = {
-  body: TEAL,
+  body: "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))",
   heading: TEAL,
-  label: TEAL,
-  accent: TEAL,
+  label: GOLD_INK,
+  accent: GOLD_INK,
 } as const
 
 const modalCardStyle = {
   background: PAPER,
-  boxShadow: "0 30px 60px -24px color-mix(in srgb, var(--color-welcome-navy) 60%, transparent)",
+  boxShadow:
+    "0 30px 60px -24px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
 const innerSurfaceStyle = {
-  background: "color-mix(in srgb, #1F3460 6%, var(--color-motif-soft))",
+  background: "color-mix(in srgb, var(--color-motif-blush) 18%, var(--color-motif-soft))",
   borderColor: HAIRLINE,
 } as const
 
-const modalInputClass = `w-full rounded-lg border bg-[var(--color-motif-soft)] px-2.5 py-1.5 font-goudy-italic ${sectionType.text} transition-all duration-300 outline-none focus:border-[#1F3460] focus:ring-2 focus:ring-[color-mix(in_srgb,#16828F_22%,transparent)] placeholder:text-[color-mix(in_srgb,#16828F_55%,transparent)] sm:px-3 sm:py-2`
+const modalInputClass = `w-full rounded-lg border bg-[var(--color-motif-soft)] px-2.5 py-1.5 font-goudy-italic ${sectionType.text} transition-all duration-300 outline-none focus:border-[var(--color-welcome-gold)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_28%,transparent)] placeholder:text-[color-mix(in_srgb,var(--color-motif-deep)_55%,transparent)] sm:px-3 sm:py-2`
 
 const modalInputStyle = {
   borderColor: HAIRLINE,
@@ -87,19 +94,19 @@ const modalInputStyle = {
 const modalLabelClass = `font-goudy-italic mb-1.5 flex flex-wrap items-center gap-1.5 ${sectionType.text} font-semibold sm:mb-2 sm:gap-2`
 
 const dividerLineStyle = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, #1F3460 55%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const primaryButtonStyle = {
-  background: BUTTON,
-  borderColor: BUTTON,
-  color: IVORY,
-  boxShadow: "0 12px 24px -10px color-mix(in srgb, #D0899A 55%, transparent)",
+  background: DEEP_GRADIENT,
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+  color: "#fff",
+  boxShadow: "0 12px 24px -10px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
 } as const
 
 const noticeStyle = {
-  background: "color-mix(in srgb, #D0899A 10%, var(--color-motif-soft))",
-  borderColor: "color-mix(in srgb, #D0899A 40%, transparent)",
+  background: "color-mix(in srgb, var(--color-motif-deep) 10%, var(--color-motif-soft))",
+  borderColor: "color-mix(in srgb, var(--color-motif-deep) 40%, transparent)",
   color: TEAL,
 } as const
 
@@ -128,7 +135,7 @@ function HighlightedName({ name, query }: { name: string; query: string }) {
   return (
     <>
       {name.slice(0, index)}
-      <span className="font-semibold" style={{ color: BUTTON, background: "color-mix(in srgb, #D0899A 14%, transparent)" }}>
+      <span className="font-semibold" style={{ color: BUTTON, background: "color-mix(in srgb, var(--color-motif-deep) 14%, transparent)" }}>
         {name.slice(index, index + trimmed.length)}
       </span>
       {name.slice(index + trimmed.length)}
@@ -190,7 +197,11 @@ async function loadGuestsFromApi(signal?: AbortSignal, reload = false): Promise<
 
 export function GuestList() {
   const siteConfig = useSiteConfig()
-  const copy = siteConfig.rsvp
+  // {celebrant} anywhere in the RSVP wording → the celebrant's nickname
+  const copy = useMemo(() => {
+    const name = JSON.stringify(celebrantName(siteConfig)).slice(1, -1)
+    return JSON.parse(JSON.stringify(siteConfig.rsvp).split("{celebrant}").join(name)) as typeof siteConfig.rsvp
+  }, [siteConfig])
   const [guests, setGuests] = useState<Guest[]>([])
   const [filteredGuests, setFilteredGuests] = useState<Guest[]>([])
   const [searchQuery, setSearchQuery] = useState("")
@@ -655,7 +666,7 @@ export function GuestList() {
             className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
             style={{
               fontSize: "var(--script-size)",
-              color: TEAL,
+              color: GOLD_INK,
               textShadow: "0 1px 0 var(--color-motif-soft)",
             }}
           >
@@ -668,7 +679,7 @@ export function GuestList() {
 
         <p
           className={`font-goudy-italic mx-auto mt-3 max-w-[17.5rem] ${sectionType.textSnug} sm:mt-4`}
-          style={{ color: TEAL }}
+          style={{ color: palette.body }}
         >
           {copy.intro}
         </p>
@@ -725,13 +736,13 @@ export function GuestList() {
                 className="pointer-events-none absolute inset-x-6 top-0 h-px"
                 style={{
                   background:
-                    "linear-gradient(to right, transparent, #1F3460, transparent)",
+                    "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
                 }}
               />
               <button
                 type="button"
                 onClick={() => setShowSearchModal(false)}
-                className="absolute right-3 top-3 z-10 rounded-full p-1.5 transition-colors hover:bg-[color-mix(in_srgb,#16828F_10%,transparent)]"
+                className="absolute right-3 top-3 z-10 rounded-full p-1.5 transition-colors hover:bg-[color-mix(in_srgb,var(--color-motif-deep)_10%,transparent)]"
                 style={{ color: palette.heading }}
                 aria-label="Close search"
               >
@@ -791,12 +802,12 @@ export function GuestList() {
                     placeholder={copy.search.placeholder}
                     autoFocus
                     autoComplete="off"
-                    className="w-full rounded-full border bg-[var(--color-motif-soft)] py-2.5 pl-10 pr-4 font-goudy-italic text-[0.95rem] shadow-sm outline-none transition-all duration-200 placeholder:text-[color-mix(in_srgb,#16828F_55%,transparent)] sm:py-3 sm:text-base"
+                    className="w-full rounded-full border bg-[var(--color-motif-soft)] py-2.5 pl-10 pr-4 font-goudy-italic text-[0.95rem] shadow-sm outline-none transition-all duration-200 placeholder:text-[color-mix(in_srgb,var(--color-motif-deep)_55%,transparent)] sm:py-3 sm:text-base"
                     style={{
-                      borderColor: searchQuery ? "#1F3460" : HAIRLINE,
+                      borderColor: searchQuery ? GOLD : HAIRLINE,
                       color: palette.heading,
                       boxShadow: searchQuery
-                        ? "0 0 0 3px color-mix(in srgb, #1F3460 20%, transparent)"
+                        ? "0 0 0 3px color-mix(in srgb, var(--color-welcome-gold) 28%, transparent)"
                         : undefined,
                     }}
                   />
@@ -865,7 +876,7 @@ export function GuestList() {
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSearchSelect(guest)}
-                      className="group flex w-full items-center gap-3 border-b px-5 py-3 text-left last:border-b-0 transition-colors hover:bg-[color-mix(in_srgb,#16828F_8%,transparent)] sm:px-6 sm:py-3.5"
+                      className="group flex w-full items-center gap-3 border-b px-5 py-3 text-left last:border-b-0 transition-colors hover:bg-[color-mix(in_srgb,var(--color-motif-deep)_8%,transparent)] sm:px-6 sm:py-3.5"
                       style={{
                         borderColor: HAIRLINE,
                       }}
@@ -976,7 +987,7 @@ export function GuestList() {
               className="pointer-events-none absolute inset-x-5 top-0 z-10 h-px sm:inset-x-8"
               style={{
                 background:
-                  "linear-gradient(to right, transparent, #1F3460, transparent)",
+                  "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
               }}
             />
 
@@ -989,7 +1000,7 @@ export function GuestList() {
               {!hasResponded && (
                 <button
                   onClick={handleCloseModal}
-                  className="absolute right-2 top-2 rounded-full p-1 transition-colors hover:bg-[color-mix(in_srgb,#16828F_10%,transparent)] sm:right-3 sm:top-3 sm:p-1.5"
+                  className="absolute right-2 top-2 rounded-full p-1 transition-colors hover:bg-[color-mix(in_srgb,var(--color-motif-deep)_10%,transparent)] sm:right-3 sm:top-3 sm:p-1.5"
                   style={{ color: palette.heading }}
                   aria-label="Close"
                 >
@@ -1173,7 +1184,7 @@ export function GuestList() {
                             formData.RSVP === "Yes"
                               ? {
                                   borderColor: palette.accent,
-                                  backgroundColor: "color-mix(in srgb, #1F3460 10%, var(--color-motif-soft))",
+                                  backgroundColor: "color-mix(in srgb, var(--color-motif-blush) 30%, var(--color-motif-soft))",
                                 }
                               : { borderColor: HAIRLINE, backgroundColor: IVORY }
                           }
@@ -1204,7 +1215,7 @@ export function GuestList() {
                             formData.RSVP === "No"
                               ? {
                                   borderColor: TEAL_SOFT,
-                                  backgroundColor: "color-mix(in srgb, #D0899A 10%, var(--color-motif-soft))",
+                                  backgroundColor: "color-mix(in srgb, var(--color-motif-deep) 10%, var(--color-motif-soft))",
                                 }
                               : { borderColor: HAIRLINE, backgroundColor: IVORY }
                           }
@@ -1239,7 +1250,7 @@ export function GuestList() {
                       const pillBase = `${cinzel.className} inline-flex items-center gap-0.5 rounded-full px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.12em]`
                       const outlineButton = {
                         color: palette.heading,
-                        borderColor: "color-mix(in srgb, #1F3460 55%, transparent)",
+                        borderColor: "color-mix(in srgb, var(--color-welcome-gold) 60%, transparent)",
                         background: IVORY,
                       }
                       return (
@@ -1276,9 +1287,9 @@ export function GuestList() {
                                         ? { background: DEEP_GRADIENT, color: IVORY, borderColor: "transparent" }
                                         : filled
                                           ? {
-                                              background: "color-mix(in srgb, #1F3460 10%, var(--color-motif-soft))",
+                                              background: "color-mix(in srgb, var(--color-motif-blush) 30%, var(--color-motif-soft))",
                                               color: palette.heading,
-                                              borderColor: "color-mix(in srgb, #1F3460 45%, transparent)",
+                                              borderColor: "color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)",
                                             }
                                           : { background: IVORY, color: TEAL_SOFT, borderColor: HAIRLINE }
                                     }
@@ -1336,7 +1347,7 @@ export function GuestList() {
                                       style={
                                         picked
                                           ? {
-                                              background: "color-mix(in srgb, #1F3460 18%, var(--color-motif-soft))",
+                                              background: "color-mix(in srgb, var(--color-motif-blush) 45%, var(--color-motif-soft))",
                                               borderColor: palette.accent,
                                               color: palette.heading,
                                             }
@@ -1559,7 +1570,7 @@ export function GuestList() {
                       className="absolute h-14 w-14 animate-ping rounded-full"
                       style={{
                         animationDuration: "2.5s",
-                        backgroundColor: "color-mix(in srgb, #1F3460 22%, transparent)",
+                        backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 30%, transparent)",
                       }}
                     />
                     <div
@@ -1658,14 +1669,14 @@ export function GuestList() {
                 className="pointer-events-none absolute inset-x-5 top-0 h-px sm:inset-x-8"
                 style={{
                   background:
-                    "linear-gradient(to right, transparent, #1F3460, transparent)",
+                    "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
                 }}
               />
 
               <div className="relative flex-shrink-0 px-4 pb-4 pt-5 text-center sm:px-6 sm:pb-5 sm:pt-6">
                 <button
                   onClick={handleCloseRequestModal}
-                  className="absolute right-2 top-2 rounded-full p-1 transition-colors hover:bg-[color-mix(in_srgb,#16828F_10%,transparent)] sm:right-3 sm:top-3 sm:p-1.5"
+                  className="absolute right-2 top-2 rounded-full p-1 transition-colors hover:bg-[color-mix(in_srgb,var(--color-motif-deep)_10%,transparent)] sm:right-3 sm:top-3 sm:p-1.5"
                   style={{ color: palette.heading }}
                   aria-label="Close"
                 >
@@ -1847,8 +1858,8 @@ export function GuestList() {
                     {/* Enhanced Icon Circle */}
                     <div className="relative inline-flex items-center justify-center mb-3 sm:mb-4">
                       {/* Animated rings */}
-                      <div className="absolute inset-0 rounded-full border-2 border-motif-teal/20 animate-ping" />
-                      <div className="absolute inset-0 rounded-full border-2 border-motif-teal/30" />
+                      <div className="absolute inset-0 rounded-full border-2 border-motif-deep/20 animate-ping" />
+                      <div className="absolute inset-0 rounded-full border-2 border-motif-deep/30" />
                       {/* Icon container */}
                       <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center shadow-xl" style={{ background: DEEP_GRADIENT }}>
                         <CheckCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 lg:h-10 lg:w-10" style={{ color: IVORY }} strokeWidth={2.5} />
@@ -1872,11 +1883,11 @@ export function GuestList() {
                     
                     {/* Subtle closing indicator */}
                     <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-2 sm:mt-3">
-                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-motif-teal/60 rounded-full animate-pulse" />
-                      <p className={`text-motif-teal/70 ${sectionType.label}`}>
+                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-motif-deep/60 rounded-full animate-pulse" />
+                      <p className={`text-motif-deep/70 ${sectionType.label}`}>
                         {copy.request.autoClose}
                       </p>
-                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-motif-teal/60 rounded-full animate-pulse" />
+                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-motif-deep/60 rounded-full animate-pulse" />
                     </div>
                   </div>
                 </div>

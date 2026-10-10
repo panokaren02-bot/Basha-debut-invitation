@@ -10,6 +10,7 @@ import { InvitePhotoBackdrop } from "@/components/loader/invite-photo-backdrop"
 import { PlainAtmosphere } from "@/components/loader/PlainAtmosphere"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
+import { fillCelebrant } from "@/lib/celebrant"
 import "@/components/loader/loading-screen.css"
 
 const cinzel = Cinzel({
@@ -176,7 +177,13 @@ function CountdownUnit({
   )
 }
 
-function HeroCountdown() {
+function HeroCountdown({
+  heading,
+  labels,
+}: {
+  heading: string
+  labels: { days: string; hours: string; minutes: string; seconds: string }
+}) {
   const timeLeft = useCeremonyCountdown()
   const colonClass = `${cinzel.className} home-hero-countdown-value shrink-0 self-start px-0.5 text-[clamp(1.2rem,5.4vw,1.75rem)] font-semibold leading-none tabular-nums sm:px-1`
 
@@ -185,26 +192,26 @@ function HeroCountdown() {
       <p
         className={`${cinzel.className} home-hero-countdown-heading text-center text-[0.58rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.64rem] sm:tracking-[0.26em]`}
       >
-        Time left til we say I do
+        {heading}
       </p>
       <div
         className="mx-auto mt-2 flex max-w-md items-start justify-center sm:mt-2.5 sm:max-w-lg"
         aria-live="polite"
         aria-label={`${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, ${timeLeft.seconds} seconds`}
       >
-        <CountdownUnit value={timeLeft.days} label="Days" />
+        <CountdownUnit value={timeLeft.days} label={labels.days} />
         <span className={colonClass} aria-hidden="true">
           :
         </span>
-        <CountdownUnit value={timeLeft.hours} label="Hours" pad />
+        <CountdownUnit value={timeLeft.hours} label={labels.hours} pad />
         <span className={colonClass} aria-hidden="true">
           :
         </span>
-        <CountdownUnit value={timeLeft.minutes} label="Minutes" pad />
+        <CountdownUnit value={timeLeft.minutes} label={labels.minutes} pad />
         <span className={colonClass} aria-hidden="true">
           :
         </span>
-        <CountdownUnit value={timeLeft.seconds} label="Seconds" pad />
+        <CountdownUnit value={timeLeft.seconds} label={labels.seconds} pad />
       </div>
     </div>
   )
@@ -219,6 +226,8 @@ export function Hero() {
   const cornerDecos =
     loading.cornerDecos ?? defaultSiteConfig.loadingScreen.cornerDecos
   const backgroundPhotos = loading.backgroundPhotos ?? []
+  const hero = siteConfig.hero ?? defaultSiteConfig.hero
+  const fill = (text: string) => fillCelebrant(text, siteConfig)
   const reduceMotion = useReducedMotion()
   const [visible, setVisible] = useState(false)
 
@@ -312,19 +321,13 @@ export function Hero() {
             aria-hidden
             className="home-hero-title-glow pointer-events-none absolute left-1/2 top-[42%] h-[min(18rem,58vw)] w-[min(36rem,96%)] -translate-x-1/2 -translate-y-1/2 rounded-full"
           />
-          <span className="sr-only">You&apos;re Invited!</span>
+          <span className="sr-only">{fill(hero.srTitle)}</span>
           <span
             aria-hidden
             className={`${theSeasons.className} home-hero-title-main relative block uppercase leading-[0.78] tracking-[0.06em] min-[400px]:tracking-[0.09em] sm:tracking-[0.11em] md:tracking-[0.12em]`}
             style={{ fontSize: "var(--hero-title-size)" }}
           >
-            You
-            <span
-              className={`${cinzel.className} relative -top-[0.04em] mx-[0.02em] inline-block font-normal tracking-normal`}
-            >
-              &rsquo;
-            </span>
-            re
+            {fill(hero.titleMain)}
           </span>
           <span
             aria-hidden
@@ -334,12 +337,7 @@ export function Hero() {
               fontSize: "var(--hero-script-size)",
             }}
           >
-            Invited
-            <span
-              className={`${cinzel.className} home-hero-title-script relative -top-[0.08em] ml-[0.05em] inline-block font-normal`}
-            >
-              !
-            </span>
+            {fill(hero.titleScript)}
           </span>
         </motion.h1>
 
@@ -347,7 +345,7 @@ export function Hero() {
           className={`${cinzel.className} home-hero-eyebrow mt-4 max-w-[22rem] text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase leading-[1.7] tracking-[0.18em] sm:mt-5 sm:max-w-none sm:tracking-[0.22em]`}
           {...fadeUp(0.2)}
         >
-          Save the date — we are getting married
+          {fill(hero.eyebrow)}
         </motion.p>
 
         <motion.p
@@ -366,7 +364,7 @@ export function Hero() {
       </div>
 
       <motion.div className="home-hero-countdown-bar relative z-10 mt-auto w-full" {...fadeUp(0.42)}>
-        <HeroCountdown />
+        <HeroCountdown heading={fill(hero.countdownHeading)} labels={hero.countdownLabels} />
       </motion.div>
     </section>
   )

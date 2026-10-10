@@ -2,6 +2,7 @@
 
 import React from "react"
 import localFont from "next/font/local"
+import { Lora } from "next/font/google"
 import { motion, useReducedMotion } from "motion/react"
 import { sectionType, storyChapterTitleSize } from "@/lib/section-typography"
 import Image from "next/image"
@@ -13,12 +14,20 @@ const theSeasons = localFont({
   variable: "--font-the-seasons",
 })
 
+// Upright, screen-friendly serif for chapter paragraphs on the pattern (easier to read than italic Goudy)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
+})
+
 const lightBg = "var(--color-welcome-bg)"
 const darkBg = "var(--color-welcome-green)"
 const revealEase = [0.22, 1, 0.36, 1] as const
 
 // Plain cards: flat palette colors — teal text on light cards, light text on teal cards
-const TEAL = "#1F3460"
+const TEAL = "var(--color-motif-teal)"
 const ON_TEAL = "var(--color-motif-soft)"
 
 export type LoveStoryEucalyptusDecos = {
@@ -41,6 +50,27 @@ interface StorySectionProps {
   eucalyptusDecos?: LoveStoryEucalyptusDecos
   // Word before the number on plain cards, e.g. "Chapter" → "Chapter 01"
   chapterLabelText?: string
+  // "pattern": no solid band — the section's circle pattern shows through and the
+  // text sits on an ivory (light) or wine-glass (dark) card (see love-story-red.css)
+  surface?: "solid" | "pattern"
+}
+
+// The Seasons (title face) lacks most punctuation — set any non-letter/number
+// character (comma, hyphen, apostrophe, &, …) in Cinzel so it renders cleanly
+function TitleText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/([^\p{L}\p{N}\s])/u).map((part, i) =>
+        i % 2 === 1 ? (
+          <span key={i} className="story-title-special">
+            {part}
+          </span>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  )
 }
 
 function PlainEucalyptusDecos({ decos }: { decos: LoveStoryEucalyptusDecos }) {
@@ -71,13 +101,13 @@ function PlainEucalyptusDecos({ decos }: { decos: LoveStoryEucalyptusDecos }) {
 function PlainChapterDivider({ dark }: { dark: boolean }) {
   const line = dark
     ? "color-mix(in srgb, var(--color-motif-soft) 45%, transparent)"
-    : "color-mix(in srgb, #1F3460 35%, transparent)"
+    : "color-mix(in srgb, var(--color-motif-teal) 35%, transparent)"
   return (
     <div className="mb-4 flex items-center justify-center gap-1.5 sm:mb-5">
       <span className="h-px w-8 sm:w-12" style={{ background: line }} />
       <span
         className="h-1 w-1 rotate-45"
-        style={{ background: dark ? "var(--color-motif-blush)" : "#D0899A" }}
+        style={{ background: dark ? "var(--color-motif-blush)" : "var(--color-motif-deep)" }}
         aria-hidden
       />
       <span className="h-px w-8 sm:w-12" style={{ background: line }} />
@@ -97,8 +127,13 @@ export const StorySection: React.FC<StorySectionProps> = ({
   chapterIndex = 0,
   eucalyptusDecos,
   chapterLabelText = "Chapter",
+  surface = "solid",
 }) => {
+  const onPattern = surface === "pattern"
   const isDark = theme === "dark"
+  const textCardClass = onPattern
+    ? ` story-pattern-card ${isDark ? "story-pattern-card--dark" : "story-pattern-card--light"}`
+    : ""
   const showImage = !plain && Boolean(imageSrc)
   const reduceMotion = useReducedMotion()
   const slideFromLeft = layout === "image-left"
@@ -151,7 +186,7 @@ export const StorySection: React.FC<StorySectionProps> = ({
   return (
     <div
       className={`${theSeasons.variable} relative z-[2] ${sectionSurfaceClass}`}
-      style={plain ? undefined : { background: isDark ? darkBg : lightBg }}
+      style={plain || onPattern ? undefined : { background: isDark ? darkBg : lightBg }}
     >
       {plain && (
         <div className="story-plain-atmosphere" aria-hidden="true">
@@ -163,7 +198,7 @@ export const StorySection: React.FC<StorySectionProps> = ({
         </div>
       )}
 
-      {!isDark && !plain && (
+      {!isDark && !plain && !onPattern && (
         <>
           {!isFirst && (
             <div className="pointer-events-none absolute left-0 top-0 z-20 -mt-[8px] w-full md:-mt-[20px]">
@@ -177,12 +212,17 @@ export const StorySection: React.FC<StorySectionProps> = ({
       )}
 
       <div
-        className={`container relative z-10 mx-auto px-2 md:px-12 ${showImage ? "py-12 md:py-32" : "py-1.5 md:py-14"} ${isFirst ? (showImage ? "pt-16 md:pt-36" : "pt-14 md:pt-16") : ""} ${isLast ? (showImage ? "pb-16 md:pb-36" : "pb-6 md:pb-16") : ""}`}
+        className={`container relative z-10 mx-auto px-2 md:px-12 ${
+          onPattern
+            ? // even rhythm between chapters on the pattern: same gap above and below each one
+              `px-4 py-7 sm:py-9 md:px-12 md:py-14 ${isFirst ? "pt-8 md:pt-12" : ""} ${isLast ? "pb-12 md:pb-20" : ""}`
+            : `${showImage ? "py-12 md:py-32" : "py-1.5 md:py-14"} ${isFirst ? (showImage ? "pt-16 md:pt-36" : "pt-14 md:pt-16") : ""} ${isLast ? (showImage ? "pb-16 md:pb-36" : "pb-6 md:pb-16") : ""}`
+        }`}
       >
         <div
           className={
             showImage
-              ? `flex ${flexDirection} items-center justify-between gap-3 md:gap-16`
+              ? `flex ${flexDirection} items-center justify-between ${onPattern ? "gap-4 sm:gap-6 md:gap-14" : "gap-3 md:gap-16"}`
               : `mx-auto flex max-w-2xl flex-col items-center px-2 text-center sm:px-4 ${plainAlign}`
           }
         >
@@ -195,8 +235,11 @@ export const StorySection: React.FC<StorySectionProps> = ({
                 viewport={{ once: true, margin: "-12%" }}
                 transition={{ duration: 0.95, delay: stagger, ease: revealEase }}
               >
-                <div className="w-full p-1.5 md:p-3" style={imageFrameStyle}>
-                  <div className="group relative aspect-[3/4] w-full overflow-hidden">
+                <div
+                  className={`w-full p-1.5 md:p-3${onPattern ? " story-pattern-frame" : ""}`}
+                  style={onPattern ? undefined : imageFrameStyle}
+                >
+                  <div className="group relative aspect-[2/3] w-full overflow-hidden">
                     <Image
                       src={imageSrc}
                       alt="Story moment"
@@ -243,7 +286,7 @@ export const StorySection: React.FC<StorySectionProps> = ({
                     color: isDark ? ON_TEAL : TEAL,
                   }}
                 >
-                  {title}
+                  <TitleText text={title} />
                 </h2>
               ) : null}
               <PlainChapterDivider dark={isDark} />
@@ -266,12 +309,12 @@ export const StorySection: React.FC<StorySectionProps> = ({
             </motion.article>
           ) : (
             <motion.div
-              className={
+              className={`${
                 showImage
                   ? "w-[55%] @container/story md:w-5/12"
                   : "w-full @container/story px-2 sm:px-4"
-              }
-              style={{ color: isDark ? lightBg : "var(--color-welcome-text)" }}
+              }${textCardClass}`}
+              style={onPattern ? undefined : { color: isDark ? lightBg : "var(--color-welcome-text)" }}
               initial={textInitial}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-10%" }}
@@ -279,17 +322,27 @@ export const StorySection: React.FC<StorySectionProps> = ({
             >
               {title && (
                 <h2
-                  className={`${theSeasons.className} mb-3 uppercase leading-tight tracking-[0.08em] sm:mb-4 sm:tracking-[0.1em] md:mb-6 md:tracking-[0.12em]`}
+                  className={`${theSeasons.className} story-pattern-card__title mb-3 uppercase leading-tight tracking-[0.08em] sm:mb-4 sm:tracking-[0.1em] md:mb-6 md:tracking-[0.12em]`}
                   style={{
                     fontSize: storyChapterTitleSize,
-                    color: isDark ? lightBg : "var(--color-welcome-navy)",
+                    color: onPattern ? undefined : isDark ? lightBg : "var(--color-welcome-navy)",
                   }}
                 >
-                  {title}
+                  {onPattern && (
+                    <span className="story-pattern-card__label">
+                      {chapterLabelText} {chapterLabel}
+                    </span>
+                  )}
+                  <TitleText text={title} />
                 </h2>
               )}
+              {onPattern && <span className="story-pattern-card__rule" aria-hidden />}
               <div
-                className={`font-goudy-italic space-y-3 sm:space-y-4 md:space-y-6 lg:leading-[1.7] ${sectionType.textRelaxed}`}
+                className={
+                  onPattern
+                    ? `${lora.className} story-pattern-card__text space-y-3 sm:space-y-4 md:space-y-5`
+                    : `font-goudy-italic space-y-3 sm:space-y-4 md:space-y-6 lg:leading-[1.7] ${sectionType.textRelaxed}`
+                }
               >
                 {text}
               </div>

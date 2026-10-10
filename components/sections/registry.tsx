@@ -1,18 +1,26 @@
 "use client"
 
+import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useState, type CSSProperties } from "react"
 import Image from "next/image"
 import localFont from "next/font/local"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora } from "next/font/google"
 import { Gift, Heart } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
-import { PlainBubbles } from "@/components/loader/PlainBubbles"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+})
+
+// Upright, screen-friendly serif for the letter (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
 })
 
 const theSeasons = localFont({
@@ -27,14 +35,14 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
-
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+// No section background or decorations: the header sits straight on the page backdrop,
+// so it's white (gold for the script) with a soft dark lift. The letter card is ivory
+// paper in wine + gold (colors: content/site.ts → registry.colors).
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: "var(--color-welcome-gold)", textShadow: textLift } as const
+const SEAL_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
 
 const ct = {
   body: sectionType.text,
@@ -58,21 +66,13 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
 }
 
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
-}
-
-// Sits directly on the circle pattern, so drawn in ivory
+// Gold hairlines + diamond above the header
 function DiamondDivider() {
   return (
     <div className="flex items-center justify-center gap-2" aria-hidden>
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
+      <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-welcome-gold)" }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
     </div>
   )
 }
@@ -101,7 +101,7 @@ function RegistryTitle({ title, subtitle }: { title: string; subtitle: string })
       <span
         aria-hidden
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
-        style={{ fontSize: "var(--script-size)", ...onBg }}
+        style={{ fontSize: "var(--script-size)", ...onBgGold }}
       >
         {subtitle}
       </span>
@@ -112,22 +112,19 @@ function RegistryTitle({ title, subtitle }: { title: string; subtitle: string })
 export function Registry() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.registry
-  const { decos } = content
   const c = content.colors // siteConfig.registry.colors (content/site.ts)
-  const { brideNickname, groomNickname } = siteConfig.couple
+  const celebrant = celebrantName(siteConfig)
   const reduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState(0)
   const initial = reduceMotion ? false : "hidden"
 
-  const buttonBg = c.button
-  const buttonText = "var(--color-motif-soft)"
-  // Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-  const sectionBg = "var(--color-bg-pattern-base)"
+  const buttonBg = SEAL_GRADIENT
+  const buttonText = "#fff"
   const cardStyle = {
-    background: c.card,
-    boxShadow: `0 26px 56px -30px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)`,
+    background: `radial-gradient(120% 45% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, ${c.card} 0%, ${c.cardEdge} 100%)`,
+    boxShadow: `0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px ${c.line}`,
   }
-  const dividerLineStyle = { background: "var(--color-on-pattern-line)" }
+  const dividerLineStyle = { background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }
 
   const accounts = content.showAccounts
     ? content.accounts.filter((a) => a.show && (a.accountNumber || a.qr))
@@ -136,46 +133,23 @@ export function Registry() {
   const active = accounts[activeIndex]
 
   return (
-    <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
-      style={{ background: sectionBg }}
-    >
-      {/* Same circle pattern as the hero */}
-      <PlainBubbles />
+    <div className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}>
       <section
         id="registry"
-        className="relative z-10 overflow-hidden pt-14 pb-12 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"
+        className="relative z-10 pt-10 pb-10 sm:pt-12 sm:pb-12 md:pt-14 md:pb-14"
       >
-        {/* Corner decorations (from site.ts) */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
-
         {/* Header */}
         <motion.div
-          className="relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center @container/registry sm:mb-10 sm:px-4 md:mb-12"
+          className="relative z-20 mx-auto mb-6 max-w-5xl px-3 text-center @container/registry sm:mb-8"
           variants={revealVariants}
           initial={initial}
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <DecoImg
-            src={decos.headerOrnament}
-            className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-          />
           <DiamondDivider />
           <p
             className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold uppercase leading-snug tracking-[0.16em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] sm:mt-5 sm:text-[0.875rem] sm:tracking-[0.22em]`}
-            style={onBg}
+            style={onBgGold}
           >
             {content.eyebrow}
           </p>
@@ -217,7 +191,10 @@ export function Registry() {
               </span>
             </motion.div>
 
-            <div className={`font-goudy-italic relative mx-auto max-w-xl space-y-4 ${ct.bodyLg} leading-relaxed`} style={{ color: c.body }}>
+            <div
+              className={`${lora.className} relative mx-auto max-w-xl space-y-4 text-[0.9rem] font-medium leading-[1.75] sm:text-[0.98rem] md:text-[1.02rem]`}
+              style={{ color: c.body }}
+            >
               {content.paragraphs.map((text, i) => (
                 <motion.p key={i} variants={itemVariants} className={i === 0 ? "text-left sm:text-center" : ""}>
                   {i === 0 && text.length > 1 ? (
@@ -339,7 +316,7 @@ export function Registry() {
                         </span>
                       )}
                       {active.accountName ? (
-                        <p className="font-goudy-italic mt-3 text-sm" style={{ color: c.body }}>
+                        <p className={`${lora.className} mt-3 text-sm font-medium`} style={{ color: c.body }}>
                           {active.accountName}
                         </p>
                       ) : null}
@@ -362,24 +339,20 @@ export function Registry() {
             {/* Sign-off */}
             <motion.div variants={itemVariants} className="relative space-y-1.5">
               {content.thankYou ? (
-                <p className={`font-goudy-italic ${ct.body}`} style={{ color: c.body }}>
+                <p className={`${lora.className} ${ct.body} font-medium`} style={{ color: c.body }}>
                   {content.thankYou}
                 </p>
               ) : null}
-              <p className={`font-goudy-italic ${ct.body}`} style={{ color: c.soft }}>
+              <p className={`${lora.className} ${ct.body} italic`} style={{ color: c.soft }}>
                 {content.signOff}
               </p>
               <p className={`${aboveTheBeyond.className} pt-1 text-2xl leading-tight sm:text-3xl`} style={{ color: c.script }}>
-                {content.signature || `${groomNickname} & ${brideNickname}`}
+                {content.signature ? fillCelebrant(content.signature, siteConfig) : celebrant}
               </p>
               <Heart className="mx-auto mt-2 h-3.5 w-3.5" style={{ color: c.eyebrow, fill: c.eyebrow }} aria-hidden />
             </motion.div>
           </motion.div>
 
-          <DecoImg
-            src={decos.footerVine}
-            className="mx-auto mt-10 block h-auto w-56 select-none opacity-90 sm:mt-12 sm:w-72 md:w-96"
-          />
         </div>
       </section>
     </div>

@@ -392,7 +392,7 @@
   width: 78%;
   height: 34px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(91, 74, 55, 0.28) 0%, transparent 72%);
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--color-coastal-deep) 28%, transparent) 0%, transparent 72%);
   filter: blur(14px);
   pointer-events: none;
   z-index: 0;
@@ -405,7 +405,7 @@
   width: 62%;
   height: 10px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse, rgba(91, 74, 55, 0.2) 0%, transparent 70%);
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--color-coastal-deep) 20%, transparent) 0%, transparent 70%);
   filter: blur(4px);
   pointer-events: none;
   z-index: 0;
@@ -424,8 +424,8 @@
   perspective: 1400px;
   overflow: hidden;
   filter:
-    drop-shadow(0 22px 40px rgba(91, 74, 55, 0.18))
-    drop-shadow(0 8px 16px rgba(91, 74, 55, 0.1));
+    drop-shadow(0 22px 40px color-mix(in srgb, var(--color-coastal-deep) 18%, transparent))
+    drop-shadow(0 8px 16px color-mix(in srgb, var(--color-coastal-deep) 10%, transparent));
   transform: none;
   border-radius: 8px;
 }
@@ -477,7 +477,7 @@
     repeating-linear-gradient(
       0deg,
       transparent 0 3px,
-      rgba(91, 74, 55, 0.03) 3px 4px
+      color-mix(in srgb, var(--color-coastal-deep) 3%, transparent) 3px 4px
     );
   pointer-events: none;
 }
@@ -634,8 +634,8 @@
   );
   border: 1px solid color-mix(in srgb, var(--env-border) 55%, transparent);
   box-shadow:
-    0 12px 32px rgba(91, 74, 55, 0.16),
-    0 4px 10px rgba(91, 74, 55, 0.08),
+    0 12px 32px color-mix(in srgb, var(--color-coastal-deep) 16%, transparent),
+    0 4px 10px color-mix(in srgb, var(--color-coastal-deep) 8%, transparent),
     inset 0 0 0 1px rgba(255, 255, 255, 0.45),
     inset 0 -18px 24px color-mix(in srgb, var(--env-ui-accent) 6%, transparent);
   overflow: hidden;
@@ -799,8 +799,8 @@
     linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, transparent 42%),
     linear-gradient(180deg, var(--color-motif-silver) 0%, var(--color-motif-soft) 52%, var(--color-motif-cream) 100%);
   box-shadow:
-    0 16px 30px rgba(91, 74, 55, 0.14),
-    0 5px 12px rgba(91, 74, 55, 0.06),
+    0 16px 30px color-mix(in srgb, var(--color-coastal-deep) 14%, transparent),
+    0 5px 12px color-mix(in srgb, var(--color-coastal-deep) 6%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     inset 0 -2px 4px color-mix(in srgb, var(--env-ui-brand) 6%, transparent);
   transform-origin: bottom center;
@@ -819,8 +819,8 @@
 .env-invite-polaroid:hover:not(:disabled),
 .env-invite-polaroid.is-lifted {
   box-shadow:
-    0 22px 38px rgba(91, 74, 55, 0.2),
-    0 10px 18px rgba(91, 74, 55, 0.1),
+    0 22px 38px color-mix(in srgb, var(--color-coastal-deep) 20%, transparent),
+    0 10px 18px color-mix(in srgb, var(--color-coastal-deep) 10%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.78),
     inset 0 -2px 4px color-mix(in srgb, var(--env-ui-brand) 6%, transparent);
 }
@@ -948,8 +948,8 @@
     radial-gradient(ellipse 70% 55% at 18% 22%, color-mix(in srgb, var(--env-highlight) 55%, transparent) 0%, transparent 58%),
     radial-gradient(ellipse 60% 50% at 82% 18%, color-mix(in srgb, var(--env-base) 40%, transparent) 0%, transparent 55%),
     radial-gradient(ellipse 85% 60% at 50% 0%, rgba(255, 255, 255, 0.32) 0%, transparent 52%),
-    radial-gradient(ellipse 55% 45% at 82% 92%, rgba(91, 74, 55, 0.1) 0%, transparent 52%),
-    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(91, 74, 55, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 45% at 82% 92%, color-mix(in srgb, var(--color-coastal-deep) 10%, transparent) 0%, transparent 52%),
+    radial-gradient(ellipse 40% 35% at 18% 78%, color-mix(in srgb, var(--color-coastal-deep) 6%, transparent) 0%, transparent 50%),
     linear-gradient(175deg, var(--env-highlight) 0%, var(--env-base) 36%, var(--env-fold) 70%, var(--env-shadow) 100%);
   transition: opacity 0.45s ease 0.15s;
   opacity: 1;
@@ -969,7 +969,7 @@
     repeating-linear-gradient(
       0deg,
       transparent 0 3px,
-      rgba(91, 74, 55, 0.035) 3px 4px
+      color-mix(in srgb, var(--color-coastal-deep) 3.5%, transparent) 3px 4px
     );
   pointer-events: none;
 }
@@ -1241,8 +1241,8 @@
   box-shadow: none;
   -webkit-tap-highlight-color: transparent;
   overflow: visible;
-  filter: drop-shadow(0 8px 16px rgba(91, 74, 55, 0.22))
-    drop-shadow(0 2px 5px rgba(154, 126, 74, 0.28));
+  /* neutral contact shadow only — no colored glow */
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-coastal-deep) 30%, transparent));
 }
 
 .env-invite-seal-img {
@@ -1253,7 +1253,7 @@
 }
 
 .env-invite-seal-letter {
-  fill: #16264A;
+  fill: var(--color-coastal-deep);
   font-family: "Cormorant Garamond", "Crimson Text", "Times New Roman", serif;
   font-weight: 500;
   font-style: normal;
@@ -1273,27 +1273,6 @@
   letter-spacing: -0.03em;
 }
 
-.env-invite-screen[data-phase="idle"] .env-invite-seal-btn {
-  animation: env-seal-breathe 2.8s ease-in-out infinite;
-}
-
-@keyframes env-seal-breathe {
-  0%,
-  100% {
-    filter: drop-shadow(0 8px 16px rgba(91, 74, 55, 0.22))
-      drop-shadow(0 2px 5px rgba(154, 126, 74, 0.28));
-  }
-  50% {
-    filter: drop-shadow(0 12px 22px rgba(180, 154, 104, 0.38))
-      drop-shadow(0 4px 10px rgba(91, 74, 55, 0.22));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .env-invite-screen[data-phase="idle"] .env-invite-seal-btn {
-    animation: none;
-  }
-}
 
 .env-invite-seal-btn:disabled {
   cursor: default;
@@ -2094,8 +2073,8 @@
     height: var(--env-letter-h);
     overflow: visible;
     box-shadow:
-      0 22px 48px rgba(91, 74, 55, 0.16),
-      0 8px 18px rgba(91, 74, 55, 0.08),
+      0 22px 48px color-mix(in srgb, var(--color-coastal-deep) 16%, transparent),
+      0 8px 18px color-mix(in srgb, var(--color-coastal-deep) 8%, transparent),
       inset 0 0 0 1px rgba(255, 255, 255, 0.5),
       inset 0 -18px 24px color-mix(in srgb, var(--env-ui-accent) 6%, transparent);
   }
@@ -2668,23 +2647,359 @@
 }
 
 /* ==========================================================================
-   "Open invitation" button — solid coral (#D0899A) with light text in every
+   "View the Invitation" button — polished gold with deep wine lettering in every
    mode (plain / photo, all breakpoints). Kept last so it wins over the rules above.
    ========================================================================== */
 .env-invite-screen .env-invite-enter-btn {
-  color: var(--color-motif-soft);
-  background: #D0899A;
-  border-color: #D0899A;
-  text-shadow: none;
-  box-shadow: 0 10px 24px color-mix(in srgb, #D0899A 45%, transparent);
+  color: var(--color-motif-deep);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-welcome-gold) 55%, white) 0%,
+    var(--color-welcome-gold) 48%,
+    color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep)) 100%
+  );
+  border-color: color-mix(in srgb, var(--color-welcome-gold) 70%, white);
+  text-shadow: 0 1px 0 color-mix(in srgb, white 45%, transparent);
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 55%, transparent);
 }
 
 .env-invite-screen .env-invite-enter-btn:hover {
-  color: var(--color-motif-soft);
-  background: color-mix(in srgb, #D0899A 85%, black);
-  box-shadow: 0 12px 28px color-mix(in srgb, #D0899A 55%, transparent);
+  color: var(--color-motif-deep);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-welcome-gold) 40%, white) 0%,
+    color-mix(in srgb, var(--color-welcome-gold) 90%, white) 48%,
+    var(--color-welcome-gold) 100%
+  );
+  box-shadow:
+    0 14px 30px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent),
+    0 0 18px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 65%, transparent);
 }
 
 .env-invite-screen .env-invite-enter-btn:focus-visible {
-  outline-color: #D0899A;
+  outline-color: var(--color-welcome-gold);
+}
+
+/* ── Luxury red envelope ─────────────────────────────────────────────────────
+   Paper colors come from --color-envelope-* (app/globals.css → "ENVELOPE").
+   Gold hairlines for the envelope edges and the letter's inner frame. */
+.env-invite-screen {
+  --env-border: color-mix(in srgb, var(--color-welcome-gold) 45%, transparent);
+  --env-border-soft: color-mix(in srgb, var(--color-welcome-gold) 38%, transparent);
+}
+
+/* ── Photo backdrop: same motif gradient as the loading screen ──────────────
+   Mirrors .loading-screen.ls-velvet .env-invite-readability-scrim in
+   loading-screen-velvet.css — wine at the top and bottom, thinner in the
+   middle so the photos still show. */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-readability-scrim {
+  background:
+    radial-gradient(80% 45% at 50% 46%, color-mix(in srgb, var(--color-coastal-deep) 28%, transparent) 0%, transparent 75%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 78%, transparent) 0%,
+      color-mix(in srgb, var(--color-motif-deep) 42%, transparent) 24%,
+      color-mix(in srgb, var(--color-motif-deep) 22%, transparent) 50%,
+      color-mix(in srgb, var(--color-motif-deep) 42%, transparent) 72%,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 84%, transparent) 100%
+    );
+}
+
+/* ==========================================================================
+   Letter content (photos mode) — ivory card inside the red envelope:
+   SAVE the DATE · divider · invitation line · name · divider · date,
+   with the monogram as a faint gold watermark.
+   ========================================================================== */
+.env-invite-letter-watermark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 78%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(140deg, var(--color-motif-blush), var(--color-welcome-gold));
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.env-invite-screen--plain .env-invite-letter-watermark {
+  display: none;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter {
+  background:
+    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%);
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-inner {
+  gap: 0.5em;
+}
+
+/* SAVE the DATE — wine capitals, gold script "the" */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.18em;
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: 1.3em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-label__word {
+  background: linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-label__script {
+  background: linear-gradient(100deg, color-mix(in srgb, var(--color-welcome-gold) 80%, var(--color-motif-deep)), var(--color-welcome-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gold hairline with a small diamond in the middle */
+.env-invite-letter-divider {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: min(62%, 11rem);
+  height: 1px;
+  margin: 0.15em auto;
+  background: linear-gradient(90deg, transparent, var(--color-welcome-gold) 30%, var(--color-welcome-gold) 70%, transparent);
+}
+
+.env-invite-letter-divider::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.42em;
+  height: 0.42em;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--color-motif-soft);
+  border: 1px solid var(--color-welcome-gold);
+}
+
+.env-invite-screen--plain .env-invite-letter-divider {
+  display: none;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-invited {
+  margin: 0;
+  font-size: 1.1em;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--color-motif-deep) 80%, var(--color-welcome-text));
+}
+
+/* Name — wine to gold, matching the envelope */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-names {
+  margin: 0.05em auto 0.1em;
+  background: linear-gradient(
+    118deg,
+    var(--color-motif-deep) 0%,
+    var(--color-motif-accent) 45%,
+    color-mix(in srgb, var(--color-welcome-gold) 85%, var(--color-motif-deep)) 100%
+  );
+}
+
+/* Date: weekday, then MONTH | 24 | 2026 between hairlines */
+.env-invite-letter-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  margin: 0;
+  font-size: 1em;
+  letter-spacing: 0;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.env-invite-letter-date__weekday {
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.36em;
+  padding-left: 0.36em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-welcome-gold) 75%, var(--color-motif-deep));
+}
+
+.env-invite-letter-date__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: min(86%, 15rem);
+}
+
+.env-invite-letter-date__side {
+  padding: 0.35em 0;
+  border-block: 1px solid color-mix(in srgb, var(--color-welcome-gold) 55%, transparent);
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-motif-deep);
+}
+
+.env-invite-letter-date__day {
+  padding: 0 0.45em;
+  font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  font-size: 2.1em;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: lining-nums;
+  background: linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 60%, color-mix(in srgb, var(--color-welcome-gold) 70%, var(--color-motif-deep)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Paper lettering: bold + high contrast on the ivory card (photos mode) ----
+   Name in The Seasons, "turns eighteen" in Above the Beyond — the same faces
+   as the loading screen and home hero. */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-label {
+  font-weight: 700;
+}
+
+.env-invite-letter-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  margin: 0.1em 0 0.2em;
+}
+
+.env-invite-letter-title__main {
+  display: block;
+  font-size: 3em;
+  line-height: 0.8;
+  letter-spacing: 0.08em;
+  padding-left: 0.08em; /* balances trailing tracking so the name is centered */
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-motif-deep);
+  /* The Seasons ships one weight — a hairline stroke gives it a bold, inked look */
+  -webkit-text-stroke: 0.04em currentColor;
+  text-shadow: 0 1px 0 color-mix(in srgb, white 70%, transparent);
+}
+
+.env-invite-letter-title__script {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: -0.32em;
+  padding: 0 0.15em;
+  font-size: 2.15em;
+  line-height: 0.9;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--color-welcome-gold) 72%, var(--color-motif-deep));
+  -webkit-text-stroke: 0.02em currentColor;
+  text-shadow: 0 1px 0 color-mix(in srgb, white 80%, transparent);
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-date__weekday {
+  font-weight: 700;
+  color: color-mix(in srgb, var(--color-welcome-gold) 60%, var(--color-motif-deep));
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-date__side {
+  font-weight: 700;
+  color: color-mix(in srgb, var(--color-motif-deep) 88%, var(--color-coastal-deep));
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-date__day {
+  font-weight: 700;
+}
+
+/* ---- Paper layout: name centered on the card ----
+   Three rows — top group / name / bottom group. The outer rows share the
+   leftover height equally, so the name sits at the middle of the paper and
+   both groups hug it with the same gap. Plain mode keeps its flex flow. */
+.env-invite-letter-top,
+.env-invite-letter-bottom {
+  display: contents;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-inner {
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  align-items: stretch;
+  gap: 0;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-top,
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55em;
+  width: 100%;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-top {
+  justify-content: flex-end;
+  padding-bottom: 0.9em;
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-bottom {
+  justify-content: flex-start;
+  padding-top: 1.1em; /* a touch more: the script line sits low in its box */
+}
+
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title {
+  margin: 0;
+}
+
+/* ---- Lines under the envelope: "14 nights until the eighteenth" + tagline ----
+   Elegant italics in sentence case instead of tracked Cinzel capitals.
+   Fonts are loaded in Hero.tsx (--env-font-countdown / --env-font-tagline).
+   Scoped under .env-invite-screen so they win over the per-breakpoint rules above. */
+.env-invite-screen .env-invite-days-to-go {
+  font-family: var(--env-font-countdown), "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.05rem, 4.2vw, 1.45rem);
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  text-transform: none;
+  color: var(--color-welcome-gold);
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent),
+    0 4px 16px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent);
+}
+
+.env-invite-screen .env-invite-reveal-copy h2 {
+  font-family: var(--env-font-tagline), "Lora", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(0.92rem, 3.4vw, 1.15rem);
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  text-transform: none;
+  color: color-mix(in srgb, white 92%, var(--color-welcome-gold));
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent),
+    0 4px 16px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent);
 }

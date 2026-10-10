@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -523,7 +524,7 @@ export default function DashboardPage() {
                 Welcome back
               </p>
               <h1 className={`${playfair.className} truncate text-[1.05rem] font-semibold leading-tight text-dash-ink sm:text-xl`}>
-                {siteConfig.couple.groomNickname} <span className="italic text-dash-accent">&amp;</span> {siteConfig.couple.brideNickname}
+                {celebrantName(siteConfig)}<span className="italic text-dash-accent">&rsquo;s</span> Debut
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">

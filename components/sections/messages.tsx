@@ -7,14 +7,23 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import MessageWallDisplay from "./message-wall-display"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
+import { fillCelebrant } from "@/lib/celebrant"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+})
+
+// Upright, screen-friendly serif for body copy and inputs (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
 })
 
 const theSeasons = localFont({
@@ -29,13 +38,17 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Form card: plain light with teal text; button is coral.
+// Header + wall titles sit on the page backdrop: white, gold for scripts, soft dark lift.
+// Form card: ivory paper with wine headings, gold labels and a crimson → wine button
+// (same vibe as the Registry / Playlist / Snap & Share cards).
 const PAPER = "var(--color-motif-soft)"
 const IVORY = "var(--color-motif-soft)"
-const NAVY = "#1F3460"
-const BODY = "#1F3460"
-const ACCENT = "#1F3460"
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const NAVY = "var(--color-motif-deep)"
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const ACCENT = GOLD_INK
+const BUTTON_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
 
 const palette = {
   body: BODY,
@@ -45,20 +58,20 @@ const palette = {
 } as const
 
 const lightLineStyle = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-soft) 75%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-// Header sits on the sage Silk backdrop — light text with a forest-green halo.
+// Header sits on the wine Silk backdrop — light text with a soft dark lift.
 const silkTitleShadow =
-  "0 1px 0 rgb(48 74 52 / 40%), 0 2px 10px rgb(48 74 52 / 35%), 0 8px 28px rgb(48 74 52 / 25%)"
+  "0 1px 0 color-mix(in srgb, var(--color-coastal-deep) 40%, transparent), 0 2px 10px color-mix(in srgb, var(--color-coastal-deep) 35%, transparent), 0 8px 28px color-mix(in srgb, var(--color-coastal-deep) 25%, transparent)"
 const silkScriptShadow =
-  "0 1px 0 rgb(48 74 52 / 32%), 0 2px 12px rgb(48 74 52 / 30%)"
+  "0 1px 0 color-mix(in srgb, var(--color-coastal-deep) 32%, transparent), 0 2px 12px color-mix(in srgb, var(--color-coastal-deep) 30%, transparent)"
 const silkBodyShadow =
-  "0 1px 1px rgb(48 74 52 / 42%), 0 2px 10px rgb(48 74 52 / 30%)"
+  "0 1px 1px color-mix(in srgb, var(--color-coastal-deep) 42%, transparent), 0 2px 10px color-mix(in srgb, var(--color-coastal-deep) 30%, transparent)"
 
 const silkGlowStyle = {
   background:
-    "radial-gradient(ellipse at center, rgb(48 74 52 / 26%) 0%, rgb(48 74 52 / 10%) 46%, transparent 72%)",
+    "radial-gradient(ellipse at center, color-mix(in srgb, var(--color-coastal-deep) 26%, transparent) 0%, color-mix(in srgb, var(--color-coastal-deep) 10%, transparent) 46%, transparent 72%)",
 } as const
 
 function SilkTextGlow({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -75,12 +88,13 @@ function SilkTextGlow({ children, className = "" }: { children: ReactNode; class
 }
 
 const cardStyle = {
-  background: "var(--color-motif-soft)",
+  background:
+    "radial-gradient(120% 45% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "color-mix(in srgb, #1F3460 25%, transparent)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)",
   boxShadow:
-    "0 22px 48px -24px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
 } as const
 
 interface Message {
@@ -107,13 +121,13 @@ function CardOrnament() {
     <div className="mx-auto mb-3 flex items-center justify-center sm:mb-4" aria-hidden>
       <span
         className="h-px w-16 sm:w-24"
-        style={{ background: "linear-gradient(to right, transparent, color-mix(in srgb, #1F3460 55%, transparent), transparent)" }}
+        style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }}
       />
     </div>
   )
 }
 
-function MessagesTitle() {
+function MessagesTitle({ title, script }: { title: string; script: string }) {
   return (
     <h2
       className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
@@ -124,28 +138,28 @@ function MessagesTitle() {
         } as React.CSSProperties
       }
     >
-      <span className="sr-only">Love Notes and Prayers — Share your love with us</span>
+      <span className="sr-only">{title} {script}</span>
       <span
         aria-hidden
         className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: IVORY,
+          color: "#fff",
           textShadow: silkTitleShadow,
         }}
       >
-        Love Notes
+        {title}
       </span>
       <span
         aria-hidden
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: "var(--color-motif-cream)",
+          color: GOLD,
           textShadow: silkScriptShadow,
         }}
       >
-        and prayers
+        {script}
       </span>
     </h2>
   )
@@ -153,8 +167,6 @@ function MessagesTitle() {
 
 function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
   const siteConfig = useSiteConfig()
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
 
   const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -219,10 +231,10 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
   const inputBorder = (field: string) =>
     focusedField === field
       ? palette.accent
-      : "color-mix(in srgb, #1F3460 30%, transparent)"
+      : "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
 
   const inputClass = (field: string) =>
-    `message-form-input w-full rounded-lg border px-3 py-2 font-goudy-italic ${sectionType.text} transition-all duration-300 focus:ring-2 focus:ring-[color-mix(in_srgb,#16828F_22%,transparent)] sm:px-4 sm:py-2.5 md:py-3 ${
+    `message-form-input w-full rounded-lg border px-3 py-2 ${lora.className} ${sectionType.text} transition-all duration-300 focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-welcome-gold)_30%,transparent)] sm:px-4 sm:py-2.5 md:py-3 ${
       focusedField === field ? "shadow-md" : ""
     }`
 
@@ -231,7 +243,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
       <style>{`
         .message-form-input::placeholder,
         .message-form-textarea::placeholder {
-          color: var(--color-welcome-text-soft) !important;
+          color: color-mix(in srgb, var(--color-motif-deep) 45%, transparent) !important;
           opacity: 1 !important;
         }
       `}</style>
@@ -244,7 +256,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
       >
         <div
           className="pointer-events-none absolute inset-2 rounded-[1.5rem] border sm:inset-2.5"
-          style={{ borderColor: "color-mix(in srgb, #1F3460 22%, transparent)" }}
+          style={{ borderColor: "color-mix(in srgb, var(--color-welcome-gold) 30%, transparent)" }}
           aria-hidden
         />
 
@@ -269,10 +281,10 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
               className={`${theSeasons.className} ${sectionType.subheader} mb-1.5 font-semibold tracking-[0.08em] uppercase`}
               style={{ color: NAVY }}
             >
-              Share Your Love
+              {siteConfig.messages.formTitle}
             </h3>
-            <p className={`font-goudy-italic ${sectionType.text}`} style={{ color: BODY }}>
-              Leave a note for {coupleDisplayName} to read and keep.
+            <p className={`${lora.className} ${sectionType.text} italic`} style={{ color: BODY }}>
+              {fillCelebrant(siteConfig.messages.formSubtitle, siteConfig)}
             </p>
           </div>
 
@@ -335,7 +347,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
                 }}
                 onFocus={() => setFocusedField("message")}
                 onBlur={() => setFocusedField(null)}
-                placeholder={`Write your wishes, prayer, or kind words for ${coupleDisplayName}...`}
+                placeholder={fillCelebrant(siteConfig.messages.messagePlaceholder, siteConfig)}
                 className={`message-form-textarea ${inputClass("message")} min-h-[90px] resize-none placeholder:leading-relaxed sm:min-h-[110px] md:min-h-[130px]`}
                 style={{
                   color: NAVY,
@@ -348,11 +360,11 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting || !nameValue.trim() || !messageValue.trim()}
-              className={`${cinzel.className} group relative w-full rounded-full border px-5 py-2.5 ${sectionType.label} font-semibold uppercase tracking-[0.16em] shadow-[0_12px_24px_-10px_color-mix(in_srgb,var(--color-welcome-navy)_60%,transparent)] transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none sm:py-3 sm:tracking-[0.18em]`}
+              className={`${cinzel.className} group relative w-full rounded-full border px-5 py-2.5 ${sectionType.label} font-semibold uppercase tracking-[0.16em] shadow-[0_12px_24px_-10px_color-mix(in_srgb,var(--color-coastal-deep)_65%,transparent)] transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none sm:py-3 sm:tracking-[0.18em]`}
               style={{
-                background: "#D0899A",
-                borderColor: "#D0899A",
-                color: IVORY,
+                background: BUTTON_GRADIENT,
+                borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+                color: "#fff",
               }}
             >
               {isSubmitting ? (
@@ -376,8 +388,6 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
 
 export function Messages() {
   const siteConfig = useSiteConfig()
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
 
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
@@ -442,13 +452,13 @@ export function Messages() {
             <OutsideDivider />
           </div>
           <div className="mx-auto mt-2 sm:mt-3 md:mt-4">
-            <MessagesTitle />
+            <MessagesTitle title={siteConfig.messages.title} script={siteConfig.messages.script} />
           </div>
           <p
-            className={`font-goudy-italic mx-auto mt-4 max-w-2xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
-            style={{ color: IVORY, textShadow: silkBodyShadow }}
+            className={`${lora.className} mx-auto mt-4 max-w-2xl px-2 font-medium sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
+            style={{ color: "#fff", textShadow: silkBodyShadow }}
           >
-            Share a short note, wish, or prayer for {coupleDisplayName}. Every message becomes part of our story.
+            {fillCelebrant(siteConfig.messages.description, siteConfig)}
           </p>
           <div className="mt-4 flex items-center justify-center sm:mt-5">
             <span className="h-px w-16 sm:w-24 md:w-32" style={lightLineStyle} />
@@ -467,15 +477,15 @@ export function Messages() {
           <SilkTextGlow className="mb-4 text-center sm:mb-6 md:mb-8">
             <h3
               className={`${theSeasons.className} mb-1.5 font-semibold tracking-[0.08em] uppercase sm:mb-2 ${sectionType.subheader}`}
-              style={{ color: IVORY, textShadow: silkTitleShadow }}
+              style={{ color: "#fff", textShadow: silkTitleShadow }}
             >
-              Messages from Loved Ones
+              {siteConfig.messages.wallTitle}
             </h3>
             <p
-              className={`font-goudy-italic ${sectionType.text}`}
-              style={{ color: "var(--color-motif-cream)", textShadow: silkBodyShadow }}
+              className={`${lora.className} ${sectionType.text} italic`}
+              style={{ color: GOLD, textShadow: silkBodyShadow }}
             >
-              Warm words from family and friends
+              {siteConfig.messages.wallSubtitle}
             </p>
             <div className="mt-4 sm:mt-5">
               <OutsideDivider />

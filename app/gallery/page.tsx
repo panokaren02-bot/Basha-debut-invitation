@@ -1,7 +1,10 @@
 import MasonryGallery from "@/components/masonry-gallery"
 import { fetchGalleryImages } from "@/lib/fetch-gallery-images"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
-import { sectionBackground } from "@/lib/section-background"
+import { siteConfig } from "@/content/site"
+import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 import localFont from "next/font/local"
 import { Cinzel } from "next/font/google"
 import { Camera } from "lucide-react"
@@ -23,10 +26,12 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
+// Same red velvet vibe as the My Story section: white + gold text on a red circle pattern
 const GOLD = "var(--color-welcome-gold)"
-const NAVY = "var(--color-welcome-navy)"
-const SCRIPT = "var(--color-welcome-green)"
-const BODY = "var(--color-welcome-text)"
+const WHITE = "#fff"
+const BG = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
+const TEXT_LIFT =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
 
 const goldDividerStyle = {
   background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
@@ -36,8 +41,12 @@ const goldDividerStyleLeft = {
   background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[120px] sm:max-w-[180px] md:max-w-[260px] lg:max-w-[320px] xl:max-w-[380px] select-none"
+const CORNERS = [
+  { key: "topLeft", className: "left-0 top-0" },
+  { key: "topRight", className: "right-0 top-0" },
+  { key: "bottomLeft", className: "left-0 bottom-0" },
+  { key: "bottomRight", className: "right-0 bottom-0" },
+] as const
 
 export const dynamic = "force-static"
 
@@ -51,7 +60,7 @@ function OutsideDivider() {
   )
 }
 
-function GalleryTitle() {
+function GalleryTitle({ title, script }: { title: string; script: string }) {
   return (
     <h1
       className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
@@ -62,28 +71,30 @@ function GalleryTitle() {
         } as React.CSSProperties
       }
     >
-      <span className="sr-only">Gallery — our favorite moments</span>
+      <span className="sr-only">
+        {title} — {script}
+      </span>
       <span
         aria-hidden
         className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: NAVY,
+          color: WHITE,
+          textShadow: TEXT_LIFT,
         }}
       >
-        Gallery
+        {title}
       </span>
       <span
         aria-hidden
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          color: SCRIPT,
-          textShadow:
-            "0 1px 0 color-mix(in srgb, var(--color-welcome-bg) 95%, white), 0 0 10px color-mix(in srgb, var(--color-welcome-bg) 65%, white)",
+          color: GOLD,
+          textShadow: TEXT_LIFT,
         }}
       >
-        our favorite moments
+        {script}
       </span>
     </h1>
   )
@@ -91,6 +102,8 @@ function GalleryTitle() {
 
 export default async function GalleryPage() {
   const { desktop, mobile } = await fetchGalleryImages()
+  const copy = siteConfig.gallery
+  const cornerDecos = siteConfig.loadingScreen.cornerDecos
   const images = [
     ...desktop.map((image) => ({
       ...image,
@@ -106,44 +119,21 @@ export default async function GalleryPage() {
 
   return (
     <main
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
-      style={{ background: sectionBackground }}
+      className={`gallery-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
+      style={{ background: BG }}
     >
-      <div className="pointer-events-none absolute left-0 top-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/decoration/top-left-corner.png"
-          alt=""
-          aria-hidden="true"
-          className={CORNER_DECO_CLASS}
-        />
-      </div>
-      <div className="pointer-events-none absolute right-0 top-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/decoration/top-right-corner.png"
-          alt=""
-          aria-hidden="true"
-          className={CORNER_DECO_CLASS}
-        />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/decoration/bottom-left-corner.png"
-          alt=""
-          aria-hidden="true"
-          className={CORNER_DECO_CLASS}
-        />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/decoration/bottom-right-corner.png"
-          alt=""
-          aria-hidden="true"
-          className={CORNER_DECO_CLASS}
-        />
+      {/* Red circle pattern + crimson corners (colors: components/sections/love-story-red.css) */}
+      <PlainBubbles />
+      <div className="invite-section-corners z-10" aria-hidden="true">
+        {CORNERS.map(({ key, className }) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={key}
+            src={cornerDecos[key]}
+            alt=""
+            className={`invite-section-corner-img absolute ${className}`}
+          />
+        ))}
       </div>
 
       <section className="relative z-20 mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
@@ -153,19 +143,18 @@ export default async function GalleryPage() {
           </div>
           <p
             className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-6 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
-            style={{ color: GOLD }}
+            style={{ color: GOLD, textShadow: TEXT_LIFT }}
           >
-            Our Moments
+            {copy.eyebrow}
           </p>
           <div className="mx-auto mt-3 sm:mt-4 md:mt-5">
-            <GalleryTitle />
+            <GalleryTitle title={copy.title} script={copy.subtitle} />
           </div>
           <p
             className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
-            style={{ color: BODY }}
+            style={{ color: WHITE, textShadow: TEXT_LIFT }}
           >
-            From our first chapter to this beautiful season of commitment — every moment has been a
-            testament to love, faith, and grace.
+            {copy.description}
           </p>
 
           <div className="mt-4 flex items-center justify-center gap-1.5 sm:mt-5">
@@ -184,7 +173,7 @@ export default async function GalleryPage() {
         ) : (
           <p
             className={`text-center font-goudy-italic ${sectionType.text}`}
-            style={{ color: BODY }}
+            style={{ color: WHITE }}
           >
             No images to display.
           </p>

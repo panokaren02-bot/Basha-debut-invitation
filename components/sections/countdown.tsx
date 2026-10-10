@@ -9,6 +9,7 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import Counter from "@/components/Counter"
 import Image from "next/image"
 import { parseWeddingDate } from "@/lib/wedding-date"
+import { celebrantName } from "@/lib/celebrant"
 
 interface TimeLeft {
   days: number
@@ -66,7 +67,7 @@ function OutsideDivider() {
   )
 }
 
-function CountdownTitle() {
+function CountdownTitle({ title, script }: { title: string; script: string }) {
   return (
     <h2
       className="relative mx-auto w-full max-w-full text-center"
@@ -84,7 +85,7 @@ function CountdownTitle() {
           color: light.title,
         }}
       >
-        Counting Down
+        {title}
       </span>
       <span
         aria-hidden
@@ -94,9 +95,9 @@ function CountdownTitle() {
           color: light.script,
         }}
       >
-        To our forever
+        {script}
       </span>
-      <span className="sr-only">To our forever</span>
+      <span className="sr-only">{script}</span>
     </h2>
   )
 }
@@ -158,7 +159,7 @@ export function Countdown() {
   const ceremonyMonth = parsedDate.month
   const ceremonyDayNumber = parsedDate.day
   const ceremonyYear = parsedDate.year
-  const { brideNickname, groomNickname } = siteConfig.couple
+  const celebrant = celebrantName(siteConfig)
   const ceremonyDay = siteConfig.ceremony.day || parsedDate.dayOfWeek
   const ceremonyDayShort = ceremonyDay.slice(0, 3).toUpperCase()
   // Parse the date: December 20, 2025 at 10:30 AM PH Time (GMT+0800)
@@ -255,12 +256,14 @@ export function Countdown() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="relative"
         >
-          <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[40rem] xl:h-[40rem] opacity-90">
+          <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[40rem] xl:h-[40rem]">
+            {/* Monogram artwork as-is (original colors, no tint) */}
             <Image
               src={siteConfig.couple.monogram}
-              alt={`${groomNickname} & ${brideNickname} Monogram`}
+              alt={`${celebrant} monogram`}
               fill
-              className="object-contain brightness-0 invert"
+              sizes="(max-width: 640px) 18rem, (max-width: 768px) 24rem, (max-width: 1024px) 28rem, 40rem"
+              className="object-contain drop-shadow-[0_6px_18px_color-mix(in_srgb,var(--color-coastal-deep)_45%,transparent)]"
               priority={false}
             />
           </div>
@@ -272,7 +275,7 @@ export function Countdown() {
         <div className="mx-auto mb-4 sm:mb-5">
           <OutsideDivider />
         </div>
-        <CountdownTitle />
+        <CountdownTitle title={siteConfig.countdown.title} script={siteConfig.countdown.script} />
         <div className="mt-3 flex items-center justify-center sm:mt-4">
           <span className="h-px w-16 sm:w-24 md:w-32 bg-motif-soft/60" />
         </div>

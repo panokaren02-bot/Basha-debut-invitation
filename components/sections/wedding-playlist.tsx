@@ -1,13 +1,13 @@
 "use client"
 
+import { fillCelebrant } from "@/lib/celebrant"
 import { useEffect, useRef, useState } from "react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { useAudio } from "@/contexts/audio-context"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora } from "next/font/google"
 import localFont from "next/font/local"
 import { Music2, Disc3 } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
-import { PlainBubbles } from "@/components/loader/PlainBubbles"
 
 interface SpotifyPlaybackUpdate {
   playingURI: string
@@ -46,13 +46,28 @@ declare global {
 let cachedSpotifyIframeApi: SpotifyIframeApi | null = null
 const spotifyApiReadyQueue: Array<(api: SpotifyIframeApi) => void> = []
 
-function getSpotifyUri(spotifyUrl: string): string {
+function parseSpotifyUrl(spotifyUrl: string): { type: string; id: string } | null {
   const match = spotifyUrl.match(
-    /open\.spotify\.com\/(playlist|album|track|episode)\/([^/?]+)/
+    /open\.spotify\.com\/(?:intl-[a-z]+\/)?(playlist|album|track|episode)\/([^/?]+)/
   )
-  if (!match) return spotifyUrl
-  return `spotify:${match[1]}:${match[2]}`
+  return match ? { type: match[1], id: match[2] } : null
 }
+
+function getSpotifyUri(spotifyUrl: string): string {
+  const parsed = parseSpotifyUrl(spotifyUrl)
+  return parsed ? `spotify:${parsed.type}:${parsed.id}` : spotifyUrl
+}
+
+// Plain embed URL — used when the IFrame API doesn't come up in time
+function getSpotifyEmbedUrl(spotifyUrl: string): string | null {
+  const parsed = parseSpotifyUrl(spotifyUrl)
+  return parsed ? `https://open.spotify.com/embed/${parsed.type}/${parsed.id}?utm_source=generator` : null
+}
+
+// Spotify's full layout (artwork + controls / track list). In-between heights render cropped.
+const PLAYER_HEIGHT = 352
+// If the IFrame API hasn't produced a player by then, fall back to a plain iframe
+const API_FALLBACK_MS = 5000
 
 function loadSpotifyIframeApi(onReady: (api: SpotifyIframeApi) => void) {
   if (cachedSpotifyIframeApi) {
@@ -87,6 +102,13 @@ const cinzel = Cinzel({
   weight: ["400", "600", "700"],
 })
 
+// Upright, screen-friendly serif for the card note (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+})
+
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
   display: "swap",
@@ -99,34 +121,33 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Card is plain light with teal text; buttons are coral (#D0899A).
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
+// No section background or corner decorations: the header sits straight on the page
+// backdrop in white (gold for the script / eyebrow) with a soft dark lift. The playlist
+// card is ivory paper with wine headings, gold accents and a crimson → wine button.
+// TEAL keeps its template name but is now the wine ink used on the card.
+const TEAL = "var(--color-motif-deep)"
 const IVORY = "var(--color-motif-soft)"
 const PAPER = "var(--color-motif-soft)"
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
 const NAVY = TEAL
-const BODY = TEAL
-const ACCENT = TEAL
-const HAIRLINE = "color-mix(in srgb, #1F3460 22%, transparent)"
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const ACCENT = GOLD_INK
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const BUTTON_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const DISC_GRADIENT = "linear-gradient(180deg, var(--color-motif-deep) 0%, color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep)) 100%)"
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
-
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: GOLD, textShadow: textLift } as const
 
 const cardStyle = {
-  background: PAPER,
+  background:
+    "radial-gradient(120% 45% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
   boxShadow:
-    "0 28px 60px -32px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
-
-const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
 
 const ct = {
   body: "text-sm sm:text-[0.95rem] md:text-base",
@@ -149,13 +170,13 @@ function DecoImg({ src, className }: { src: string; className: string }) {
   )
 }
 
-// Sits directly on the circle pattern, so drawn in ivory
+// Gold hairlines + diamond above the header
 function DiamondDivider() {
   return (
     <div className="flex items-center justify-center gap-2" aria-hidden>
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
+      <span className="h-1.5 w-1.5 rotate-45" style={{ background: GOLD }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
     </div>
   )
 }
@@ -200,7 +221,7 @@ function PlaylistTitle({ title, script }: { title: string; script: string }) {
           <span
             aria-hidden
             className={`${aboveTheBeyond.className} mx-auto mt-2 block w-fit max-w-full px-1 leading-[0.9] sm:mt-3`}
-            style={{ fontSize: "var(--script-size)", ...onBg }}
+            style={{ fontSize: "var(--script-size)", ...onBgGold }}
           >
             {script}
           </span>
@@ -215,23 +236,33 @@ export function WeddingPlaylist() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.playlist
   const { title, subtitle, spotifyUrl, decos } = content
-  const { groomNickname, brideNickname } = siteConfig.couple
-  const fillCouple = (text: string) => text.split("{couple}").join(`${groomNickname} & ${brideNickname}`)
+  const fillCouple = (text: string) => fillCelebrant(text, siteConfig)
   const playlistName = fillCouple(content.playlistName)
   const reduceMotion = useReducedMotion()
   const initial = reduceMotion ? false : "hidden"
   const spotifyUri = getSpotifyUri(spotifyUrl)
+  const embedUrl = getSpotifyEmbedUrl(spotifyUrl)
+  // React owns this wrapper; Spotify replaces a throwaway child inside it
   const embedContainerRef = useRef<HTMLDivElement>(null)
   const controllerRef = useRef<SpotifyEmbedController | null>(null)
   const playbackStateRef = useRef<"playing" | "paused">("paused")
   const [playerReady, setPlayerReady] = useState(false)
+  // true → render a plain <iframe> instead of the IFrame API player
+  const [useFallback, setUseFallback] = useState(false)
   const { pauseMusic, resumeMusic } = useAudio()
 
   useEffect(() => {
     const container = embedContainerRef.current
-    if (!container) return
+    if (!container || useFallback) return
 
     let mounted = true
+    // Give Spotify its own mount point so replacing it never touches a React-managed node
+    const mountPoint = document.createElement("div")
+    container.replaceChildren(mountPoint)
+
+    const fallbackTimer = window.setTimeout(() => {
+      if (mounted && !controllerRef.current) setUseFallback(true)
+    }, API_FALLBACK_MS)
 
     const handlePlaybackStateChange = (isPlaying: boolean) => {
       if (isPlaying && playbackStateRef.current !== "playing") {
@@ -244,20 +275,23 @@ export function WeddingPlaylist() {
     }
 
     const initController = (IFrameAPI: SpotifyIframeApi) => {
-      if (!mounted || !embedContainerRef.current) return
+      if (!mounted || !mountPoint.isConnected) return
 
       IFrameAPI.createController(
-        embedContainerRef.current,
+        mountPoint,
         {
           uri: spotifyUri,
           width: "100%",
-          // 352 is Spotify's full layout (artwork + track list); in-between heights render cropped
-          height: "352",
+          height: String(PLAYER_HEIGHT),
         },
         (EmbedController) => {
-          if (!mounted) return
+          if (!mounted) {
+            EmbedController.destroy()
+            return
+          }
 
           controllerRef.current = EmbedController
+          window.clearTimeout(fallbackTimer)
 
           const handleReady = () => {
             if (mounted) setPlayerReady(true)
@@ -282,41 +316,24 @@ export function WeddingPlaylist() {
 
     return () => {
       mounted = false
+      window.clearTimeout(fallbackTimer)
       if (playbackStateRef.current === "playing") {
         resumeMusic()
       }
       playbackStateRef.current = "paused"
       controllerRef.current?.destroy()
       controllerRef.current = null
+      container.replaceChildren()
       setPlayerReady(false)
     }
-  }, [pauseMusic, resumeMusic, spotifyUri])
+  }, [pauseMusic, resumeMusic, spotifyUri, useFallback])
 
   return (
-    <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
-      style={{ background: sectionBg }}
-    >
-      {/* Same circle pattern as the hero */}
-      <PlainBubbles />
+    <div className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}>
       <section
         id="playlist"
-        className="relative z-10 overflow-hidden pt-10 pb-9 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"
+        className="relative z-10 pt-10 pb-10 sm:pt-12 sm:pb-12 md:pt-14 md:pb-14"
       >
-        {/* Corner decorations (from site.ts) */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
-
         <div className="relative z-20 mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
           {/* Header */}
           <motion.div
@@ -334,7 +351,7 @@ export function WeddingPlaylist() {
             {content.eyebrow ? (
               <p
                 className={`${cinzel.className} mt-3 text-[0.625rem] font-semibold uppercase tracking-[0.2em] sm:mt-5 sm:text-[0.8rem] sm:tracking-[0.24em]`}
-                style={onBg}
+                style={onBgGold}
               >
                 {content.eyebrow}
               </p>
@@ -352,38 +369,38 @@ export function WeddingPlaylist() {
 
           {/* Playlist card — stacked on mobile, side by side on desktop */}
           <motion.div
-            className="relative mt-6 overflow-hidden rounded-[1.5rem] sm:mt-10 sm:rounded-[2.25rem] md:mt-12"
+            className="relative mt-6 overflow-hidden rounded-[1.5rem] sm:mt-8 sm:rounded-[2.25rem]"
             style={cardStyle}
             variants={revealVariants}
             initial={initial}
             whileInView="show"
             viewport={{ once: true, amount: 0.1 }}
           >
-            <div className="relative z-20 grid grid-cols-1 items-center gap-4 px-3 py-4 sm:gap-6 sm:px-7 sm:py-9 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-10 md:px-10 md:py-10">
-              {/* Info */}
-              <div className="flex flex-row flex-wrap items-center gap-x-3 gap-y-2 px-1 text-left sm:flex-col sm:flex-nowrap sm:gap-0 sm:px-0 sm:text-center md:items-start md:text-left">
+            <div className="relative z-20 grid grid-cols-1 items-center gap-5 px-4 py-6 sm:gap-6 sm:px-7 sm:py-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10 md:px-10 md:py-10">
+              {/* Info — centered stack on phones / tablets, left-aligned beside the player on desktop */}
+              <div className="flex flex-col items-center text-center md:items-start md:text-left">
                 <span
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16"
+                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16"
                   style={{
-                    background: TEAL,
-                    boxShadow: `0 0 0 4px ${PAPER}, 0 0 0 5px ${HAIRLINE}, 0 14px 28px -12px color-mix(in srgb, var(--color-welcome-navy) 60%, transparent)`,
+                    background: DISC_GRADIENT,
+                    boxShadow: `0 0 0 4px ${PAPER}, 0 0 0 5px ${HAIRLINE}, 0 14px 28px -12px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)`,
                   }}
                   aria-hidden
                 >
                   <Disc3
-                    className={`h-6 w-6 sm:h-8 sm:w-8 ${reduceMotion ? "" : "animate-[spin_6s_linear_infinite]"}`}
-                    style={{ color: IVORY }}
+                    className={`h-7 w-7 sm:h-8 sm:w-8 ${reduceMotion ? "" : "animate-[spin_6s_linear_infinite]"}`}
+                    style={{ color: GOLD }}
                   />
                 </span>
-                <div className="min-w-0 sm:contents">
+                <div className="mt-3 min-w-0 max-w-full sm:mt-4">
                   <p
-                    className={`${cinzel.className} text-[0.55rem] font-semibold uppercase tracking-[0.22em] sm:mt-4 sm:text-[0.65rem]`}
+                    className={`${cinzel.className} text-[0.6rem] font-semibold uppercase tracking-[0.22em] sm:text-[0.65rem]`}
                     style={{ color: ACCENT }}
                   >
                     {content.cardEyebrow}
                   </p>
                   <h3
-                    className={`${theSeasons.className} mt-0.5 truncate text-base uppercase leading-tight tracking-[0.06em] sm:mt-1.5 sm:whitespace-normal sm:text-2xl sm:tracking-[0.08em]`}
+                    className={`${theSeasons.className} mt-1 text-lg uppercase leading-tight tracking-[0.06em] [overflow-wrap:anywhere] sm:mt-1.5 sm:text-2xl sm:tracking-[0.08em]`}
                     style={{ color: NAVY }}
                     title={playlistName}
                   >
@@ -392,7 +409,7 @@ export function WeddingPlaylist() {
                 </div>
                 {content.cardNote ? (
                   <p
-                    className={`font-goudy-italic w-full text-[0.82rem] leading-snug sm:mt-3 sm:w-auto sm:max-w-sm sm:text-[0.95rem] sm:leading-relaxed md:text-base`}
+                    className={`${lora.className} mt-2 max-w-sm text-[0.85rem] font-medium leading-relaxed sm:mt-3 sm:text-[0.92rem] md:text-[0.95rem]`}
                     style={{ color: BODY }}
                   >
                     {content.cardNote}
@@ -401,18 +418,18 @@ export function WeddingPlaylist() {
                 <span
                   aria-hidden
                   className="my-5 hidden h-px w-24 md:block"
-                  style={{ background: "linear-gradient(to right, color-mix(in srgb, #1F3460 45%, transparent), transparent)" }}
+                  style={{ background: "linear-gradient(to right, var(--color-welcome-gold), transparent)" }}
                 />
                 <a
                   href={spotifyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`${cinzel.className} mt-5 hidden items-center sm:inline-flex justify-center gap-2 rounded-full border px-7 py-2.5 font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3460] sm:py-3 md:mt-0 ${ct.btn}`}
+                  className={`${cinzel.className} mt-0 hidden items-center justify-center gap-2 rounded-full border px-7 py-3 font-semibold uppercase tracking-[0.2em] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-welcome-gold)] md:inline-flex ${ct.btn}`}
                   style={{
-                    background: BUTTON,
-                    borderColor: BUTTON,
-                    color: IVORY,
-                    boxShadow: "0 12px 24px -12px color-mix(in srgb, #D0899A 60%, transparent)",
+                    background: BUTTON_GRADIENT,
+                    borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+                    color: "#fff",
+                    boxShadow: "0 12px 24px -12px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
                   }}
                 >
                   <Music2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -423,21 +440,35 @@ export function WeddingPlaylist() {
               {/* Spotify player */}
               <div
                 className="relative w-full overflow-hidden rounded-[14px] p-1 sm:rounded-2xl sm:p-2"
-                style={{ background: IVORY, boxShadow: `0 0 0 1px ${HAIRLINE}, 0 18px 36px -24px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)` }}
+                style={{ background: IVORY, boxShadow: `0 0 0 1px ${HAIRLINE}, 0 18px 36px -24px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)` }}
               >
-                <div
-                  ref={embedContainerRef}
-                  title={`${playlistName} — Spotify playlist`}
-                  aria-label={`${playlistName} — Spotify playlist`}
-                  className="h-[352px] w-full overflow-hidden rounded-[12px] [&_iframe]:block [&_iframe]:border-0"
-                  style={{ background: "color-mix(in srgb, #1F3460 8%, transparent)" }}
-                />
+                {useFallback && embedUrl ? (
+                  <iframe
+                    src={embedUrl}
+                    title={`${playlistName} — Spotify`}
+                    width="100%"
+                    height={PLAYER_HEIGHT}
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    className="block w-full rounded-[12px] border-0"
+                    style={{ height: PLAYER_HEIGHT }}
+                    onLoad={() => setPlayerReady(true)}
+                  />
+                ) : (
+                  <div
+                    ref={embedContainerRef}
+                    title={`${playlistName} — Spotify`}
+                    aria-label={`${playlistName} — Spotify`}
+                    className="w-full overflow-hidden rounded-[12px] [&_iframe]:block [&_iframe]:w-full [&_iframe]:border-0"
+                    style={{ height: PLAYER_HEIGHT, background: "color-mix(in srgb, var(--color-motif-blush) 18%, transparent)" }}
+                  />
+                )}
                 {/* Placeholder while the Spotify embed loads */}
                 {!playerReady && (
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-1 flex flex-col items-center justify-center gap-3 rounded-[12px] sm:inset-2"
-                    style={{ background: "color-mix(in srgb, #1F3460 8%, var(--color-motif-soft))" }}
+                    style={{ background: "color-mix(in srgb, var(--color-motif-blush) 22%, var(--color-motif-soft))" }}
                   >
                     <Disc3
                       className={`h-9 w-9 opacity-60 ${reduceMotion ? "" : "animate-[spin_3s_linear_infinite]"}`}
@@ -447,7 +478,7 @@ export function WeddingPlaylist() {
                       className={`${cinzel.className} text-[0.6rem] font-semibold uppercase tracking-[0.22em] opacity-70`}
                       style={{ color: TEAL }}
                     >
-                      Loading playlist
+                      Loading song
                     </span>
                   </div>
                 )}
@@ -458,11 +489,11 @@ export function WeddingPlaylist() {
                 href={spotifyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${cinzel.className} inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full py-3 font-semibold uppercase tracking-[0.18em] transition-all active:scale-[0.98] sm:hidden ${ct.btn}`}
+                className={`${cinzel.className} mx-auto inline-flex min-h-11 w-full max-w-sm items-center justify-center gap-2 rounded-full py-3 font-semibold uppercase tracking-[0.18em] transition-all active:scale-[0.98] md:hidden ${ct.btn}`}
                 style={{
-                  background: BUTTON,
-                  color: IVORY,
-                  boxShadow: "0 10px 20px -12px color-mix(in srgb, #D0899A 60%, transparent)",
+                  background: BUTTON_GRADIENT,
+                  color: "#fff",
+                  boxShadow: "0 10px 20px -12px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)",
                 }}
               >
                 <Music2 className="h-3.5 w-3.5" />

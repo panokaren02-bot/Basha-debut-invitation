@@ -1,17 +1,35 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useState, type CSSProperties, type ReactNode } from "react"
 import { ChevronDown } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora, Playfair_Display } from "next/font/google"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+})
+
+// Upright, screen-friendly serif for the answers (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+})
+
+// Question numbers: high-contrast italic numerals (The Seasons has no clean digits)
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  style: ["italic"],
+  display: "swap",
 })
 
 const theSeasons = localFont({
@@ -26,41 +44,47 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Card is plain light with teal text; active badge and links are coral (#D0899A).
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
+// Red velvet vibe (same as the sections around it): white + gold text on the red
+// circle pattern; the questions sit on an ivory card with wine questions, gold accents
+// and crimson → wine number badges.
+// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+const WINE = "var(--color-motif-deep)"
+const CRIMSON = "var(--color-motif-accent)"
 const IVORY = "var(--color-motif-soft)"
-const PAPER = "var(--color-motif-soft)"
-const NAVY = TEAL
-const BODY = TEAL
-const ACCENT = TEAL
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const BADGE_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+
+// Text sitting directly on the red pattern: white, or gold for scripts / eyebrows
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: GOLD, textShadow: textLift } as const
 
 const cardStyle = {
-  background: PAPER,
+  background:
+    "radial-gradient(120% 40% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
   boxShadow:
-    "0 26px 56px -30px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
 const dividerLineStyle = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, #1F3460 45%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 const ct = {
   body: sectionType.textRelaxed,
-  question: sectionType.text,
+  // a touch smaller than sectionType.text (13 / 15 / 16px → 12.5 / 14 / 15px)
+  question: "text-[0.78rem] sm:text-[0.875rem] md:text-[0.95rem]",
+  // answers: 14 / 15 / 16px → 13 / 14.5 / 15px
+  answer: "text-[0.82rem] sm:text-[0.9rem] md:text-[0.95rem]",
 } as const
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -88,13 +112,13 @@ function DecoImg({ src, className }: { src: string; className: string }) {
   )
 }
 
-// Sits directly on the circle pattern, so drawn in ivory
+// Sits directly on the red pattern: gold hairlines + diamond
 function DiamondDivider() {
   return (
     <div className="flex items-center justify-center gap-2" aria-hidden>
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
+      <span className="h-1.5 w-1.5 rotate-45" style={{ background: GOLD }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
     </div>
   )
 }
@@ -123,7 +147,7 @@ function FaqTitle({ title, subtitle }: { title: string; subtitle: string }) {
       <span
         aria-hidden
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
-        style={{ fontSize: "var(--script-size)", ...onBg }}
+        style={{ fontSize: "var(--script-size)", ...onBgGold }}
       >
         {subtitle}
       </span>
@@ -142,8 +166,8 @@ function renderInline(text: string): ReactNode[] {
       <a
         key={i}
         href={`#${id}`}
-        className="font-semibold underline decoration-[color-mix(in_srgb,#D96F70_55%,transparent)] underline-offset-2 transition-opacity hover:opacity-80"
-        style={{ color: BUTTON }}
+        className="font-semibold underline decoration-[var(--color-welcome-gold)] decoration-1 underline-offset-[3px] transition-opacity hover:opacity-80"
+        style={{ color: CRIMSON }}
         onClick={(e) => {
           e.preventDefault()
           document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
@@ -159,7 +183,10 @@ function renderInline(text: string): ReactNode[] {
 function FaqAnswer({ answer }: { answer: string }) {
   const blocks = answer.split(/\n{2,}/)
   return (
-    <div className={`font-goudy-italic ${ct.body} space-y-2.5`} style={{ color: BODY }}>
+    <div
+      className={`${lora.className} ${ct.answer} space-y-2.5 font-medium leading-[1.7]`}
+      style={{ color: BODY }}
+    >
       {blocks.map((block, i) => {
         const lines = block.split("\n").filter(Boolean)
         if (lines.length > 0 && lines.every((line) => line.trim().startsWith("•"))) {
@@ -169,8 +196,8 @@ function FaqAnswer({ answer }: { answer: string }) {
                 <li key={j} className="flex items-start gap-2">
                   <span
                     aria-hidden
-                    className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full"
-                    style={{ background: TEAL }}
+                    className="mt-[0.65em] h-1.5 w-1.5 shrink-0 rotate-45"
+                    style={{ background: GOLD_INK }}
                   />
                   <span>{renderInline(line.replace(/^\s*•\s*/, ""))}</span>
                 </li>
@@ -202,19 +229,23 @@ export function FAQ() {
     text
       .split("{deadline}").join(rsvp.deadline.replace(/\.\s*$/, ""))
       .split("{coordinator}").join(rsvp.coordinator)
-      // coordinator may itself use {groom} / {bride}
-      .split("{groom}").join(siteConfig.couple.groomNickname || siteConfig.couple.groom)
-      .split("{bride}").join(siteConfig.couple.brideNickname || siteConfig.couple.bride)
+      // coordinator may itself use {celebrant}
+      .split("{celebrant}").join(celebrantName(siteConfig))
       .split("{contact}").join(showRsvpPhone ? ` at ${rsvpPhone}` : "")
+      .split("{guestsTime}").join(siteConfig.ceremony.guestsTime ?? "")
+      .split("{programTime}").join(siteConfig.ceremony.time ?? "")
+      .split("{endTime}").join(siteConfig.reception.time ?? "")
+      .split("{venueName}").join(siteConfig.ceremony.location ?? "")
+      .split("{venueAddress}").join(siteConfig.ceremony.venue ?? "")
 
   const initial = reduceMotion ? false : "hidden"
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the hero */}
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <section
         id="faq"
@@ -249,7 +280,7 @@ export function FAQ() {
           <DiamondDivider />
           <p
             className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold uppercase leading-snug tracking-[0.16em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] sm:mt-5 sm:text-[0.875rem] sm:tracking-[0.22em]`}
-            style={onBg}
+            style={onBgGold}
           >
             {content.eyebrow}
           </p>
@@ -265,7 +296,7 @@ export function FAQ() {
           <div className="mt-4 flex items-center justify-center sm:mt-5">
             <span
               className="h-px w-16 sm:w-24 md:w-32"
-              style={{ background: "var(--color-on-pattern-line)" }}
+              style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }}
             />
           </div>
         </motion.div>
@@ -297,29 +328,33 @@ export function FAQ() {
                     className="relative overflow-hidden rounded-2xl transition-all duration-300"
                     style={{
                       background: isOpen
-                        ? "color-mix(in srgb, #1F3460 7%, var(--color-motif-soft))"
-                        : "color-mix(in srgb, #1F3460 3%, var(--color-motif-soft))",
+                        ? "color-mix(in srgb, var(--color-motif-blush) 26%, var(--color-motif-soft))"
+                        : "color-mix(in srgb, var(--color-motif-blush) 8%, var(--color-motif-soft))",
                       boxShadow: isOpen
-                        ? "0 12px 24px -16px color-mix(in srgb, var(--color-welcome-navy) 45%, transparent)"
-                        : "none",
+                        ? "0 12px 24px -16px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+                        : "inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 18%, transparent)",
                     }}
                   >
                     <button
                       type="button"
                       onClick={() => setOpenIndex(isOpen ? null : index)}
-                      className="group flex w-full items-center gap-3 px-3.5 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#1F3460] sm:px-5 sm:py-3.5"
+                      className="group flex w-full items-center gap-3 px-3.5 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-welcome-gold)] sm:px-5 sm:py-3.5"
                       aria-expanded={isOpen}
                       aria-controls={contentId}
                     >
                       <span
-                        className={`${theSeasons.className} flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.72rem] transition-all duration-300 sm:h-8 sm:w-8 sm:text-[0.8rem]`}
+                        className={`${playfair.className} flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.78rem] font-semibold italic leading-none tabular-nums transition-all duration-300 sm:h-8 sm:w-8 sm:text-[0.86rem]`}
                         style={
                           isOpen
                             ? {
-                                background: BUTTON,
+                                background: BADGE_GRADIENT,
                                 color: IVORY,
                               }
-                            : { background: "color-mix(in srgb, #1F3460 12%, transparent)", color: TEAL }
+                            : {
+                                background: "color-mix(in srgb, var(--color-welcome-gold) 14%, transparent)",
+                                color: WINE,
+                                boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)",
+                              }
                         }
                         aria-hidden
                       >
@@ -327,16 +362,16 @@ export function FAQ() {
                       </span>
                       <span
                         className={`${cinzel.className} ${ct.question} flex-1 font-semibold leading-snug transition-colors duration-200`}
-                        style={{ color: NAVY }}
+                        style={{ color: WINE }}
                       >
                         {item.question}
                       </span>
                       <span
                         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${isOpen ? "rotate-180" : "group-hover:translate-y-0.5"}`}
-                        style={{ background: isOpen ? IVORY : "color-mix(in srgb, #1F3460 10%, transparent)" }}
+                        style={{ background: isOpen ? IVORY : "color-mix(in srgb, var(--color-welcome-gold) 14%, transparent)" }}
                         aria-hidden
                       >
-                        <ChevronDown className="h-4 w-4" style={{ color: ACCENT }} />
+                        <ChevronDown className="h-4 w-4" style={{ color: GOLD_INK }} />
                       </span>
                     </button>
 

@@ -98,7 +98,7 @@ function MessageVideoTitle() {
 export function MessageVideo() {
   const { fg: qrFg, bg: qrBg } = useQrColors() // --color-qr-fg / --color-qr-bg in globals.css
   const siteConfig = useSiteConfig()
-  const coupleName = `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`
+  const coupleName = siteConfig.celebrant.nickname
 
   return (
     <div

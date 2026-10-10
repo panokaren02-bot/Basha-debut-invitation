@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Cinzel, Playfair_Display } from "next/font/google"
@@ -129,8 +130,7 @@ export function ProposalDashboard() {
     const name = inviteeName.trim()
     const roleSingular = getRoleSingular(selectedInviteRole.title)
     const url = getProposalLink(selectedInviteRole.id, name)
-    const groom = siteConfig.couple.groomNickname
-    const bride = siteConfig.couple.brideNickname
+    const celebrant = celebrantName(siteConfig)
     const date = siteConfig.wedding.date
     const day = siteConfig.ceremony.day ?? "Saturday"
     const time = siteConfig.ceremony.time ?? siteConfig.wedding.time
@@ -140,9 +140,9 @@ export function ProposalDashboard() {
 
     return `${greeting}
 
-${groom} & ${bride} have a personal wedding invitation for you.
+${celebrant} has a personal debut invitation for you.
 
-They would love for you to open your special link, read their message, and confirm whether you can stand with them as their ${roleSingular}.
+She would love for you to open your special link, read her message, and let her know if you can be ${roleSingular.match(/^One of/i) ? roleSingular.replace(/^One of My/i, "one of her") : `her ${roleSingular}`}.
 
 ${date} | ${day} | ${time}
 ${venue}
@@ -151,7 +151,7 @@ Open your invitation:
 ${url}
 
 With love,
-${groom} & ${bride}`
+${celebrant}`
   }
 
   const handleCopyInviteText = () => {

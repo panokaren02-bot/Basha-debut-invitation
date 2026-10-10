@@ -1,7 +1,8 @@
 "use client"
 
+import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useEffect, useState } from "react"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora } from "next/font/google"
 import localFont from "next/font/local"
 import { Instagram, Facebook, Twitter, Share2, Copy, Download, Check } from "lucide-react"
 import { useQrColors } from "@/hooks/use-css-color"
@@ -13,6 +14,13 @@ import Image from "next/image"
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+})
+
+// Upright, screen-friendly serif for card text (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 })
 
 const theSeasons = localFont({
@@ -27,34 +35,40 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Header + closing text sit on the page backdrop, so they stay light.
+// Header + closing text sit on the page backdrop: white, gold for the script, with a
+// soft dark lift. The cards are ivory paper with wine headings, gold accents and
+// crimson → wine buttons (same vibe as the Registry and Playlist cards).
 const OUTSIDE_TEXT = "#FFFFFF"
-const OUTSIDE_TEXT_MUTED = "rgba(255, 255, 255, 0.88)"
-const OUTSIDE_TITLE_SHADOW = "0 2px 6px rgba(0, 0, 0, 0.28), 0 0 18px rgba(0, 0, 0, 0.12)"
-const READABLE_SHADOW = "0 1px 3px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.35)"
+const OUTSIDE_TEXT_MUTED = "rgba(255, 255, 255, 0.92)"
+const OUTSIDE_GOLD = "var(--color-welcome-gold)"
+const OUTSIDE_TITLE_SHADOW =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+const READABLE_SHADOW = OUTSIDE_TITLE_SHADOW
 
-// Card palette — cards are plain light with teal text; buttons are coral (#D0899A).
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
+// TEAL keeps its template name but is now the wine ink used on the ivory cards
+const TEAL = "var(--color-motif-deep)"
 const IVORY = "var(--color-motif-soft)"
-const PAPER = "var(--color-motif-soft)"
-const HAIRLINE = "color-mix(in srgb, #1F3460 22%, transparent)"
-const PALE = "color-mix(in srgb, #1F3460 10%, var(--color-motif-soft))"
-const TEAL_SOFT = "color-mix(in srgb, #1F3460 70%, transparent)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const PALE = "color-mix(in srgb, var(--color-motif-blush) 30%, var(--color-motif-soft))"
+const TEAL_SOFT = "color-mix(in srgb, var(--color-motif-deep) 65%, transparent)"
+const BUTTON_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const BUTTON_SHADOW = "0 12px 24px -12px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)"
+const BUTTON_EDGE = "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)"
 
 const palette = {
-  body: TEAL,
+  body: "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))",
   heading: TEAL,
-  label: TEAL,
-  accent: TEAL,
+  label: GOLD_INK,
+  accent: GOLD_INK,
 } as const
 
 const outsideDividerLineStyle = {
-  background: "linear-gradient(to right, transparent, rgba(255, 255, 255, 0.55), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const insideDividerLineStyle = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, #1F3460 45%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const ct = {
@@ -66,8 +80,10 @@ const ct = {
 } as const
 
 const cardStyle = {
-  background: PAPER,
-  boxShadow: "0 24px 50px -28px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+  background:
+    "radial-gradient(120% 45% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
+  boxShadow:
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
 
@@ -75,7 +91,7 @@ function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-1.5">
       <span className="h-px w-6 sm:w-10" style={outsideDividerLineStyle} />
-      <span className="h-0.5 w-0.5 rounded-full bg-white/50 sm:h-1 sm:w-1" aria-hidden />
+      <span className="h-1 w-1 rotate-45 sm:h-1.5 sm:w-1.5" style={{ background: OUTSIDE_GOLD }} aria-hidden />
       <span className="h-px w-6 sm:w-10" style={outsideDividerLineStyle} />
     </div>
   )
@@ -105,7 +121,7 @@ function SnapShareTitle({ title, subtitle }: { title: string; subtitle: string }
         style={{
           marginTop: "var(--script-overlap)",
           fontSize: "var(--script-size)",
-          color: OUTSIDE_TEXT_MUTED,
+          color: OUTSIDE_GOLD,
           textShadow: OUTSIDE_TITLE_SHADOW,
         }}
       >
@@ -148,12 +164,12 @@ function PrimaryButton({
     <button
       type="button"
       onClick={onClick}
-      className={`${cinzel.className} inline-flex items-center justify-center gap-1.5 rounded-full border px-5 py-2.5 font-semibold uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F3460] sm:px-6 ${ct.btn}`}
+      className={`${cinzel.className} inline-flex items-center justify-center gap-1.5 rounded-full border px-5 py-2.5 font-semibold uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-welcome-gold)] sm:px-6 ${ct.btn}`}
       style={{
-        background: active ? TEAL : BUTTON,
-        borderColor: active ? TEAL : BUTTON,
-        color: IVORY,
-        boxShadow: "0 12px 24px -12px color-mix(in srgb, #D0899A 60%, transparent)",
+        background: active ? TEAL : BUTTON_GRADIENT,
+        borderColor: BUTTON_EDGE,
+        color: "#fff",
+        boxShadow: BUTTON_SHADOW,
       }}
     >
       {children}
@@ -177,16 +193,14 @@ export function SnapShare() {
   const [copiedDriveLink, setCopiedDriveLink] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  const { groomNickname, brideNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
-  const fill = (text: string) => text.split("{couple}").join(coupleDisplayName)
+  const celebrant = celebrantName(siteConfig)
+  const fill = (text: string) => fillCelebrant(text, siteConfig)
 
   const websiteUrl = typeof window !== "undefined" ? window.location.href : "https://example.com"
   const uploadLink = content.googleDriveLink
   const hashtags = content.hashtag
   const allHashtagsText = hashtags.join(" ")
-  const sanitizedGroomName = groomNickname.replace(/\s+/g, "")
-  const sanitizedBrideName = brideNickname.replace(/\s+/g, "")
+  const fileSlug = celebrant.replace(/\s+/g, "").toLowerCase()
   const shareText = `${fill(content.social.shareText)} ${websiteUrl} ${allHashtagsText}`
 
   // Plain display mode never shows the photo card
@@ -240,7 +254,7 @@ export function SnapShare() {
   ) => (
     <div
       className="mx-auto flex w-full max-w-[240px] flex-col items-center rounded-2xl p-3 sm:p-4"
-      style={{ background: IVORY, boxShadow: `0 0 0 1px ${HAIRLINE}, 0 14px 28px -20px color-mix(in srgb, var(--color-welcome-navy) 50%, transparent)` }}
+      style={{ background: IVORY, boxShadow: `0 0 0 1px ${HAIRLINE}, 0 14px 28px -20px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent)` }}
     >
       <div className="flex w-full max-w-full justify-center overflow-hidden rounded-xl bg-white">
         <QRCodeCanvas
@@ -255,7 +269,7 @@ export function SnapShare() {
         />
       </div>
       {note ? (
-        <p className={`font-goudy-italic ${ct.body} mt-2 text-center sm:mt-3`} style={{ color: palette.label }}>
+        <p className={`${lora.className} ${ct.body} font-medium mt-2 text-center sm:mt-3`} style={{ color: palette.label }}>
           {note}
         </p>
       ) : null}
@@ -265,7 +279,7 @@ export function SnapShare() {
   const websiteCard = content.website.show && (
     <ContentCard>
       <CardTitle>{content.website.title}</CardTitle>
-      <p className={`font-goudy-italic ${ct.body} text-center`} style={{ color: palette.body }}>
+      <p className={`${lora.className} ${ct.body} font-medium text-center`} style={{ color: palette.body }}>
         {fill(content.website.description)}
       </p>
       {qrFrame("snapshare-qr", websiteUrl, "M")}
@@ -274,7 +288,7 @@ export function SnapShare() {
           onClick={() =>
             downloadCanvas(
               "snapshare-qr",
-              `${sanitizedGroomName.toLowerCase()}-${sanitizedBrideName.toLowerCase()}-wedding-qr.png`,
+              `${fileSlug}-debut-qr.png`,
             )
           }
         >
@@ -282,7 +296,7 @@ export function SnapShare() {
           {content.website.downloadButton}
         </PrimaryButton>
       </div>
-      <p className={`font-goudy-italic ${ct.body} text-center`} style={{ color: TEAL_SOFT }}>
+      <p className={`${lora.className} ${ct.body} font-medium text-center`} style={{ color: TEAL_SOFT }}>
         {content.website.note}
       </p>
     </ContentCard>
@@ -307,18 +321,18 @@ export function SnapShare() {
               className="flex w-full min-w-0 items-center justify-between gap-2 rounded-xl px-3.5 py-2.5 transition-all duration-200 active:scale-[0.98]"
               style={{
                 background: isCopied ? PALE : IVORY,
-                boxShadow: `inset 0 0 0 1px ${isCopied ? "color-mix(in srgb, #1F3460 50%, transparent)" : HAIRLINE}`,
+                boxShadow: `inset 0 0 0 1px ${isCopied ? "color-mix(in srgb, var(--color-welcome-gold) 75%, transparent)" : HAIRLINE}`,
               }}
             >
               <span
-                className={`font-goudy-italic ${ct.body} min-w-0 flex-1 break-all text-left font-semibold`}
+                className={`${lora.className} ${ct.body} min-w-0 flex-1 break-all text-left font-semibold`}
                 style={{ color: isCopied ? palette.accent : palette.heading }}
               >
                 {hashtag}
               </span>
               <span
                 className={`${cinzel.className} flex flex-shrink-0 items-center gap-1 whitespace-nowrap ${sectionType.label} font-semibold uppercase tracking-wider`}
-                style={{ color: isCopied ? TEAL : BUTTON }}
+                style={{ color: isCopied ? GOLD_INK : "var(--color-motif-accent)" }}
               >
                 {isCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                 {isCopied ? content.hashtags.copied : content.hashtags.copy}
@@ -337,7 +351,11 @@ export function SnapShare() {
             })
           }
           className="flex w-full items-center justify-center gap-1.5 rounded-full py-2.5 transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
-          style={copiedAllHashtags ? { background: PALE, color: palette.accent } : { background: BUTTON, color: IVORY }}
+          style={
+            copiedAllHashtags
+              ? { background: PALE, color: TEAL, boxShadow: `inset 0 0 0 1px ${HAIRLINE}` }
+              : { background: BUTTON_GRADIENT, color: "#fff", boxShadow: `${BUTTON_SHADOW}, inset 0 0 0 1px ${BUTTON_EDGE}` }
+          }
         >
           {copiedAllHashtags ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           <span className={`${cinzel.className} ${ct.btn} font-semibold uppercase tracking-[0.12em]`}>
@@ -351,7 +369,7 @@ export function SnapShare() {
   const socialCard = content.social.show && content.social.platforms.length > 0 && (
     <ContentCard>
       <CardTitle as="h5">{content.social.title}</CardTitle>
-      <p className={`font-goudy-italic ${ct.body} text-center`} style={{ color: palette.body }}>
+      <p className={`${lora.className} ${ct.body} font-medium text-center`} style={{ color: palette.body }}>
         {fill(content.social.description)}
       </p>
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-3">
@@ -363,7 +381,7 @@ export function SnapShare() {
               type="button"
               onClick={() => shareOnSocial(platform)}
               className="group flex w-full min-w-0 items-center justify-center gap-2 rounded-xl px-3 py-3 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: BUTTON, boxShadow: "0 10px 20px -12px color-mix(in srgb, #D0899A 60%, transparent)" }}
+              style={{ background: BUTTON_GRADIENT, boxShadow: `${BUTTON_SHADOW}, inset 0 0 0 1px ${BUTTON_EDGE}` }}
             >
               <Icon className="h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" style={{ color: IVORY }} />
               <span className={`${cinzel.className} ${ct.btn} truncate font-semibold uppercase tracking-[0.08em]`} style={{ color: IVORY }}>
@@ -380,11 +398,11 @@ export function SnapShare() {
     <ContentCard>
       <p
         className={`${cinzel.className} ${ct.label} mx-auto w-full rounded-full px-3 py-1.5 text-center uppercase leading-snug tracking-[0.16em] break-words`}
-        style={{ color: palette.heading, background: PALE }}
+        style={{ color: palette.heading, background: PALE, boxShadow: `inset 0 0 0 1px ${HAIRLINE}` }}
       >
         {content.upload.badge}
       </p>
-      <p className={`font-goudy-italic ${ct.body} break-words text-center`} style={{ color: palette.body }}>
+      <p className={`${lora.className} ${ct.body} font-medium break-words text-center`} style={{ color: palette.body }}>
         {content.instructions}
       </p>
       {qrFrame("album-qr", uploadLink, "H", content.upload.scanNote)}
@@ -411,7 +429,7 @@ export function SnapShare() {
           target="_blank"
           rel="noopener noreferrer"
           className={`${cinzel.className} inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 font-semibold uppercase tracking-[0.16em] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 sm:px-6 ${ct.btn}`}
-          style={{ background: BUTTON, color: IVORY, boxShadow: "0 12px 24px -12px color-mix(in srgb, #D0899A 60%, transparent)" }}
+          style={{ background: BUTTON_GRADIENT, color: "#fff", boxShadow: `${BUTTON_SHADOW}, inset 0 0 0 1px ${BUTTON_EDGE}` }}
         >
           <Share2 className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" />
           {content.upload.uploadButton}
@@ -440,7 +458,7 @@ export function SnapShare() {
             {fill(content.description)}
           </p>
           <div className="flex items-center justify-center pt-3 sm:pt-4">
-            <span className="h-px w-16 bg-white/50 sm:w-24 md:w-32" />
+            <span className="h-px w-16 sm:w-24 md:w-32" style={outsideDividerLineStyle} />
           </div>
         </div>
 
@@ -448,19 +466,41 @@ export function SnapShare() {
           <div className="mt-6 grid grid-cols-1 items-start gap-5 sm:mt-8 sm:gap-6 md:mt-10 lg:grid-cols-2 lg:gap-8">
             <ContentCard>
               <CardTitle>{content.moments.title}</CardTitle>
+              {/* Two tall portrait frames on top (the photos are 9:16 portraits, so the frames
+                  are 3:4 and anchored near the top to keep faces in view), one wide 16:9 frame
+                  below for the landscape photo. */}
               <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-3">
                 {[momentA, momentB].filter(Boolean).map((src, i) => (
-                  <div key={src} className="relative aspect-square overflow-hidden rounded-xl" style={{ boxShadow: `0 0 0 1px ${HAIRLINE}` }}>
-                    <Image src={src} alt={`Wedding moment ${i + 1}`} fill sizes="(max-width: 1024px) 45vw, 22vw" className="object-cover" />
+                  <div
+                    key={src}
+                    className="relative aspect-[3/4] overflow-hidden rounded-xl"
+                    style={{ boxShadow: `0 0 0 1px ${HAIRLINE}, 0 10px 22px -14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent)` }}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${celebrant} moment ${i + 1}`}
+                      fill
+                      sizes="(max-width: 1024px) 45vw, 22vw"
+                      className="object-cover object-[50%_22%]"
+                    />
                   </div>
                 ))}
                 {momentC ? (
-                  <div className="relative col-span-2 aspect-[3/2] overflow-hidden rounded-xl" style={{ boxShadow: `0 0 0 1px ${HAIRLINE}` }}>
-                    <Image src={momentC} alt="Wedding moment 3" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+                  <div
+                    className="relative col-span-2 aspect-video overflow-hidden rounded-xl"
+                    style={{ boxShadow: `0 0 0 1px ${HAIRLINE}, 0 10px 22px -14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent)` }}
+                  >
+                    <Image
+                      src={momentC}
+                      alt={`${celebrant} moment 3`}
+                      fill
+                      sizes="(max-width: 1024px) 90vw, 45vw"
+                      className="object-cover object-center"
+                    />
                   </div>
                 ) : null}
               </div>
-              <p className={`font-goudy-italic ${ct.body} text-center`} style={{ color: palette.body }}>
+              <p className={`${lora.className} ${ct.body} font-medium text-center`} style={{ color: palette.body }}>
                 {content.moments.caption}
               </p>
             </ContentCard>
@@ -492,7 +532,7 @@ export function SnapShare() {
           </p>
           <p
             className={`${cinzel.className} ${ct.label} uppercase tracking-[0.18em] sm:tracking-[0.2em]`}
-            style={{ color: OUTSIDE_TEXT, textShadow: READABLE_SHADOW }}
+            style={{ color: OUTSIDE_GOLD, textShadow: READABLE_SHADOW }}
           >
             {content.closingTag}
           </p>

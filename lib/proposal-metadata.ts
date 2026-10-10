@@ -6,7 +6,7 @@ const canonicalBase = canonicalSiteUrl
 export const PROPOSAL_OG_IMAGE_PATH = siteConfig.linkPreviewImage
 export const PROPOSAL_OG_IMAGE_URL = `${canonicalBase}${PROPOSAL_OG_IMAGE_PATH}`
 
-const coupleNames = `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`
+const celebrant = siteConfig.celebrant.nickname
 
 export function buildProposalMetadata(options?: {
   roleTitle?: string
@@ -17,14 +17,14 @@ export function buildProposalMetadata(options?: {
   const url = `${canonicalBase}${path}`
 
   const title = roleTitle
-    ? `Will You Be Our ${roleTitle}?`
-    : "Will You Be Part of Our Wedding?"
+    ? `Will You Be ${roleTitle}?`
+    : "Will You Be Part of My Debut?"
 
   const description = roleTitle
-    ? `${coupleNames} lovingly invite you to be their ${roleTitle}. Open this special proposal and share your heartfelt response.`
-    : `${coupleNames} have a special wedding proposal for you. Open your link to view the invitation and respond.`
+    ? `${celebrant} would love for you to be ${/^One of My/i.test(roleTitle) ? roleTitle.replace(/^One of My/i, "one of her") : `her ${roleTitle}`} at her debut. Open this special invitation and share your response.`
+    : `${celebrant} has a special debut invitation for you. Open your link to view it and respond.`
 
-  const ogTitle = `${title} | ${coupleNames}`
+  const ogTitle = `${title} | ${celebrant}'s Debut`
 
   return {
     title,
@@ -36,7 +36,7 @@ export function buildProposalMetadata(options?: {
       title: ogTitle,
       description,
       url,
-      siteName: `${coupleNames} Wedding`,
+      siteName: `${celebrant}'s Debut`,
       locale: "en_PH",
       type: "website",
       images: [
@@ -47,8 +47,8 @@ export function buildProposalMetadata(options?: {
           height: 630,
           type: "image/jpeg",
           alt: roleTitle
-            ? `Will you be our ${roleTitle}? — ${coupleNames} Wedding Proposal`
-            : `${coupleNames} Wedding Proposal`,
+            ? `Will you be ${roleTitle}? — ${celebrant}'s Debut`
+            : `${celebrant}'s Debut`,
         },
       ],
     },

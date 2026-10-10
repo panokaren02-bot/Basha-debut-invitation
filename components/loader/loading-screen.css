@@ -456,7 +456,7 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ls-butter);
-  text-shadow: 0 1px 12px rgb(26 32 18 / 55%);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent);
 }
 
 .loading-screen__verse-text {
@@ -474,7 +474,7 @@
   font-size: clamp(1.15rem, 5.2vw, 1.72rem);
   line-height: 1.58;
   color: var(--ls-cream);
-  text-shadow: 0 2px 16px rgb(26 32 18 / 62%);
+  text-shadow: 0 2px 16px color-mix(in srgb, var(--color-coastal-deep) 62%, transparent);
 }
 
 .loading-screen__quote-mark {
@@ -486,7 +486,7 @@
   line-height: 1;
   color: var(--ls-mustard);
   opacity: 0.72;
-  text-shadow: 0 2px 12px rgb(26 32 18 / 45%);
+  text-shadow: 0 2px 12px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent);
   pointer-events: none;
   user-select: none;
 }
@@ -520,7 +520,7 @@
   color: var(--ls-cream);
   opacity: 0.94;
   text-align: center;
-  text-shadow: 0 1px 12px rgb(26 32 18 / 55%);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent);
 }
 
 .loading-screen__kicker {
@@ -531,7 +531,7 @@
   text-transform: uppercase;
   color: var(--ls-butter);
   opacity: 0.92;
-  text-shadow: 0 1px 10px rgb(26 32 18 / 50%);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent);
 }
 
 .loading-screen__names {
@@ -555,7 +555,7 @@
   );
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 4px 18px rgb(26 32 18 / 45%));
+  filter: drop-shadow(0 4px 18px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent));
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -606,7 +606,7 @@
   text-transform: uppercase;
   color: var(--ls-cream);
   opacity: 0.82;
-  text-shadow: 0 1px 10px rgb(26 32 18 / 50%);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent);
 }
 
 .loading-screen__date {
@@ -615,7 +615,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ls-cream);
-  text-shadow: 0 1px 12px rgb(26 32 18 / 55%);
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent);
 }
 
 .loading-screen__ceremony {
@@ -633,7 +633,7 @@
   text-transform: uppercase;
   color: var(--ls-butter);
   opacity: 0.95;
-  text-shadow: 0 1px 10px rgb(26 32 18 / 50%);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent);
 }
 
 .loading-screen__ceremony-meta {
@@ -643,7 +643,7 @@
   text-transform: uppercase;
   color: var(--ls-cream);
   opacity: 0.9;
-  text-shadow: 0 1px 10px rgb(26 32 18 / 50%);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent);
 }
 
 .loading-screen__footer {
@@ -697,7 +697,7 @@
   text-transform: uppercase;
   color: var(--ls-cream);
   opacity: 0.88;
-  text-shadow: 0 1px 10px rgb(26 32 18 / 50%);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--color-coastal-deep) 50%, transparent);
 }
 
 .loading-screen__track {
@@ -981,21 +981,25 @@
 }
 
 .home-hero--photos .home-hero-photo-scrim {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-welcome-navy) 58%, transparent) 0%,
-    color-mix(in srgb, var(--color-welcome-navy) 36%, transparent) 22%,
-    color-mix(in srgb, var(--color-welcome-navy) 42%, transparent) 48%,
-    color-mix(in srgb, var(--color-welcome-navy) 48%, transparent) 72%,
-    color-mix(in srgb, var(--color-welcome-navy) 68%, transparent) 100%
-  );
+  /* Same wine gradient as the loader + envelope: deeper at the top and bottom,
+     thinner in the middle so the photos still show */
+  background:
+    radial-gradient(80% 45% at 50% 46%, color-mix(in srgb, var(--color-coastal-deep) 28%, transparent) 0%, transparent 75%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 78%, transparent) 0%,
+      color-mix(in srgb, var(--color-motif-deep) 42%, transparent) 24%,
+      color-mix(in srgb, var(--color-motif-deep) 22%, transparent) 50%,
+      color-mix(in srgb, var(--color-motif-deep) 42%, transparent) 72%,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 84%, transparent) 100%
+    );
 }
 
 .home-hero--photos .home-hero-title-glow {
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--color-welcome-navy) 46%, transparent) 0%,
-    color-mix(in srgb, var(--color-welcome-navy) 18%, transparent) 46%,
+    color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 50%, transparent) 0%,
+    color-mix(in srgb, var(--color-motif-deep) 18%, transparent) 46%,
     transparent 72%
   );
 }
@@ -1006,7 +1010,7 @@
 }
 
 .home-hero--photos .home-hero-title-main {
-  color: var(--color-motif-soft);
+  color: #fff;
   text-shadow:
     0 1px 0 color-mix(in srgb, var(--color-motif-soft) 35%, transparent),
     0 2px 18px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent),
@@ -1060,11 +1064,12 @@
 }
 
 .home-hero--photos .home-hero-countdown-bar {
+  /* Same fade as before (clear at the top, solid at the bottom edge), in wine red */
   background: linear-gradient(
     180deg,
     transparent 0%,
-    color-mix(in srgb, var(--color-welcome-navy) 28%, transparent) 28%,
-    color-mix(in srgb, var(--color-welcome-gold) 72%, var(--color-motif-deep)) 100%
+    color-mix(in srgb, var(--color-motif-deep) 28%, transparent) 28%,
+    color-mix(in srgb, var(--color-motif-deep) 85%, var(--color-coastal-deep)) 100%
   );
 }
 
@@ -3193,26 +3198,26 @@
 }
 
 .love-story-plain-track::before {
-  background: color-mix(in srgb, #1F3460 25%, transparent);
+  background: color-mix(in srgb, var(--color-motif-teal) 25%, transparent);
 }
 
 .love-story-plain-track--first::before,
 .love-story-plain-track--last::before {
-  background: color-mix(in srgb, #1F3460 25%, transparent);
+  background: color-mix(in srgb, var(--color-motif-teal) 25%, transparent);
 }
 
 .story-plain-card {
-  border: 1px solid color-mix(in srgb, #1F3460 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-motif-teal) 20%, transparent);
   background: var(--color-motif-soft);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  box-shadow: 0 14px 32px -18px color-mix(in srgb, #1F3460 45%, transparent);
+  box-shadow: 0 14px 32px -18px color-mix(in srgb, var(--color-motif-teal) 45%, transparent);
 }
 
 .story-plain-card--dark {
-  border-color: #1F3460;
-  background: #1F3460;
-  box-shadow: 0 14px 32px -18px color-mix(in srgb, #1F3460 70%, transparent);
+  border-color: var(--color-motif-teal);
+  background: var(--color-motif-teal);
+  box-shadow: 0 14px 32px -18px color-mix(in srgb, var(--color-motif-teal) 70%, transparent);
 }
 
 .story-plain-card__frost {
@@ -3220,7 +3225,7 @@
 }
 
 .story-plain-card .wedding-frame-inner {
-  border-color: color-mix(in srgb, #1F3460 18%, transparent);
+  border-color: color-mix(in srgb, var(--color-motif-teal) 18%, transparent);
 }
 
 .story-plain-card--dark .wedding-frame-inner {
@@ -3228,7 +3233,7 @@
 }
 
 .story-plain-card__dot {
-  background: #D0899A;
+  background: var(--color-motif-deep);
   box-shadow: 0 0 0 4px var(--color-motif-soft);
 }
 
@@ -3237,7 +3242,7 @@
 }
 
 .story-plain-chapter-label {
-  color: #D0899A;
+  color: var(--color-motif-deep);
 }
 
 .story-plain-card--dark .story-plain-chapter-label {
@@ -3245,7 +3250,7 @@
 }
 
 .story-plain-chapter-line {
-  background: color-mix(in srgb, #1F3460 22%, transparent);
+  background: color-mix(in srgb, var(--color-motif-teal) 22%, transparent);
 }
 
 .story-plain-chapter-line--dark {
@@ -3253,5 +3258,5 @@
 }
 
 .story-plain-chapter-connector__stem {
-  background: color-mix(in srgb, #1F3460 30%, transparent);
+  background: color-mix(in srgb, var(--color-motif-teal) 30%, transparent);
 }

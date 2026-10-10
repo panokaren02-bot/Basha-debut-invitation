@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useState, useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 import { useSiteConfig } from "@/hooks/use-site-config"
@@ -17,29 +18,11 @@ const cormorant = Cormorant_Garamond({
 // Edit there once to update every component.
 
 
-const NAV_MONOGRAM = siteConfig.couple.monogram
+const NAV_MONOGRAM = siteConfig.celebrant.monogram
 
-// Same order as the sections in app/page.tsx. Links whose section isn't on the page
-// (e.g. commented out there) are hidden automatically.
-// wideOnly: shown in the desktop bar only on extra-wide screens (always in the phone menu).
-const navLinks: { href: string; label: string; wideOnly?: boolean }[] = [
-  { href: "#home", label: "Home" },
-  { href: "#welcome", label: "Welcome", wideOnly: true },
-  { href: "#love-story", label: "Our Message" },
-  { href: "#countdown", label: "Countdown", wideOnly: true },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#messages", label: "Messages" },
-  { href: "#details", label: "Details" },
-  { href: "#wedding-timeline", label: "Timeline" },
-  { href: "#entourage", label: "Entourage" },
-  { href: "#guest-list", label: "RSVP" },
-  { href: "#guests", label: "Guests" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#registry", label: "Gifts" },
-  { href: "#playlist", label: "Playlist" },
-  { href: "#snap-share", label: "Snap & Share" },
-  { href: "#see-you-there", label: "See You There", wideOnly: true },
-]
+// Link labels and order live in content/site.ts → nav.links.
+// Links whose section isn't on the page are hidden automatically.
+const navLinks: { href: string; label: string; wideOnly?: boolean }[] = siteConfig.nav.links
 
 export function Navbar() {
   const siteConfig = useSiteConfig()
@@ -121,7 +104,7 @@ export function Navbar() {
     [visibleLinks],
   )
 
-  const monogramSrc = siteConfig.couple.monogram || NAV_MONOGRAM
+  const monogramSrc = siteConfig.celebrant?.monogram || NAV_MONOGRAM
 
   return (
     <nav
@@ -147,7 +130,7 @@ export function Navbar() {
           <Link
             href="#home"
             className="flex-shrink-0 group relative z-10 flex items-center justify-center py-0 pl-1 pr-2.5 sm:pl-1.5 sm:pr-3 md:pl-2 md:pr-3.5 -ml-0.5 sm:ml-0 self-stretch"
-            aria-label={`${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} — Home`}
+            aria-label={`${celebrantName(siteConfig)} — Home`}
           >
             <div className="relative h-[2.5rem] w-[3.2rem] sm:h-[2.85rem] sm:w-[3.65rem] md:h-[3.35rem] md:w-[4.15rem] shrink-0 my-0">
               <Image
@@ -156,8 +139,8 @@ export function Navbar() {
                 fill
                 sizes="(max-width: 768px) 51px, 67px"
                 priority
+                // Monogram artwork as-is (original colors, no tint)
                 className="object-contain object-center p-0 group-hover:scale-105 group-active:scale-100 transition-transform duration-500 drop-shadow-[0_2px_6px_color-mix(in_srgb,var(--color-welcome-navy)_35%,transparent)]"
-                style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
             <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[color-mix(in_srgb,var(--color-motif-soft)_18%,transparent)] blur-md -z-10" />
@@ -200,15 +183,17 @@ export function Navbar() {
               socialItems={[]}
               displaySocials={false}
               menuButtonColor="var(--color-motif-soft)"
-              openMenuButtonColor="var(--color-motif-deep)"
+              // gold X on the wine menu panel
+              openMenuButtonColor="var(--color-welcome-gold)"
               changeMenuColorOnOpen={true}
+              // layers that sweep in before the panel: crimson → gold → near-black
               colors={[
-                "var(--color-motif-silver)",
-                "var(--color-motif-blush)",
-                "var(--color-motif-medium)",
-                "var(--color-motif-soft)",
+                "var(--color-motif-accent)",
+                "var(--color-welcome-gold)",
+                "var(--color-motif-deep)",
+                "var(--color-coastal-deep)",
               ]}
-              accentColor="var(--color-motif-accent)"
+              accentColor="var(--color-welcome-gold)"
               isFixed={true}
               activeLink={activeSection}
               onMenuOpen={() => {}}

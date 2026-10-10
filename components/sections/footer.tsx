@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useState, useEffect, useMemo, type ReactNode } from "react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import localFont from "next/font/local"
@@ -19,12 +20,22 @@ import {
 } from "lucide-react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 import { sectionType } from "@/lib/section-typography"
-import { Cinzel } from "next/font/google"
+import { Cinzel, Lora } from "next/font/google"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+})
+
+// Upright, screen-friendly serif for card text (same as the My Story paragraphs)
+const lora = Lora({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
 })
 
 const theSeasons = localFont({
@@ -39,45 +50,50 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Cards are plain light with teal text; buttons are coral (#D0899A).
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
-const BUTTON_HOVER = "color-mix(in srgb, #D0899A 85%, black)"
+// Red velvet vibe (same as the sections above): white + gold text on the red circle
+// pattern; the cards are ivory paper with wine headings, gold labels and crimson → wine
+// buttons. Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// TEAL keeps its template name but is now the wine ink used on the ivory cards.
+const TEAL = "var(--color-motif-deep)"
+const BUTTON = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const BUTTON_HOVER =
+  "linear-gradient(180deg, color-mix(in srgb, var(--color-motif-accent) 88%, black) 0%, color-mix(in srgb, var(--color-motif-deep) 85%, black) 100%)"
+const BUTTON_EDGE = "color-mix(in srgb, var(--color-welcome-gold) 60%, transparent)"
+const BUTTON_SHADOW = "0 10px 22px -12px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)"
 const IVORY = "var(--color-motif-soft)"
-const PAPER = "var(--color-motif-soft)"
-const HAIRLINE = "color-mix(in srgb, #1F3460 22%, transparent)"
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const CHAMPAGNE = "color-mix(in srgb, var(--color-motif-blush) 22%, var(--color-motif-soft))"
 
 const palette = {
-  body: TEAL,
-  soft: "color-mix(in srgb, #1F3460 70%, transparent)",
+  body: "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))",
+  soft: "color-mix(in srgb, var(--color-motif-deep) 65%, transparent)",
   heading: TEAL,
-  label: TEAL,
-  accent: TEAL,
+  label: GOLD_INK,
+  accent: GOLD_INK,
 } as const
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
 
-// Same, for the softer lines in the bottom bar
-const onBgSoft = { ...onBg, color: "var(--color-on-pattern-soft)" } as const
+// Text sitting directly on the red pattern: white, gold for scripts, soft white for fine print
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: GOLD, textShadow: textLift } as const
+const onBgSoft = { color: "color-mix(in srgb, white 82%, transparent)", textShadow: textLift } as const
 
 const onBgLineStyle = {
-  background: "var(--color-on-pattern-line)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const dividerLineStyle = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, #1F3460 40%, transparent), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 const ct = {
   label: sectionType.label,
@@ -87,9 +103,10 @@ const ct = {
 } as const
 
 const cardStyle = {
-  background: PAPER,
+  background:
+    "radial-gradient(120% 45% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
   boxShadow:
-    "0 22px 48px -28px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
 type IconProps = { className?: string }
@@ -191,11 +208,10 @@ export function Footer() {
   const year = new Date().getFullYear()
   const ceremonyDate = siteConfig.ceremony.date
 
-  const groomName = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const brideName = siteConfig.couple.brideNickname || siteConfig.couple.bride
-  const coupleDisplayName = `${groomName} & ${brideName}`
+  const celebrant = celebrantName(siteConfig)
+  const monogram = siteConfig.celebrant?.monogram || siteConfig.couple.monogram
   const fill = (text: string) =>
-    text.split("{couple}").join(coupleDisplayName).split("{year}").join(String(year))
+    fillCelebrant(text, siteConfig).split("{year}").join(String(year))
 
   const quotes = content.quotes.length > 0 ? content.quotes : [""]
   const longestQuote = useMemo(
@@ -297,10 +313,10 @@ export function Footer() {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the hero */}
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
 
       {/* Corner decorations (from site.ts) */}
@@ -318,7 +334,7 @@ export function Footer() {
       </div>
 
       <footer className="relative z-20 pt-14 pb-10 sm:pt-16 sm:pb-12 md:pt-20 md:pb-14">
-        {/* Header: monogram + couple */}
+        {/* Header: monogram + celebrant */}
         <motion.div
           className="relative mx-auto mb-8 flex max-w-xl flex-col items-center px-6 text-center sm:mb-10 md:mb-12"
           variants={stagger}
@@ -326,24 +342,17 @@ export function Footer() {
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
         >
-          {content.showMonogram && siteConfig.couple.monogram ? (
-            <motion.span
+          {content.showMonogram && monogram ? (
+            // The monogram artwork as-is (original colors, no tint) with a soft drop shadow
+            // eslint-disable-next-line @next/next/no-img-element
+            <motion.img
               variants={rise}
-              role="img"
-              aria-label={`${coupleDisplayName} monogram`}
-              className="block h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48"
-              style={{
-                background: "var(--color-on-pattern)",
-                filter: "drop-shadow(0 2px 10px var(--color-on-pattern-glow))",
-                WebkitMaskImage: `url("${siteConfig.couple.monogram}")`,
-                maskImage: `url("${siteConfig.couple.monogram}")`,
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                WebkitMaskPosition: "center",
-                maskPosition: "center",
-              }}
+              src={monogram}
+              alt={`${celebrant} monogram`}
+              loading="lazy"
+              decoding="async"
+              className="block h-32 w-32 select-none object-contain sm:h-40 sm:w-40 md:h-48 md:w-48"
+              style={{ filter: "drop-shadow(0 4px 14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent))" }}
             />
           ) : (
             <motion.div variants={rise}>
@@ -356,32 +365,32 @@ export function Footer() {
             className={`${theSeasons.className} mt-4 text-2xl uppercase tracking-[0.12em] sm:mt-5 sm:text-3xl md:text-4xl`}
             style={onBg}
           >
-            {groomName}
-            <span
-              className={`${aboveTheBeyond.className} mx-2 inline-block normal-case tracking-normal sm:mx-3`}
-              style={{ fontSize: "1.1em" }}
-              aria-hidden
-            >
-              &amp;
-            </span>
-            <span className="sr-only">and</span>
-            {brideName}
+            {celebrant}
           </motion.h2>
+          {content.nameLine ? (
+            <motion.p
+              variants={rise}
+              className={`${aboveTheBeyond.className} mt-1 text-2xl sm:text-3xl`}
+              style={onBgGold}
+            >
+              {content.nameLine}
+            </motion.p>
+          ) : null}
 
           {ceremonyDate ? (
             <motion.p
               variants={rise}
               className={`${cinzel.className} mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] sm:text-xs`}
-              style={onBg}
+              style={onBgGold}
             >
               {ceremonyDate}
             </motion.p>
           ) : null}
 
           <motion.div variants={rise} className="mt-4 flex items-center justify-center gap-2" aria-hidden>
-            <span className="h-px w-12 sm:w-20" style={{ background: "var(--color-on-pattern-line)" }} />
-            <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-on-pattern-line)" }} />
-            <span className="h-px w-12 sm:w-20" style={{ background: "var(--color-on-pattern-line)" }} />
+            <span className="h-px w-12 sm:w-20" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
+            <span className="h-1.5 w-1.5 rotate-45" style={{ background: GOLD }} />
+            <span className="h-px w-12 sm:w-20" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
           </motion.div>
         </motion.div>
 
@@ -400,7 +409,7 @@ export function Footer() {
                   <Label>{content.noteTitle}</Label>
                   <Heart className="h-3.5 w-3.5 shrink-0" style={{ color: palette.label, fill: palette.label }} aria-hidden />
                 </div>
-                <blockquote className={`font-goudy-italic relative ${ct.bodyLg}`}>
+                <blockquote className={`${lora.className} relative ${ct.bodyLg} font-medium italic leading-[1.7]`}>
                   {/* Reserve height for the longest quote so the card doesn't jump */}
                   <span className="invisible block select-none" aria-hidden="true">
                     &ldquo;{longestQuote}&rdquo;
@@ -424,7 +433,7 @@ export function Footer() {
                         className="h-1.5 rounded-full transition-all duration-500"
                         style={{
                           width: i === currentQuoteIndex ? "1.25rem" : "0.375rem",
-                          background: i === currentQuoteIndex ? palette.label : "color-mix(in srgb, #1F3460 25%, transparent)",
+                          background: i === currentQuoteIndex ? palette.label : "color-mix(in srgb, var(--color-welcome-gold) 30%, transparent)",
                         }}
                       />
                     ))}
@@ -439,10 +448,10 @@ export function Footer() {
                 <div className="flex items-start gap-3">
                   <span
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                    style={{ background: TEAL }}
+                    style={{ background: BUTTON, boxShadow: `0 0 0 3px ${IVORY}, 0 0 0 4px ${HAIRLINE}` }}
                     aria-hidden
                   >
-                    <CalendarHeart className="h-4.5 w-4.5" style={{ color: IVORY }} />
+                    <CalendarHeart className="h-4.5 w-4.5" style={{ color: GOLD }} />
                   </span>
                   <div className="min-w-0">
                     <Label>{content.dateLabel}</Label>
@@ -459,7 +468,7 @@ export function Footer() {
                       <div
                         key={key}
                         className="flex items-start gap-3 rounded-2xl px-3 py-2.5"
-                        style={{ background: "color-mix(in srgb, #1F3460 7%, transparent)" }}
+                        style={{ background: CHAMPAGNE, boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 25%, transparent)` }}
                       >
                         <span
                           className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
@@ -473,7 +482,7 @@ export function Footer() {
                             {label}
                           </p>
                           {place ? (
-                            <p className={`font-goudy-italic mt-0.5 flex items-start gap-1 text-[0.82rem] leading-snug`} style={{ color: palette.body }}>
+                            <p className={`${lora.className} mt-0.5 flex items-start gap-1 text-[0.82rem] font-medium leading-snug`} style={{ color: palette.body }}>
                               <MapPin className="mt-[0.2em] h-3 w-3 shrink-0" style={{ color: palette.soft }} aria-hidden />
                               <span className="min-w-0">{place}</span>
                             </p>
@@ -503,14 +512,14 @@ export function Footer() {
                   <>
                     <span className="my-4 block h-px w-full" style={dividerLineStyle} aria-hidden />
                     <Label>{content.rsvp.title}</Label>
-                    <p className={`font-goudy-italic mt-1 ${ct.body}`} style={{ color: palette.body }}>
+                    <p className={`${lora.className} mt-1 ${ct.body} font-medium`} style={{ color: palette.body }}>
                       {content.rsvp.label}{" "}
                       <span className="font-semibold" style={{ color: palette.heading }}>
                         {siteConfig.details.rsvp.deadline}
                       </span>
                     </p>
                     {content.rsvp.note ? (
-                      <p className={`font-goudy-italic mt-1 ${ct.body}`} style={{ color: palette.soft }}>
+                      <p className={`${lora.className} mt-1 ${ct.body} italic`} style={{ color: palette.soft }}>
                         {content.rsvp.note}
                       </p>
                     ) : null}
@@ -520,9 +529,9 @@ export function Footer() {
                       className={`${cinzel.className} ${ct.label} mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full border px-5 py-2.5 font-semibold uppercase tracking-[0.14em] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-[0.98]`}
                       style={{
                         background: BUTTON,
-                        borderColor: BUTTON,
-                        color: IVORY,
-                        boxShadow: "0 12px 24px -12px color-mix(in srgb, #D0899A 60%, transparent)",
+                        borderColor: BUTTON_EDGE,
+                        color: "#fff",
+                        boxShadow: BUTTON_SHADOW,
                       }}
                     >
                       {content.rsvp.button}
@@ -539,7 +548,7 @@ export function Footer() {
                   <>
                     <Label>{content.followTitle}</Label>
                     {content.followNote ? (
-                      <p className={`font-goudy-italic mt-1 ${ct.body}`} style={{ color: palette.soft }}>
+                      <p className={`${lora.className} mt-1 ${ct.body} italic`} style={{ color: palette.soft }}>
                         {content.followNote}
                       </p>
                     ) : null}
@@ -558,7 +567,7 @@ export function Footer() {
                             title={label}
                             aria-label={label}
                             className="group inline-flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:-translate-y-0.5"
-                            style={{ background: BUTTON, color: IVORY, boxShadow: "0 6px 14px -8px color-mix(in srgb, #D0899A 70%, transparent)" }}
+                            style={{ background: BUTTON, color: "#fff", boxShadow: `${BUTTON_SHADOW}, inset 0 0 0 1px ${BUTTON_EDGE}` }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.background = BUTTON_HOVER
                             }}
@@ -583,7 +592,7 @@ export function Footer() {
                       href={item.href}
                       onClick={scrollTo(item.href)}
                       className="group flex min-w-0 items-center justify-between gap-1.5 rounded-full py-2 pl-3.5 pr-2 transition-all duration-300 hover:-translate-y-0.5"
-                      style={{ background: BUTTON }}
+                      style={{ background: BUTTON, boxShadow: `${BUTTON_SHADOW}, inset 0 0 0 1px ${BUTTON_EDGE}` }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = BUTTON_HOVER
                       }}
@@ -616,37 +625,37 @@ export function Footer() {
             <span className="mb-6 block h-px w-full sm:mb-8" style={onBgLineStyle} aria-hidden />
             <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:gap-6 md:text-left">
               <div className="min-w-0">
-                <p className={`font-goudy-italic ${ct.body}`} style={{ ...onBg, fontWeight: 600 }}>
+                <p className={`${lora.className} ${ct.body} font-medium`} style={onBg}>
                   {fill(content.copyright)}
                 </p>
                 {content.tagline ? (
-                  <p className={`font-goudy-italic mt-1 ${ct.body}`} style={onBgSoft}>
+                  <p className={`${lora.className} mt-1 ${ct.body} italic`} style={onBgSoft}>
                     {fill(content.tagline)}
                   </p>
                 ) : null}
               </div>
               {content.credit.show && (
                 <div className="min-w-0 space-y-1 md:text-right">
-                  <p className={`font-goudy-italic ${ct.body}`} style={onBgSoft}>
+                  <p className={`${lora.className} ${ct.body}`} style={onBgSoft}>
                     {content.credit.developedBy}{" "}
                     <a
                       href={content.credit.developerUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold underline decoration-[var(--color-on-pattern-line)] underline-offset-2 hover:opacity-80"
-                      style={{ color: "var(--color-on-pattern)" }}
+                      className="font-semibold underline decoration-[var(--color-welcome-gold)] underline-offset-2 hover:opacity-80"
+                      style={{ color: GOLD }}
                     >
                       {content.credit.developerName}
                     </a>
                   </p>
-                  <p className={`font-goudy-italic ${ct.body}`} style={onBgSoft}>
+                  <p className={`${lora.className} ${ct.body}`} style={onBgSoft}>
                     {content.credit.promoText}{" "}
                     <a
                       href={content.credit.promoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold underline decoration-[var(--color-on-pattern-line)] underline-offset-2 hover:opacity-80"
-                      style={{ color: "var(--color-on-pattern)" }}
+                      className="font-semibold underline decoration-[var(--color-welcome-gold)] underline-offset-2 hover:opacity-80"
+                      style={{ color: GOLD }}
                     >
                       {content.credit.promoName}
                     </a>

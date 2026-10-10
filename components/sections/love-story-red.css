@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Love Story — red velvet look (components/sections/love-story.tsx)
+   Red-majority circle pattern, crimson corner decorations, and chapter text
+   on ivory / wine-glass cards (StorySection surface="pattern").
+   Scoped to .love-story-root, .gallery-root (gallery section + /gallery page)
+   and .red-velvet-root (any other section, e.g. Event Details) so sections
+   without those classes keep their own palette.
+   ========================================================================== */
+
+/* Luxury red velvet base: crimson glows over deep wine, darker at the edges */
+.love-story-root .plain-bubbles,
+.gallery-root .plain-bubbles,
+.red-velvet-root .plain-bubbles {
+  background:
+    radial-gradient(70% 40% at 20% 12%, color-mix(in srgb, var(--color-motif-accent) 45%, transparent) 0%, transparent 70%),
+    radial-gradient(60% 35% at 85% 45%, color-mix(in srgb, var(--color-motif-accent) 35%, transparent) 0%, transparent 70%),
+    radial-gradient(70% 40% at 30% 85%, color-mix(in srgb, var(--color-motif-accent) 30%, transparent) 0%, transparent 70%),
+    radial-gradient(140% 100% at 50% 50%, transparent 55%, color-mix(in srgb, var(--color-coastal-deep) 55%, transparent) 100%),
+    linear-gradient(180deg, var(--color-motif-deep) 0%, color-mix(in srgb, var(--color-motif-deep) 62%, var(--color-coastal-deep)) 100%);
+}
+
+/* Circles: each tone is a different depth of red, shaded like a velvet sphere
+   (lit top-left, falling into shadow at the rim) so they read as volume */
+.love-story-root .plain-bubble,
+.gallery-root .plain-bubble,
+.red-velvet-root .plain-bubble {
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in srgb, var(--red) 78%, white 22%) 0%,
+    var(--red) 42%,
+    color-mix(in srgb, var(--red) 62%, var(--color-coastal-deep)) 100%
+  );
+  opacity: var(--red-alpha, 0.7);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--color-coastal-deep) 30%, transparent);
+}
+
+.love-story-root .plain-bubble--d,
+.gallery-root .plain-bubble--d,
+.red-velvet-root .plain-bubble--d { --red: #4a0710; --red-alpha: 0.85; } /* oxblood */
+.love-story-root .plain-bubble--m,
+.gallery-root .plain-bubble--m,
+.red-velvet-root .plain-bubble--m { --red: #7a0f1a; --red-alpha: 0.8; }  /* wine */
+.love-story-root .plain-bubble--l,
+.gallery-root .plain-bubble--l,
+.red-velvet-root .plain-bubble--l { --red: #a3172a; --red-alpha: 0.55; } /* crimson */
+.love-story-root .plain-bubble--c,
+.gallery-root .plain-bubble--c,
+.red-velvet-root .plain-bubble--c { --red: #8c1222; --red-alpha: 0.75; } /* garnet */
+.love-story-root .plain-bubble--p,
+.gallery-root .plain-bubble--p,
+.red-velvet-root .plain-bubble--p { --red: #c0283a; --red-alpha: 0.5; }  /* ruby */
+.love-story-root .plain-bubble--b,
+.gallery-root .plain-bubble--b,
+.red-velvet-root .plain-bubble--b { --red: #5e0b16; --red-alpha: 0.8; }  /* burgundy */
+.love-story-root .plain-bubble--r,
+.gallery-root .plain-bubble--r,
+.red-velvet-root .plain-bubble--r { --red: #b81d32; --red-alpha: 0.6; }  /* scarlet */
+.love-story-root .plain-bubble--k,
+.gallery-root .plain-bubble--k,
+.red-velvet-root .plain-bubble--k { --red: #d0425a; --red-alpha: 0.4; }  /* rose red */
+
+/* Corner decorations: crimson instead of antique gold, bright enough to read on wine */
+.love-story-root .invite-section-corner-img,
+.gallery-root .invite-section-corner-img,
+.gallery-root .red-corner-deco,
+.red-velvet-root .red-corner-deco {
+  filter: grayscale(1) sepia(1) saturate(6) hue-rotate(-42deg) brightness(1.05) contrast(1.05)
+    drop-shadow(0 2px 6px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent));
+}
+
+/* ---- Chapters on the pattern ------------------------------------------- */
+
+/* No card: white text straight on the red velvet, lifted by a soft dark shadow */
+.story-pattern-card {
+  position: relative;
+  color: #fff;
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent),
+    0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent);
+}
+
+.story-pattern-card .story-pattern-card__title {
+  color: var(--color-welcome-gold);
+}
+
+/* Chapter paragraphs: Lora, upright, comfortable size and line height */
+.story-pattern-card__text {
+  font-size: clamp(0.88rem, 3.4vw, 1.1rem);
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.005em;
+}
+
+@media (min-width: 768px) {
+  .story-pattern-card__text {
+    font-size: 1.12rem;
+    line-height: 1.8;
+  }
+}
+
+/* The closing signature line ("With love and gratitude, …") stays a touch softer */
+.story-pattern-card__text p + p {
+  font-style: italic;
+  color: var(--color-motif-blush);
+}
+
+/* "Chapter 01" above each title */
+.story-pattern-card__label {
+  display: block;
+  margin-bottom: 0.45em;
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: 0.42em;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--color-motif-blush);
+}
+
+/* Short gold rule between the title and the text */
+.story-pattern-card__rule {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  margin: -0.25rem 0 0.9rem;
+  background: linear-gradient(90deg, var(--color-welcome-gold), transparent);
+}
+
+@media (min-width: 768px) {
+  .story-pattern-card__rule {
+    margin: -0.75rem 0 1.25rem;
+  }
+}
+
+/* Photo frame: ivory mat with a gold hairline */
+.story-pattern-frame {
+  background: var(--color-motif-soft);
+  border: 1px solid color-mix(in srgb, var(--color-welcome-gold) 55%, transparent);
+  box-shadow:
+    0 18px 40px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent),
+    0 4px 10px color-mix(in srgb, var(--color-coastal-deep) 20%, transparent);
+}

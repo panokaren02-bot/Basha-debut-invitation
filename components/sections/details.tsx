@@ -12,6 +12,8 @@ import { Cinzel } from "next/font/google"
 import { Shirt, Copy, Check, Navigation, Heart, MapPin } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -30,47 +32,51 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
+// Red velvet vibe (same as My Story + Gallery): white + gold text on the red circle
+// pattern; the venue / attire / reminder cards stay ivory paper with wine + gold ink.
+// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
 const C = {
-  heading: "var(--color-welcome-navy)",
-  body: "var(--color-welcome-text)",
-  soft: "var(--color-welcome-text-soft)",
-  label: "var(--color-welcome-heading)",
-  script: "var(--color-welcome-script)",
+  heading: "var(--color-motif-deep)",
+  body: "color-mix(in srgb, var(--color-welcome-text) 88%, var(--color-motif-deep))",
+  soft: "color-mix(in srgb, var(--color-welcome-text) 70%, var(--color-motif-deep))",
+  label: GOLD_INK,
+  script: GOLD_INK,
   accent: "var(--color-motif-accent)",
-  green: "var(--color-welcome-green)",
-  paper: "var(--color-welcome-bg-soft)",
+  green: "var(--color-motif-deep)",
+  paper: "var(--color-motif-soft)",
   light: "var(--color-motif-soft)",
 } as const
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
 
-const hairline = "color-mix(in srgb, var(--color-motif-medium) 55%, transparent)"
+// Text sitting directly on the red pattern: white, or gold for scripts / eyebrows
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: "var(--color-welcome-gold)", textShadow: textLift } as const
+
+const hairline = "color-mix(in srgb, var(--color-welcome-gold) 50%, transparent)"
 
 const cardStyle = {
-  background: C.paper,
-  borderColor: "color-mix(in srgb, var(--color-motif-medium) 70%, transparent)",
+  background:
+    "radial-gradient(120% 50% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
+  borderColor: hairline,
   borderWidth: "1px",
   borderStyle: "solid",
   boxShadow:
-    "0 22px 48px -26px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
+    "0 24px 50px -24px color-mix(in srgb, var(--color-coastal-deep) 75%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 35%, transparent)",
 } as const
 
 const softPanelStyle = {
   borderColor: hairline,
-  backgroundColor: "color-mix(in srgb, var(--color-motif-silver) 35%, var(--color-welcome-bg-soft))",
+  backgroundColor: "color-mix(in srgb, var(--color-motif-blush) 22%, var(--color-motif-soft))",
 } as const
 
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 function DecoImg({ src, className }: { src: string; className: string }) {
   if (!src) return null
@@ -85,17 +91,20 @@ function SectionIconDivider({ icon }: { icon: ReactNode }) {
     <div className="flex items-center justify-center gap-2 pt-1 sm:pt-2">
       <span
         className="h-px w-10 sm:w-16 md:w-20"
-        style={{ background: "var(--color-on-pattern-line)" }}
+        style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }}
       />
       <span
         className="flex h-7 w-7 items-center justify-center rounded-full sm:h-8 sm:w-8"
-        style={{ border: `1px solid ${hairline}`, background: C.paper }}
+        style={{
+          border: "1px solid color-mix(in srgb, var(--color-welcome-gold) 60%, transparent)",
+          background: "var(--color-motif-deep)",
+        }}
       >
         {icon}
       </span>
       <span
         className="h-px w-10 sm:w-16 md:w-20"
-        style={{ background: "var(--color-on-pattern-line)" }}
+        style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }}
       />
     </div>
   )
@@ -121,7 +130,7 @@ function DetailsTitle({ title, subtitle }: { title: string; subtitle: string }) 
       <span
         aria-hidden
         className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
-        style={{ fontSize: "var(--script-size)", ...onBg }}
+        style={{ fontSize: "var(--script-size)", ...onBgGold }}
       >
         {subtitle}
       </span>
@@ -181,9 +190,9 @@ function DressCodePaletteHeader({
         </p>
 
         <div className="mx-auto mt-3 flex max-w-xs items-center justify-center gap-2 sm:mt-4 sm:max-w-sm md:max-w-md">
-          <span className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, var(--color-motif-medium))" }} />
+          <span className="h-px flex-1" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
           <Heart className="h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3" style={{ color: C.accent, fill: C.accent }} aria-hidden />
-          <span className="h-px flex-1" style={{ background: "linear-gradient(to left, transparent, var(--color-motif-medium))" }} />
+          <span className="h-px flex-1" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
         </div>
 
         <p
@@ -249,35 +258,75 @@ function ColorPalette({ colors }: { colors: readonly string[] }) {
   )
 }
 
-function CoupleImagesCarousel({
-  coupleImages,
-  currentImageIndex,
-  rotationOffset,
-}: {
-  coupleImages: readonly string[]
-  currentImageIndex: number
-  rotationOffset: number
-}) {
-  return (
-    <div className="mb-4 flex justify-center gap-2 sm:mb-5 sm:gap-2.5">
-      {coupleImages.map((image, index) => {
-        const isActive = index === currentImageIndex
-        const baseRotation = index % 2 === 0 ? -5 + index : 5 - index
-        const currentRotation = isActive
-          ? baseRotation + Math.sin((rotationOffset * Math.PI) / 180) * 2
-          : baseRotation
-        const scale = isActive ? "scale(1.1)" : "scale(1)"
+// Gentle reminders photos as a fanned deck: the top card faces front, the rest peek
+// out behind it alternating left / right. Each step the top card glides to the back
+// of the pile and the next one springs forward.
+// 5 visible: front card in the middle + two on each side (symmetric fan)
+const DECK_VISIBLE = 5
 
+function deckPose(depth: number) {
+  if (depth === 0) return { x: 0, y: 0, rotate: 0, scale: 1 }
+  const side = depth % 2 === 1 ? -1 : 1
+  const step = Math.ceil(depth / 2)
+  // Wide fan: each pair steps ~half a card out to the side, so every photo shows
+  return {
+    x: side * step * 50,
+    y: step * 5,
+    rotate: side * (4 + step * 3),
+    scale: 1 - step * 0.07,
+  }
+}
+
+function PhotoDeck({
+  images,
+  currentIndex,
+  reduceMotion,
+}: {
+  images: readonly string[]
+  currentIndex: number
+  reduceMotion: boolean | null
+}) {
+  const count = images.length
+  return (
+    <div className="relative mx-auto mb-6 h-[8rem] w-full max-w-[18rem] sm:mb-7 sm:h-[9.5rem] sm:max-w-[22rem]" aria-hidden>
+      {images.map((image, index) => {
+        // 0 = top of the deck, 1… = further back
+        const depth = (index - currentIndex + count) % count
+        const pose = deckPose(depth)
         return (
-          <div
+          <motion.div
             key={image}
-            className={`relative h-14 w-14 overflow-hidden rounded-lg border-[3px] shadow-md transition-all duration-700 ease-in-out sm:h-16 sm:w-16 ${
-              isActive ? "z-10" : "opacity-75"
-            }`}
-            style={{ transform: `rotate(${currentRotation}deg) ${scale}`, borderColor: C.light }}
+            className="absolute inset-x-0 top-0 mx-auto h-[7rem] w-[5.5rem] overflow-hidden rounded-md sm:h-[8.5rem] sm:w-[6.5rem]"
+            style={{
+              zIndex: count - depth,
+              padding: 3,
+              background: "var(--color-motif-soft)",
+              boxShadow:
+                depth === 0
+                  ? "0 14px 26px -10px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)"
+                  : "0 6px 14px -8px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)",
+            }}
+            initial={false}
+            animate={{
+              ...pose,
+              opacity: depth < DECK_VISIBLE ? 1 : 0,
+            }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 140, damping: 20, mass: 0.9 }
+            }
           >
-            <Image src={image} alt={`Wedding couple ${index + 1}`} fill className="object-cover" sizes="64px" />
-          </div>
+            <div className="relative h-full w-full overflow-hidden rounded-[0.3rem]">
+              <Image src={image} alt="" fill className="object-cover" sizes="104px" />
+              {depth > 0 && (
+                <div
+                  className="absolute inset-0"
+                  style={{ background: "color-mix(in srgb, var(--color-motif-deep) 18%, transparent)" }}
+                />
+              )}
+            </div>
+          </motion.div>
         )
       })}
     </div>
@@ -288,7 +337,7 @@ function FadeRule({ className = "" }: { className?: string }) {
   return (
     <span
       className={`mx-auto block h-px w-24 sm:w-32 ${className}`}
-      style={{ background: "linear-gradient(to right, transparent, var(--color-motif-accent), transparent)" }}
+      style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }}
       aria-hidden
     />
   )
@@ -331,7 +380,7 @@ function highlightPhrase(text: string, phrase?: string): ReactNode {
   return (
     <>
       {text.slice(0, index)}
-      <strong className="font-bold underline decoration-[var(--color-motif-medium)] underline-offset-2" style={{ color: C.heading }}>
+      <strong className="font-bold underline decoration-[var(--color-welcome-gold)] underline-offset-2" style={{ color: C.heading }}>
         {text.slice(index, index + phrase.length)}
       </strong>
       {text.slice(index + phrase.length)}
@@ -378,7 +427,7 @@ function AttireCard({
       />
       <div
         className="relative flex h-full flex-col overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]"
-        style={{ background: cardStyle.background, boxShadow: cardStyle.boxShadow }}
+        style={cardStyle}
       >
         <div className="px-4 pt-6 pb-2 sm:px-5 sm:pt-8">
           <h4
@@ -462,6 +511,8 @@ type EventVenueCardProps = {
   onOpenMaps: (link: string) => void
   showDateDetails?: boolean
   labels: VenueLabels
+  /** Shown on a gold-on-black panel when there are no venue photos */
+  monogram?: string
 }
 
 function EventVenueCard({
@@ -484,6 +535,7 @@ function EventVenueCard({
   onOpenMaps,
   showDateDetails = true,
   labels,
+  monogram,
 }: EventVenueCardProps) {
   const { fg: qrFg, bg: qrBg } = useQrColors() // --color-qr-fg / --color-qr-bg in globals.css
   const eventDate = showDateDetails ? new Date(dateString) : null
@@ -500,9 +552,37 @@ function EventVenueCard({
 
       <div
         className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]"
-        style={{ background: cardStyle.background, boxShadow: cardStyle.boxShadow }}
+        style={cardStyle}
       >
         <div className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[30rem] overflow-hidden" style={{ background: "var(--color-motif-silver)" }}>
+          {/* No venue photos → black velvet panel with the gold monogram */}
+          {images.length === 0 && (
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                background:
+                  "radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 0%, var(--color-coastal-deep) 70%)",
+              }}
+              aria-hidden
+            >
+              {monogram ? (
+                <div
+                  className="h-[62%] aspect-square opacity-80 -translate-y-6"
+                  style={{
+                    background: "linear-gradient(135deg, var(--color-motif-blush), var(--color-welcome-gold) 55%, color-mix(in srgb, var(--color-welcome-gold) 60%, black))",
+                    WebkitMaskImage: `url("${monogram}")`,
+                    maskImage: `url("${monogram}")`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
+                />
+              ) : null}
+            </div>
+          )}
           {images.map((src, index) => {
             const isActive = index === activeImageIndex
             return (
@@ -531,7 +611,7 @@ function EventVenueCard({
             className="absolute inset-0 z-20 pointer-events-none"
             style={{
               background:
-                "linear-gradient(to top, color-mix(in srgb, var(--color-welcome-navy) 82%, transparent) 0%, color-mix(in srgb, var(--color-welcome-navy) 25%, transparent) 45%, transparent 100%)",
+                "linear-gradient(to top, color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 60%, var(--color-coastal-deep)) 88%, transparent) 0%, color-mix(in srgb, var(--color-motif-deep) 30%, transparent) 45%, transparent 100%)",
             }}
           />
 
@@ -577,7 +657,7 @@ function EventVenueCard({
                   </p>
                   <div
                     className="h-10 sm:h-12 md:h-14 w-[2px] rounded-full"
-                    style={{ background: "var(--color-motif-medium)" }}
+                    style={{ background: "var(--color-welcome-gold)" }}
                   />
                   <p className={`${cinzel.className} ${ct.year} font-semibold leading-none`} style={{ color: C.heading }}>
                     {eventDate.getFullYear()}
@@ -614,7 +694,10 @@ function EventVenueCard({
             )}
           </div>
 
-          <div className="rounded-2xl p-3 sm:p-4 md:p-5 mb-4 sm:mb-6" style={{ backgroundColor: softPanelStyle.backgroundColor }}>
+          <div
+            className="rounded-2xl border p-3 sm:p-4 md:p-5 mb-4 sm:mb-6"
+            style={{ backgroundColor: softPanelStyle.backgroundColor, borderColor: softPanelStyle.borderColor }}
+          >
             <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mt-0.5 flex-shrink-0" style={{ color: C.accent }} />
               <div className="flex-1 min-w-0">
@@ -648,10 +731,10 @@ function EventVenueCard({
               onClick={() => onOpenMaps(mapsLink)}
               className={`${cinzel.className} flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 md:py-3.5 rounded-full border font-semibold uppercase tracking-[0.12em] ${ct.btn} transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]`}
               style={{
-                background: C.accent,
-                borderColor: "color-mix(in srgb, var(--color-motif-medium) 60%, transparent)",
-                color: C.light,
-                boxShadow: "0 12px 24px -10px color-mix(in srgb, var(--color-welcome-navy) 60%, transparent)",
+                background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
+                borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+                color: "#fff",
+                boxShadow: "0 12px 24px -10px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
               }}
               aria-label={`Get directions to ${badge.toLowerCase()} venue`}
             >
@@ -665,7 +748,7 @@ function EventVenueCard({
               style={{
                 color: C.heading,
                 backgroundColor: C.light,
-                borderColor: "color-mix(in srgb, var(--color-motif-accent) 55%, transparent)",
+                borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
               }}
               aria-label={`Copy ${badge.toLowerCase()} venue address`}
             >
@@ -693,7 +776,6 @@ export function Details() {
   const [ceremonyImageIndex, setCeremonyImageIndex] = useState(0)
   const [receptionImageIndex, setReceptionImageIndex] = useState(0)
   const [reminderImageIndex, setReminderImageIndex] = useState(0)
-  const [rotationOffset, setRotationOffset] = useState(0)
   const reduceMotion = useReducedMotion()
 
   // "combined" = one card for both events at the ceremony venue (eventDetails.venues.layout)
@@ -719,15 +801,14 @@ export function Details() {
     return () => clearInterval(timer)
   }, [receptionImages.length])
 
-  // Gentle reminders couple photos — subtle carousel + wobble animation
+  // Gentle reminders photo deck — the top card moves to the back every few seconds
   useEffect(() => {
-    if (reminderImages.length === 0) return
+    if (reminderImages.length <= 1 || reduceMotion) return
     const interval = setInterval(() => {
       setReminderImageIndex((prev) => (prev + 1) % reminderImages.length)
-      setRotationOffset((prev) => (prev + 10) % 360)
-    }, 2600)
+    }, 3200)
     return () => clearInterval(interval)
-  }, [reminderImages.length])
+  }, [reminderImages.length, reduceMotion])
 
   const copyToClipboard = async (text: string, itemId: string) => {
     try {
@@ -750,7 +831,10 @@ export function Details() {
   }
 
   const fillTimes = (text: string) =>
-    text.split("{guestsTime}").join(ceremony.guestsTime).split("{ceremonyTime}").join(ceremony.time)
+    text
+      .split("{guestsTime}").join(ceremony.guestsTime)
+      .split("{ceremonyTime}").join(ceremony.time)
+      .split("{endTime}").join(reception.time)
 
   const ceremonyVenue = `${ceremony.location}, ${ceremony.venue}`
   const receptionVenue = `${reception.location}, ${reception.venue}`
@@ -758,10 +842,10 @@ export function Details() {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the hero */}
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <Section
         id="details"
@@ -789,7 +873,7 @@ export function Details() {
           />
           <p
             className={`${cinzel.className} mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.34em] min-[400px]:tracking-[0.38em] sm:text-[0.65rem] sm:tracking-[0.44em]`}
-            style={onBg}
+            style={onBgGold}
           >
             {content.eyebrow}
           </p>
@@ -804,7 +888,7 @@ export function Details() {
           </p>
 
           <div className="mt-4 sm:mt-5">
-            <SectionIconDivider icon={<MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: C.accent }} aria-hidden />} />
+            <SectionIconDivider icon={<MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: "var(--color-welcome-gold)" }} aria-hidden />} />
           </div>
         </div>
 
@@ -829,6 +913,7 @@ export function Details() {
               ]}
               venueSectionLabel={venues.combined.sectionLabel}
               mapsLink={ceremony.map}
+              monogram={siteConfig.celebrant?.monogram}
               copyId="combined"
               fullVenue={ceremonyVenue}
               copiedItems={copiedItems}
@@ -852,6 +937,7 @@ export function Details() {
               arrivalTime={venues.ceremony.showArrival ? ceremony.guestsTime : undefined}
               venueSectionLabel={venues.ceremony.sectionLabel}
               mapsLink={ceremony.map}
+              monogram={siteConfig.celebrant?.monogram}
               copyId="ceremony"
               fullVenue={ceremonyVenue}
               copiedItems={copiedItems}
@@ -890,7 +976,7 @@ export function Details() {
         <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           {attireGroups.length > 0 && (
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
-            <SectionIconDivider icon={<Shirt className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: C.accent }} aria-hidden />} />
+            <SectionIconDivider icon={<Shirt className="h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ color: "var(--color-welcome-gold)" }} aria-hidden />} />
             <h3
               className={`${theSeasons.className} ${ct.sectionTitle} mt-3 uppercase font-semibold leading-tight tracking-[0.12em] sm:mt-4 md:tracking-[0.15em]`}
               style={onBg}
@@ -953,7 +1039,7 @@ export function Details() {
           >
             <div
               className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]"
-              style={{ background: cardStyle.background, boxShadow: cardStyle.boxShadow }}
+              style={cardStyle}
             >
               <motion.div
                 className="relative z-10 flex flex-col items-center px-5 py-7 text-center sm:px-10 sm:py-9 md:px-12"
@@ -964,10 +1050,10 @@ export function Details() {
               >
                 <motion.div variants={reminderItemVariants} className="flex flex-col items-center">
                   {reminderImages.length > 0 ? (
-                    <CoupleImagesCarousel
-                      coupleImages={reminderImages}
-                      currentImageIndex={reminderImageIndex}
-                      rotationOffset={rotationOffset}
+                    <PhotoDeck
+                      images={reminderImages}
+                      currentIndex={reminderImageIndex}
+                      reduceMotion={reduceMotion}
                     />
                   ) : (
                     <DecoImg
@@ -994,7 +1080,7 @@ export function Details() {
                         <motion.span
                           variants={reminderItemVariants}
                           className="mx-auto my-4 block h-px w-1/2 max-w-[14rem] sm:my-5"
-                          style={{ background: "linear-gradient(to right, transparent, var(--color-motif-medium), transparent)" }}
+                          style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }}
                           aria-hidden
                         />
                       ) : null}

@@ -12,6 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { AppState } from "@/components/types"
 import { prefetchInvitationData } from "@/lib/invitation-data"
 import { useSiteConfig } from "@/hooks/use-site-config"
+import { useCssColor } from "@/hooks/use-css-color"
 import { WeddingPlaylist } from "@/components/sections/wedding-playlist"
 import type { SponsorsList } from "@/components/sections/entourage"
 
@@ -85,8 +86,14 @@ const sectionsRevealVariants = {
   },
 }
 
-/** WebGL Silk needs a hex color. */
-const SILK_COLOR = "#1F3460"
+/** WebGL Silk needs a hex color — read from --color-silk in app/globals.css. */
+const SILK_FALLBACK = "#2B0A10"
+
+function rgbToHex(rgb: string) {
+  const parts = rgb.match(/\d+/g)
+  if (!parts || parts.length < 3) return SILK_FALLBACK
+  return `#${parts.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`
+}
 
 type InvitationPageProps = {
   /** Which principal-sponsor sheet the entourage shows (googleAPI.sponsorsInviteOne / Two) */
@@ -110,6 +117,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
     return AppState.LOADING
   })
   const siteConfig = useSiteConfig()
+  const silkColor = rgbToHex(useCssColor("--color-silk", SILK_FALLBACK))
   const plainLoader = siteConfig.loadingScreen?.display === "plain"
   const enableDecor = process.env.NEXT_PUBLIC_ENABLE_DECOR !== 'false'
   const [showInvitation, setShowInvitation] = useState(false)
@@ -159,8 +167,8 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
   const cinematicEntry = enteringFromInvite && detailsVisible
 
   useEffect(() => {
-    prefetchInvitationData({ sponsorsList, entourage: showEntourage })
-  }, [sponsorsList, showEntourage])
+    prefetchInvitationData({ sponsorsList, entourage: showEntourage && siteConfig.entourage.show !== false })
+  }, [sponsorsList, showEntourage, siteConfig.entourage.show])
 
   return (
       <div className={`relative min-h-screen bg-cloud text-charcoal selection:bg-birch selection:text-nut font-sans ${pageScrollLocked ? "overflow-hidden" : ""}`}>
@@ -199,7 +207,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
           >
             {cinematicEntry && (
               <motion.div
-                className="fixed inset-0 z-[28] pointer-events-none bg-[#FAF4F4]"
+                className="fixed inset-0 z-[28] pointer-events-none bg-[var(--color-motif-cream)]"
                 aria-hidden="true"
                 initial={{ clipPath: "circle(0% at 50% 46%)", opacity: 0.98 }}
                 animate={{ clipPath: "circle(145% at 50% 46%)", opacity: 0 }}
@@ -209,7 +217,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
 
             {enableDecor && (
               <motion.div
-                className="fixed inset-0 z-0 pointer-events-none"
+                className="fixed inset-0 z-0 pointer-events-none bg-[var(--color-silk)]"
                 variants={silkBackdropVariants}
                 initial={false}
                 animate={cinematicEntry ? "show" : detailsVisible ? "show" : "hidden"}
@@ -217,13 +225,13 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
               >
                 <Suspense
                   fallback={
-                    <div className="h-full w-full bg-[var(--color-welcome-bg-soft)]" />
+                    <div className="h-full w-full bg-[var(--color-silk)]" />
                   }
                 >
                   <Silk
                     speed={8}
                     scale={0.9}
-                    color={SILK_COLOR}
+                    color={silkColor}
                     noiseIntensity={0}
                     rotation={0.3}
                   />
@@ -262,17 +270,16 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
               {/* <CoupleVideo />  */}
               <LoveStory />
               <Countdown />
-              {/* <Gallery /> */}
+              <Gallery />
+              <Messages />
               {/* <MessageVideo /> */}
-              
               <Details />
               <WeddingTimeline />
-              {showEntourage && <Entourage sponsorsList={sponsorsList} />}
+              {showEntourage && siteConfig.entourage.show !== false && <Entourage sponsorsList={sponsorsList} />}
               <GuestList />
               <BookOfGuests />
-              <Messages />
-              <FAQ />
               <Registry />
+              <FAQ />
               <WeddingPlaylist /> 
               <SnapShare />
               <SeeYouThere />

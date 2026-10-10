@@ -69,25 +69,25 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Primary: light blue #AFC8E6 */
-  --primary: #AFC8E6;
-  --primary-foreground: oklch(0.145 0 0);
-  /* Secondary: dusty pink #D8B0B0 */
-  --secondary: #D8B0B0;
-  --secondary-foreground: oklch(0.145 0 0);
-  /* Sage mapped to secondary */
-  --sage: #D8B0B0;
-  /* Muted/light surfaces: blush ivory #F3ECEE */
-  --muted: #F3ECEE;
-  --muted-foreground: oklch(0.145 0 0);
-  /* Accent: dusty pink #D8B0B0 */
-  --accent: #D8B0B0;
-  --accent-foreground: oklch(0.145 0 0);
+  /* Primary: oxblood red #7A0F1A */
+  --primary: #7A0F1A;
+  --primary-foreground: #FBF9F4;
+  /* Secondary: antique gold #C9A24A */
+  --secondary: #C9A24A;
+  --secondary-foreground: #141012;
+  /* Legacy "sage" token — mapped to gold */
+  --sage: #C9A24A;
+  /* Muted/light surfaces: pearl ivory #F4F1EB */
+  --muted: #F4F1EB;
+  --muted-foreground: #141012;
+  /* Accent: antique gold #C9A24A */
+  --accent: #C9A24A;
+  --accent-foreground: #141012;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: #AFC8E6;
+  --ring: #C9A24A;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -96,19 +96,22 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #AFC8E6;
-  --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: #D8B0B0;
-  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #7A0F1A;
+  --sidebar-primary-foreground: #FBF9F4;
+  --sidebar-accent: #C9A24A;
+  --sidebar-accent-foreground: #141012;
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: #AFC8E6;
+  --sidebar-ring: #C9A24A;
 
-  /* Decoration tint: the botanical PNGs in /public/deco are painted in sage
-     (hue ≈ 92°). This recolors them to the motif navy (--color-motif-teal
-     #1F3460): grayscale + sepia flattens the sage, then hue-rotate/
-     saturate/brightness land it on navy while keeping the watercolor shading.
+  /* Decoration tint: the botanical PNGs in /public/deco are painted in sage.
+     grayscale + sepia flattens them, then saturate/hue-rotate/brightness land
+     them on antique gold (--color-welcome-gold) while keeping the shading.
      Set to "none" to show the original artwork. */
-  --deco-filter: grayscale(1) sepia(1) hue-rotate(185deg) saturate(2.8) brightness(0.5);
+  --deco-filter: grayscale(1) sepia(1) saturate(2.1) hue-rotate(-6deg) brightness(0.86) contrast(1.08);
+
+  /* Moving "Silk" backdrop behind the main sections (WebGL — any CSS color).
+     Read at runtime by components/invitation-page.tsx. Deep wine velvet. */
+  --color-silk: #3A0B12;
 
   /* QR codes (every QR on the site + dashboard): darkest motif color on white.
      Read at runtime by hooks/use-css-color, so any CSS color works here. */
@@ -123,21 +126,20 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #AFC8E6;
+  --primary: #7A0F1A;
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: #D8B0B0;
-  --secondary-foreground: oklch(0.985 0 0);
-  /* Sage for dark mode */
-  --sage: #D8B0B0;
-  --muted: #F3ECEE;
+  --secondary: #C9A24A;
+  --secondary-foreground: oklch(0.145 0 0);
+  --sage: #C9A24A;
+  --muted: #F4F1EB;
   --muted-foreground: oklch(0.145 0 0);
-  --accent: #D8B0B0;
-  --accent-foreground: oklch(0.985 0 0);
+  --accent: #C9A24A;
+  --accent-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
-  --ring: #AFC8E6;
+  --ring: #C9A24A;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -145,382 +147,343 @@
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: #AFC8E6;
+  --sidebar-primary: #7A0F1A;
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: #D8B0B0;
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent: #C9A24A;
+  --sidebar-accent-foreground: oklch(0.145 0 0);
   --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: #AFC8E6;
+  --sidebar-ring: #C9A24A;
 }
 
 @theme inline {
   --font-sans: "Inter", "Inter Fallback";
   /* Updated serif font to Great Vibes */
   --font-serif: "Great Vibes", "Great Vibes Fallback";
-  
+
 /* ==========================================
- *  MOTIF COLORS
- *  Theme: Navy Blue + Blush Pink
- *  Deep Navy + Blush Rose + Soft Pink + Ivory
+ *  MOTIF COLORS — DEBUT
+ *  Theme:  Regal Grunge Aesthetic
+ *  Motif:  Baroque Sun / Moon, Pearls, Red Roses
+ *  Colors: Red, Black, Gold, Silver
+ *
+ *  CHANGE THE WHOLE SITE FROM HERE.
+ *  Token names are kept from the original
+ *  template (e.g. "teal" = the main ink color)
+ *  so every component keeps working — only
+ *  the values below need editing.
  * ========================================== */
 
 /* ------------------------------------------
- * Background / Linen
+ * Background / Paper — pearl & silver
  * ------------------------------------------ */
 
- --color-motif-cream: #FAF4F4;
- /* Soft blush ivory */
- 
- --color-motif-yellow: #E9D9DC;
- /* Pink-tinted sand */
- 
- --color-motif-soft: #FDFAFA;
- /* Almost-white romantic paper */
- 
- 
+ --color-motif-cream: #F4F1EB;
+ /* Pearl ivory — main page background */
+
+ --color-motif-yellow: #E4D6AE;
+ /* Champagne gold — hairlines, paper texture */
+
+ --color-motif-soft: #FBF9F4;
+ /* Pearl white — cards, light text on dark */
+
+
  /* ------------------------------------------
-  * Blush Pink Accents
+  * Red Rose Accents
   * ------------------------------------------ */
- 
- --color-motif-accent: #E3A3AE;
- /* Blush rose */
- 
- --color-motif-deep: #D0899A;
- /* Deep blush rose */
- 
- --color-motif-medium: #EFBFC6;
- /* Soft pink */
- 
- 
+
+ --color-motif-accent: #A3172A;
+ /* Rose red — script, flowers, highlights */
+
+ --color-motif-deep: #7A0F1A;
+ /* Oxblood — hover / active / buttons */
+
+ --color-motif-medium: #C9A24A;
+ /* Antique gold — secondary decoration */
+
+
  /* ------------------------------------------
-  * Navy Blue Accents
+  * Black / Silver (main ink)
   * ------------------------------------------ */
- 
- --color-motif-teal: #1F3460;
- /* Navy blue */
- 
- --color-motif-teal-medium: #4F6694;
- /* Soft navy / dusty blue */
- 
- --color-motif-teal-light: #B4C2DC;
- /* Pale powder blue */
- 
- 
+
+ --color-motif-teal: #1A1416;
+ /* Regal black — headings, icons, strong text */
+
+ --color-motif-teal-medium: #4A3F42;
+ /* Smoke charcoal — secondary ink */
+
+ --color-motif-teal-light: #C7C9CE;
+ /* Silver */
+
+
  /* ------------------------------------------
-  * Floral / Romantic Accent
+  * Gold / Pearl accent
   * ------------------------------------------ */
- 
- --color-motif-blush: #F6D3D8;
- /* Blush pink */
- 
- 
+
+ --color-motif-blush: #E8D6A0;
+ /* Pale gold */
+
+
  /* ------------------------------------------
   * Neutral / Paper
   * ------------------------------------------ */
- 
- --color-motif-silver: #E3E8F2;
- /* Very light blue-gray neutral */
- 
- 
+
+ --color-motif-silver: #E6E6EA;
+ /* Pale silver */
+
+
  /* ==========================================
   *  WELCOME SECTION
   * ========================================== */
- 
- 
- /* ------------------------------------------
-  * Main background
-  * ------------------------------------------ */
- 
+
  --color-welcome-bg:
      color-mix(
          in srgb,
          var(--color-motif-cream) 72%,
          white
      );
- 
- 
- /* ------------------------------------------
-  * Soft background
-  * ------------------------------------------ */
- 
+
  --color-welcome-bg-soft:
      color-mix(
          in srgb,
          var(--color-motif-teal-light) 22%,
          white
      );
- 
- 
+
+
  /* ==========================================
   *  TYPOGRAPHY
   * ========================================== */
- 
- 
- /* ------------------------------------------
-  * Main body text
-  * ------------------------------------------ */
- 
- --color-welcome-text: #1F3460;
- /* Navy blue */
- 
- 
- /* ------------------------------------------
-  * Secondary / softer text
-  * ------------------------------------------ */
- 
+
+ /* Main body text — regal black */
+ --color-welcome-text: #1A1416;
+
+ /* Secondary / softer text */
  --color-welcome-text-soft:
      color-mix(
          in srgb,
-         #1F3460 62%,
+         #1A1416 62%,
          white
      );
- 
- 
- /* ------------------------------------------
-  * Small headings
-  * ------------------------------------------ */
- 
- --color-welcome-heading: #D0899A;
- /* Deep blush rose */
- 
- 
- /* ------------------------------------------
-  * Script / romantic accent
-  * ------------------------------------------ */
- 
- --color-welcome-script: #E3A3AE;
- /* Blush rose */
- 
- 
- /* ------------------------------------------
-  * Main hero heading
-  * ------------------------------------------ */
- 
- --color-welcome-navy: #16264A;
- /* Navy blue */
- 
- 
+
+ /* Small headings — oxblood */
+ --color-welcome-heading: #7A0F1A;
+
+ /* Script / romantic accent — rose red */
+ --color-welcome-script: #A3172A;
+
+ /* Main hero heading — deepest black */
+ --color-welcome-navy: #0E0B0C;
+
+
  /* ==========================================
   *  BUTTONS / DECORATION
   * ========================================== */
- 
- 
- /* ------------------------------------------
-  * Buttons
-  * ------------------------------------------ */
- 
- --color-welcome-green: #1F3460;
- /* Navy blue */
- 
- 
- /* ------------------------------------------
-  * Decorative coastal / floral lines
-  * ------------------------------------------ */
- 
- --color-welcome-botanical: #4F6694;
- /* Dusty blue */
- 
- 
- /* ------------------------------------------
-  * Gold decorative details
-  * ------------------------------------------ */
- 
- --color-welcome-gold: #EFBFC6;
- /* Pink replaces traditional gold */
- 
- 
- /* ------------------------------------------
-  * Floral accents
-  * ------------------------------------------ */
- 
- --color-welcome-blush: #F6D3D8;
- /* Soft blush pink */
- 
- 
+
+ /* Buttons */
+ --color-welcome-green: #7A0F1A;
+
+ /* Decorative lines */
+ --color-welcome-botanical: #8C7338;
+
+ /* Gold decorative details */
+ --color-welcome-gold: #C9A24A;
+
+ /* Pale gold accents */
+ --color-welcome-blush: #E8D6A0;
+
+
  /* ==========================================
-  *  ADDITIONAL NAVY + BLUSH COLORS
+  *  ADDITIONAL PALETTE (legacy names)
   * ========================================== */
- 
- /* Deep navy */
- --color-coastal-deep: #16264A;
- 
- /* Dusty blue */
- --color-coastal-teal: #1F3460;
- 
- /* Dusty blue */
- --color-coastal-soft: #4F6694;
- 
- /* Powder blue */
- --color-coastal-light: #B4C2DC;
- 
- /* Blush rose */
- --color-romantic-coral: #E3A3AE;
- 
- /* Deep blush rose */
- --color-romantic-deep: #D0899A;
- 
- /* Pink */
- --color-romantic-peach: #EFBFC6;
- 
- /* Blush pink */
- --color-romantic-blush: #F6D3D8;
- 
- /* Pink sand */
- --color-coastal-sand: #E9D9DC;
- 
- /* Blush ivory */
- --color-coastal-ivory: #FAF4F4;
- 
- 
+
+ /* Deepest black */
+ --color-coastal-deep: #0E0B0C;
+
+ /* Regal black */
+ --color-coastal-teal: #1A1416;
+
+ /* Smoke charcoal */
+ --color-coastal-soft: #4A3F42;
+
+ /* Silver */
+ --color-coastal-light: #C7C9CE;
+
+ /* Rose red */
+ --color-romantic-coral: #A3172A;
+
+ /* Oxblood */
+ --color-romantic-deep: #7A0F1A;
+
+ /* Antique gold */
+ --color-romantic-peach: #C9A24A;
+
+ /* Pale gold */
+ --color-romantic-blush: #E8D6A0;
+
+ /* Silver champagne */
+ --color-coastal-sand: #E2DDD0;
+
+ /* Pearl ivory */
+ --color-coastal-ivory: #F4F1EB;
+
+
  /* ==========================================
-  *  COUPLE NAME MASK / LOCKUP
+  *  CELEBRANT NAME LOCKUP
+  *  (image mask, or script text when no
+  *  lettering image is set in content/site.ts)
   * ========================================== */
- 
- --couple-name-fill: var(--color-welcome-navy);
- 
- /* mid + accent match the fill → the names render in one plain color */
- --couple-name-fill-mid: var(--couple-name-fill);
- 
- --couple-name-fill-accent: var(--couple-name-fill);
- 
+
+ --couple-name-fill: var(--color-motif-deep);
+
+ /* mid + accent → a subtle oxblood → rose → gold sheen */
+ --couple-name-fill-mid: var(--color-motif-accent);
+
+ --couple-name-fill-accent: color-mix(in srgb, var(--color-welcome-gold) 70%, var(--color-motif-deep));
+
+ /* Used on dark/photo backgrounds */
  --couple-name-fill-soft: var(--color-motif-soft);
 
 
  /* ==========================================
-  *  BACKGROUND — CIRCLE PATTERN
+  *  BACKGROUND — PEARL PATTERN
   *  Used by every plain-mode section (loader,
   *  envelope, hero, details, entourage, ...)
   *  via components/loader/PlainBubbles.
-  *  Light + blush pink, flat colors (no gradients).
+  *  Circles read as scattered pearls, gold and
+  *  a hint of rose red. Flat colors only.
   * ========================================== */
- 
- /* Flat base painted behind the circles — light blush */
+
+ /* Flat base painted behind the circles — pearl silver */
  --color-bg-pattern-base:
      color-mix(
          in srgb,
-         var(--color-romantic-blush) 30%,
+         var(--color-motif-silver) 45%,
          var(--color-motif-cream)
      );
- 
- /* Main circles — blush pink family */
- --color-bg-circle-deep: color-mix(in srgb, var(--color-romantic-peach) 40%, transparent);
- --color-bg-circle-mid: color-mix(in srgb, var(--color-romantic-blush) 55%, transparent);
- --color-bg-circle-light: color-mix(in srgb, white 55%, transparent);
- 
- /* Accent circles — a touch of other palette colors */
- --color-bg-circle-accent-1: color-mix(in srgb, var(--color-romantic-coral) 30%, transparent);
- --color-bg-circle-accent-2: color-mix(in srgb, var(--color-coastal-light) 40%, transparent);
- --color-bg-circle-accent-3: color-mix(in srgb, var(--color-coastal-sand) 60%, transparent);
- 
- /* Rose + soft peach circles scattered through the pattern */
- --color-bg-circle-rose: color-mix(in srgb, #D98A98 38%, transparent);
- --color-bg-circle-peach: color-mix(in srgb, #F6C3A5 50%, transparent);
- 
+
+ /* Main circles — pearl / silver family */
+ --color-bg-circle-deep: color-mix(in srgb, var(--color-coastal-light) 45%, transparent);
+ --color-bg-circle-mid: color-mix(in srgb, var(--color-motif-silver) 70%, transparent);
+ --color-bg-circle-light: color-mix(in srgb, white 60%, transparent);
+
+ /* Accent circles — gold + rose */
+ --color-bg-circle-accent-1: color-mix(in srgb, var(--color-romantic-coral) 14%, transparent);
+ --color-bg-circle-accent-2: color-mix(in srgb, var(--color-welcome-gold) 28%, transparent);
+ --color-bg-circle-accent-3: color-mix(in srgb, var(--color-coastal-sand) 70%, transparent);
+
+ /* Rose + gold circles scattered through the pattern */
+ --color-bg-circle-rose: color-mix(in srgb, var(--color-romantic-deep) 16%, transparent);
+ --color-bg-circle-peach: color-mix(in srgb, var(--color-romantic-blush) 50%, transparent);
+
  /* Text and divider lines sitting directly on the pattern */
  --color-on-pattern: var(--color-welcome-navy);
- --color-on-pattern-soft: var(--color-motif-teal);
+ --color-on-pattern-soft: var(--color-motif-deep);
  --color-on-pattern-glow: color-mix(in srgb, white 70%, transparent);
- --color-on-pattern-line: var(--color-romantic-coral);
- 
- 
+ --color-on-pattern-line: var(--color-welcome-gold);
+
+
  /* ==========================================
   *  HERO COUNTDOWN — fades up from the bottom
   *  (components/sections/hero.tsx, plain mode)
   * ========================================== */
- 
+
  /* Solid at the very bottom, fading to transparent upward */
  --color-countdown-fade: var(--color-coastal-deep);
- 
+
  /* Numbers + heading on the faded band */
  --color-countdown-text: var(--color-motif-soft);
- 
+
  /* Unit labels (Days, Hours, ...) */
- --color-countdown-label: var(--color-romantic-blush);
- 
- 
+ --color-countdown-label: var(--color-welcome-gold);
+
+
  /* ==========================================
-  *  ENVELOPE — NAVY FAMILY
+  *  ENVELOPE — LUXURY RED FAMILY
   *  The invitation envelope (components/loader/
   *  envelope-invite.css). Letter inside stays light.
   * ========================================== */
- 
+
  /* Main paper */
  --color-envelope-paper:
      color-mix(
          in srgb,
-         var(--color-motif-teal) 88%,
-         var(--color-motif-teal-medium)
+         var(--color-motif-deep) 88%,
+         var(--color-coastal-deep)
      );
- 
+
  /* Back panel / inside */
- --color-envelope-base: var(--color-motif-teal);
- 
+ --color-envelope-base: var(--color-motif-deep);
+
  /* Lit edges */
  --color-envelope-highlight:
      color-mix(
          in srgb,
-         var(--color-motif-teal-medium) 85%,
-         var(--color-motif-teal-light)
+         var(--color-motif-accent) 88%,
+         var(--color-welcome-gold)
      );
- 
+
  /* Flap folds */
  --color-envelope-fold:
      color-mix(
          in srgb,
-         var(--color-motif-teal) 62%,
+         var(--color-motif-deep) 72%,
          var(--color-coastal-deep)
      );
- 
+
  /* Shadows */
- --color-envelope-shadow: var(--color-coastal-deep);
- 
- /* Crease hairlines on the paper */
- --color-envelope-crease: color-mix(in srgb, var(--color-motif-soft) 22%, transparent);
+ --color-envelope-shadow:
+     color-mix(
+         in srgb,
+         var(--color-motif-deep) 45%,
+         var(--color-coastal-deep)
+     );
+
+ /* Crease hairlines on the paper — gold */
+ --color-envelope-crease: color-mix(in srgb, var(--color-welcome-gold) 30%, transparent);
 
 
  /* ==========================================
   *  OPTIONAL SEMANTIC COLORS
-  *  Use these when assigning colors to
-  *  specific UI components.
   * ========================================== */
- 
+
  /* Primary CTA */
- --color-primary: #1F3460;
- 
+ --color-primary: #7A0F1A;
+
  /* Primary CTA hover */
- --color-primary-hover: #16264A;
- 
+ --color-primary-hover: #5C0A13;
+
  /* Romantic CTA */
- --color-romantic: #E3A3AE;
- 
+ --color-romantic: #A3172A;
+
  /* Romantic hover */
- --color-romantic-hover: #D0899A;
- 
+ --color-romantic-hover: #7A0F1A;
+
  /* Soft highlight */
- --color-highlight: #EFBFC6;
- 
+ --color-highlight: #E8D6A0;
+
  /* Section accent */
- --color-section-accent: #4F6694;
- 
+ --color-section-accent: #C9A24A;
+
  /* Light section */
- --color-section-light: #B4C2DC;
- 
+ --color-section-light: #C7C9CE;
+
  /* Card background */
- --color-card: #FDFAFA;
- 
+ --color-card: #FBF9F4;
+
  /* Border */
- --color-border: #E9D9DC;
- 
+ --color-border: #E2DDD0;
+
  /* Dark text */
- --color-text-dark: #16264A;
- 
+ --color-text-dark: #0E0B0C;
+
  /* Muted text */
  --color-text-muted:
      color-mix(
          in srgb,
-         #16264A 60%,
+         #0E0B0C 60%,
          white
      );
+
 
 
  /* ==========================================
@@ -571,96 +534,26 @@
 
 
  /* ==========================================
-  *  COLOR USAGE GUIDE
-  * ========================================== */
- 
- /*
-    NAVY BLUE
-    #1F3460
-    Use for:
-    - Buttons
-    - Important headings
-    - Icons
-    - Navigation
-    - Strong text
-    - Primary UI elements
- 
- 
-    DEEP NAVY
-    #16264A
-    Use for:
-    - Hero couple names
-    - Main heading
-    - Dark overlays
-    - Strong contrast elements
- 
- 
-    DUSTY BLUE
-    #4F6694
-    Use for:
-    - Decorative leaves
-    - Lines
-    - Borders
-    - Secondary buttons
-    - Section accents
- 
- 
-    POWDER BLUE
-    #B4C2DC
-    Use for:
-    - Soft backgrounds
-    - Decorative circles
-    - Image overlays
-    - Subtle cards
- 
- 
-    BLUSH ROSE
-    #E3A3AE
-    Use for:
-    - Romantic script
-    - Floral elements
-    - Small highlights
-    - Important decorative details
- 
- 
-    DEEP BLUSH ROSE
-    #D0899A
-    Use sparingly for:
-    - Hover states
-    - Active states
-    - Small emphasis
- 
- 
-    PINK
-    #EFBFC6
-    Use for:
-    - Secondary decorative elements
-    - Small badges
-    - Accent backgrounds
-    - Romantic highlights
- 
- 
-    BLUSH PINK
-    #F6D3D8
-    Use for:
-    - Flowers
-    - Soft decorations
-    - Background shapes
- 
-    PINK SAND
-    #E9D9DC
-    Use for:
-    - Borders
-    - Paper texture
-    - Neutral decorative elements
- 
- 
-    IVORY
-    #FAF4F4
-    Use for:
-    - Main page background
-    - Linen sections
-    - Large negative spaces
+  *  COLOR USAGE GUIDE — DEBUT
+  * ==========================================
+    REGAL BLACK   #1A1416  (--color-motif-teal)
+      Headings, icons, navigation, strong text
+    DEEP BLACK    #0E0B0C  (--color-coastal-deep / --color-welcome-navy)
+      Hero name, dark overlays, countdown band, QR codes
+    OXBLOOD       #7A0F1A  (--color-motif-deep)
+      Buttons, hover/active states, small emphasis
+    ROSE RED      #A3172A  (--color-motif-accent)
+      Script lines, roses, highlights
+    ANTIQUE GOLD  #C9A24A  (--color-motif-medium / --color-welcome-gold)
+      Ornaments, dividers, seal, baroque sun details
+    PALE GOLD     #E8D6A0  (--color-motif-blush)
+      Soft decoration, badges
+    SILVER        #C7C9CE  (--color-motif-teal-light)
+      Pearls, subtle cards, borders
+    PEARL IVORY   #F4F1EB  (--color-motif-cream)
+      Page background, large negative space
+    PEARL WHITE   #FBF9F4  (--color-motif-soft)
+      Cards, light text on dark sections
  */
 
   /* ─────────────────────────────────────────────────────────── */
@@ -746,6 +639,26 @@ html {
   mask-position: center;
 }
 
+/* Celebrant name as script text — used when no lettering image is set
+   (components/name-lockup.tsx). Same fill as the image lockup above. */
+.couple-name-lockup.name-lockup--text {
+  aspect-ratio: auto !important;
+  height: auto !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-family: "CoupleAnastasia", "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: var(--name-lockup-size, clamp(3.4rem, 17vw, 6.75rem));
+  line-height: 1.2;
+  text-align: center;
+  padding: 0.12em 0.3em 0.18em;
+  white-space: nowrap;
+}
+
 /* Botanical decorations follow the motif (see --deco-filter). Matches corner
    decos and eucalyptus sprigs only — not the wax seal or couple illustration.
    The encoded variants cover images served through next/image. */
@@ -824,12 +737,12 @@ img[src*="%2Flovestorydeco%2F"] {
 
 /* Updated scrollbar color to primary */
 ::-webkit-scrollbar-thumb {
-  background: #AFC8E6;
+  background: var(--color-welcome-gold);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D8B0B0;
+  background: var(--color-motif-deep);
 }
 
 /* Shimmer animation for countdown cards */
@@ -912,9 +825,9 @@ img[src*="%2Flovestorydeco%2F"] {
   font-style: normal;
 }
 
-/* Countdown gradient text — blush pink */
+/* Countdown gradient text — pale gold to antique gold */
 .countdown-gradient-text * {
-  background: linear-gradient(180deg, #F6D3D8 0%, #E3A3AE 100%);
+  background: linear-gradient(180deg, var(--color-motif-blush) 0%, var(--color-welcome-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -923,19 +836,19 @@ img[src*="%2Flovestorydeco%2F"] {
 
 /* Wedding colors for Love Story section */
 .bg-wedding-brown {
-  background-color: #16264A;
+  background-color: var(--color-coastal-deep);
 }
 
 .bg-wedding-paper {
-  background-color: #FAF4F4;
+  background-color: var(--color-motif-cream);
 }
 
 .text-wedding-brown {
-  color: #16264A;
+  color: var(--color-coastal-deep);
 }
 
 .text-wedding-paper {
-  color: #FAF4F4;
+  color: var(--color-motif-cream);
 }
 
 /* Font utilities for Love Story section */
@@ -1279,4 +1192,13 @@ img[src*="%2Flovestorydeco%2F"] {
 }
 @media (prefers-reduced-motion: reduce) {
   .dash-pop, .dash-pop-badge { animation: none; }
+}
+
+/* Special characters inside chapter titles (components/StorySection.tsx → TitleText):
+   The Seasons has no punctuation glyphs, so these use Cinzel at a matching weight. */
+.story-title-special {
+  font-family: var(--font-cinzel), "Cinzel", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin: 0 0.04em;
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { celebrantName, fillCelebrant } from '@/lib/celebrant';
 import React, {
   useCallback,
   useEffect,
@@ -21,7 +22,34 @@ import { InviteParticles } from '@/components/loader/InviteParticles';
 import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
 import { PlainAtmosphere } from '@/components/loader/PlainAtmosphere';
 import { PlainBubbles } from '@/components/loader/PlainBubbles';
+import localFont from 'next/font/local';
+import { Lora, Playfair_Display } from 'next/font/google';
 import './envelope-invite.css';
+
+// Paper lettering — same faces as the loading screen and the home hero
+const theSeasons = localFont({
+  src: '../../Font/Fontspring-DEMO-theseasons-reg.otf',
+  display: 'swap',
+});
+const aboveTheBeyond = localFont({
+  src: '../../Font/above-the-beyond-script.otf',
+  display: 'swap',
+});
+// Lines under the envelope: italic countdown (Playfair) + italic tagline (Lora)
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  style: ['italic'],
+  display: 'swap',
+  variable: '--env-font-countdown',
+});
+const lora = Lora({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  style: ['italic'],
+  display: 'swap',
+  variable: '--env-font-tagline',
+});
 
 interface HeroProps {
   onOpen: () => void;
@@ -102,9 +130,9 @@ export const Hero: React.FC<HeroProps> = ({
   const [isExiting, setIsExiting] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
-  const groomName = siteConfig.couple.groomNickname;
-  const brideName = siteConfig.couple.brideNickname;
-  const coupleNames = `${groomName} & ${brideName}`;
+  const celebrant = celebrantName(siteConfig);
+  const hero = siteConfig.hero ?? defaultSiteConfig.hero;
+  const fill = (text: string) => fillCelebrant(text, siteConfig);
 
   const letterDateNumeric = useMemo(() => {
     const parsed = parseWeddingDate(siteConfig.ceremony.date ?? siteConfig.wedding.date);
@@ -123,6 +151,20 @@ export const Hero: React.FC<HeroProps> = ({
     const year = String(wedding.getFullYear()).slice(-2);
     return `${month} | ${day} | ${year}`;
   }, [siteConfig.ceremony.date, siteConfig.wedding.date]);
+
+  // Letter date: weekday above, then Mon · day · year (short month; the full date stays in the aria-label)
+  const letterDate = useMemo(() => {
+    const parsed = parseWeddingDate(siteConfig.ceremony.date ?? siteConfig.wedding.date);
+    return {
+      weekday: parsed.dayOfWeek,
+      month: parsed.month.charAt(0) + parsed.month.slice(1, 3).toLowerCase(),
+      day: String(parsed.day).padStart(2, '0'),
+      year: parsed.year,
+      label: `${parsed.dayOfWeek}, ${parsed.month} ${parsed.day}, ${parsed.year}`,
+    };
+  }, [siteConfig.ceremony.date, siteConfig.wedding.date]);
+
+  const monogram = siteConfig.celebrant?.monogram;
 
   const weddingDateGhost = useMemo(() => {
     const [month, day, year] = letterDateNumeric.split(' | ');
@@ -487,7 +529,7 @@ export const Hero: React.FC<HeroProps> = ({
 
   return (
     <motion.div
-      className={`env-invite-screen${isPlain ? ' env-invite-screen--plain' : ''}${isPlain && enterFromLoading && visible && !reduceMotion ? ' is-arriving' : ''} ${visible ? '' : 'is-hidden'}`}
+      className={`env-invite-screen ${playfair.variable} ${lora.variable}${isPlain ? ' env-invite-screen--plain' : ''}${isPlain && enterFromLoading && visible && !reduceMotion ? ' is-arriving' : ''} ${visible ? '' : 'is-hidden'}`}
       data-phase={isExiting ? 'exiting' : phase}
       aria-hidden={!visible}
       initial={false}
@@ -685,42 +727,60 @@ export const Hero: React.FC<HeroProps> = ({
                     }
                   >
                     <div className="env-invite-letter-frame" aria-hidden="true" />
-                    <div className="env-invite-letter-inner">
-                      {isPlain && plainInvite.ornament && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={plainInvite.ornament}
-                          alt=""
-                          aria-hidden="true"
-                          className="env-invite-letter-ornament"
-                        />
-                      )}
-                      <span className="env-invite-letter-label" aria-label={content.headline}>
-                        {content.headline.split(/\s+/).filter(Boolean).map((word, i) => (
-                          <span
-                            key={i}
-                            aria-hidden="true"
-                            className={
-                              SCRIPT_WORDS.has(word.toLowerCase())
-                                ? 'env-invite-letter-label__script'
-                                : 'env-invite-letter-label__word'
-                            }
-                          >
-                            {word}
-                          </span>
-                        ))}
-                      </span>
-                      <span className="env-invite-letter-date">{letterDateNumeric}</span>
-                      <span className="env-invite-letter-invited">{content.eyebrow}</span>
+                    {monogram && (
                       <div
-                        className="env-invite-letter-names couple-name-lockup"
-                        role="img"
-                        aria-label={coupleNames}
-                        style={{
-                          maskImage: `url("${content.coupleNameImage}")`,
-                          WebkitMaskImage: `url("${content.coupleNameImage}")`,
-                        }}
+                        className="env-invite-letter-watermark"
+                        aria-hidden="true"
+                        style={{ maskImage: `url("${monogram}")`, WebkitMaskImage: `url("${monogram}")` }}
                       />
+                    )}
+                    <div className="env-invite-letter-inner">
+                      <div className="env-invite-letter-top">
+                        {isPlain && plainInvite.ornament && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={plainInvite.ornament}
+                            alt=""
+                            aria-hidden="true"
+                            className="env-invite-letter-ornament"
+                          />
+                        )}
+                        <span className="env-invite-letter-label" aria-label={content.headline}>
+                          {content.headline.split(/\s+/).filter(Boolean).map((word, i) => (
+                            <span
+                              key={i}
+                              aria-hidden="true"
+                              className={
+                                SCRIPT_WORDS.has(word.toLowerCase())
+                                  ? 'env-invite-letter-label__script'
+                                  : 'env-invite-letter-label__word'
+                              }
+                            >
+                              {word}
+                            </span>
+                          ))}
+                        </span>
+                        <span className="env-invite-letter-divider" aria-hidden="true" />
+                      </div>
+                      <span className="env-invite-letter-title" role="img" aria-label={fill(hero.srTitle)}>
+                        <span className={`${theSeasons.className} env-invite-letter-title__main`}>
+                          {fill(hero.titleMain)}
+                        </span>
+                        <span className={`${aboveTheBeyond.className} env-invite-letter-title__script`}>
+                          {fill(hero.titleScript)}
+                        </span>
+                      </span>
+                      <div className="env-invite-letter-bottom">
+                        <span className="env-invite-letter-divider" aria-hidden="true" />
+                        <span className="env-invite-letter-date" role="img" aria-label={letterDate.label}>
+                          <span className="env-invite-letter-date__weekday">{letterDate.weekday}</span>
+                          <span className="env-invite-letter-date__row">
+                            <span className="env-invite-letter-date__side">{letterDate.month}</span>
+                            <span className="env-invite-letter-date__day">{letterDate.day}</span>
+                            <span className="env-invite-letter-date__side">{letterDate.year}</span>
+                          </span>
+                        </span>
+                      </div>
                     </div>
                   </motion.div>
 
@@ -732,7 +792,7 @@ export const Hero: React.FC<HeroProps> = ({
                             key={`mobile-${photo.side}-${photo.src}`}
                             side={photo.side}
                             src={photo.src}
-                            alt={photo.side === 'left' ? `${groomName} portrait` : `${brideName} portrait`}
+                            alt={`${celebrant} portrait`}
                             variants={
                               photo.side === 'left'
                                 ? mobileEnvelopePhotoLeftVariants
@@ -761,7 +821,7 @@ export const Hero: React.FC<HeroProps> = ({
                               key={`desktop-${photo.side}-${photo.src}`}
                               side={photo.side}
                               src={photo.src}
-                              alt={coupleNames}
+                              alt={celebrant}
                               variants={variantsBySide[photo.side]}
                               photoState={photoState}
                               liftedPhoto={liftedPhoto}

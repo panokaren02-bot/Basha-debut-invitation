@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { useEffect } from "react"
 import { Cinzel } from "next/font/google"
-import { sectionBackground } from "@/lib/section-background"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -26,13 +25,13 @@ export default function GalleryLayout({ children }: { children: React.ReactNode 
   }, [])
 
   return (
-    <div style={{ background: sectionBackground }}>
+    <div style={{ background: "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))" }}>
       <div
         className="sticky top-0 z-50 border-b backdrop-blur-md"
         style={{
-          backgroundColor: "color-mix(in srgb, #fffaf4 92%, transparent)",
+          backgroundColor: "color-mix(in srgb, var(--color-motif-deep) 82%, transparent)",
           borderColor: GOLD_BORDER,
-          boxShadow: "0 4px 18px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent)",
+          boxShadow: "0 4px 18px color-mix(in srgb, var(--color-coastal-deep) 40%, transparent)",
         }}
       >
         <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-3 sm:h-14 sm:px-6 lg:px-8">

@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useEffect, useState } from "react"
 import {
   Users,
@@ -119,8 +120,7 @@ export function DashboardSidebar({
     },
   ]
 
-  const groom = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const bride = siteConfig.couple.brideNickname || siteConfig.couple.bride
+  const celebrant = celebrantName(siteConfig)
   const weddingDate = normalizeWeddingDateString(siteConfig.wedding.date || siteConfig.ceremony?.date)
   const weddingDay = siteConfig.ceremony?.day || ""
   const weddingTime = siteConfig.ceremony?.time || siteConfig.wedding.time || ""
@@ -150,7 +150,7 @@ export function DashboardSidebar({
 
         {/* Names */}
         <h2 className={`${playfair.className} relative mt-1.5 truncate px-6 text-[1.3rem] font-semibold leading-tight text-dash-ink lg:px-0`}>
-          {groom} <span className="font-medium italic text-dash-accent">&amp;</span> {bride}
+          {celebrant}<span className="font-medium italic text-dash-accent">&rsquo;s</span> Debut
         </h2>
 
         {/* Divider */}

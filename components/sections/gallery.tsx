@@ -10,6 +10,9 @@ import { Cinzel } from "next/font/google"
 import { Section } from "@/components/section"
 import { sectionType } from "@/lib/section-typography"
 import { useSiteConfig } from "@/hooks/use-site-config"
+import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -28,50 +31,44 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
+// Red velvet vibe, same as My Story and /gallery: white + gold text on a red circle
+// pattern (circle + corner colors: components/sections/love-story-red.css)
 const C = {
-  title: "var(--color-welcome-navy)",
-  script: "var(--color-welcome-script)",
-  eyebrow: "var(--color-motif-accent)",
-  body: "var(--color-welcome-text)",
-  soft: "var(--color-welcome-text-soft)",
-  accent: "var(--color-motif-accent)",
+  title: "#fff",
+  script: "var(--color-welcome-gold)",
+  eyebrow: "var(--color-welcome-gold)",
+  body: "#fff",
+  soft: "var(--color-motif-blush)",
+  accent: "var(--color-welcome-gold)",
   deep: "var(--color-motif-deep)",
-  paper: "var(--color-welcome-bg-soft)",
+  paper: "var(--color-motif-deep)",
   light: "var(--color-motif-soft)",
 } as const
 
-const sectionBg = `
-  radial-gradient(760px 420px at 50% 0%, color-mix(in srgb, var(--color-motif-silver) 70%, transparent) 0%, transparent 65%),
-  radial-gradient(520px 360px at 0% 100%, color-mix(in srgb, var(--color-motif-blush) 35%, transparent) 0%, transparent 60%),
-  radial-gradient(520px 360px at 100% 100%, color-mix(in srgb, var(--color-motif-blush) 35%, transparent) 0%, transparent 60%),
-  linear-gradient(180deg, var(--color-welcome-bg-soft) 0%, var(--color-motif-cream) 100%)
-`.trim()
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
+
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
 
 const lineRight = {
-  background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-accent) 60%, transparent))",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold))",
 } as const
 const lineLeft = {
-  background: "linear-gradient(to left, transparent, color-mix(in srgb, var(--color-motif-accent) 60%, transparent))",
+  background: "linear-gradient(to left, transparent, var(--color-welcome-gold))",
 } as const
 
+// Photos sit bare on the pattern — no mat, border or inner line; just a soft drop shadow
 const frameStyle: React.CSSProperties = {
-  background: C.paper,
-  border: "1px solid color-mix(in srgb, var(--color-motif-medium) 70%, transparent)",
-  boxShadow: "0 14px 30px -18px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
-}
-
-const innerFrameStyle: React.CSSProperties = {
-  boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--color-motif-soft) 70%, transparent)",
+  boxShadow: "0 16px 32px -14px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)",
 }
 
 const badgeStyle: React.CSSProperties = {
-  backgroundColor: "color-mix(in srgb, var(--color-motif-deep) 75%, transparent)",
+  backgroundColor: "color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)",
   color: C.light,
 }
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 function DecoImg({ src, className }: { src: string; className: string }) {
   return (
@@ -112,7 +109,7 @@ function GalleryTitle({ title, subtitle }: { title: string; subtitle: string }) 
       <span
         aria-hidden
         className={`${theSeasons.className} block uppercase leading-[0.9] tracking-[0.04em] min-[400px]:tracking-[0.08em] sm:tracking-[0.12em] md:tracking-[0.14em]`}
-        style={{ fontSize: "var(--title-size)", color: C.title }}
+        style={{ fontSize: "var(--title-size)", color: C.title, textShadow: textLift }}
       >
         {title}
       </span>
@@ -122,7 +119,7 @@ function GalleryTitle({ title, subtitle }: { title: string; subtitle: string }) 
         style={{
           fontSize: "var(--script-size)",
           color: C.script,
-          textShadow: "0 1px 0 var(--color-motif-soft)",
+          textShadow: textLift,
         }}
       >
         {subtitle}
@@ -246,9 +243,10 @@ export function Gallery() {
 
   return (
     <div
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full`}
+      className={`gallery-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
+      <PlainBubbles />
       <Section
         id="gallery"
         className="relative z-10 overflow-hidden pt-14 pb-10 sm:pt-16 sm:pb-12 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"
@@ -276,7 +274,7 @@ export function Gallery() {
         <DiamondDivider />
         <p
           className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] uppercase min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-5 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
-          style={{ color: C.eyebrow }}
+          style={{ color: C.eyebrow, textShadow: textLift }}
         >
           {gallery.eyebrow}
         </p>
@@ -285,7 +283,7 @@ export function Gallery() {
         </div>
         <p
           className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${sectionType.textRelaxed}`}
-          style={{ color: C.body }}
+          style={{ color: C.body, textShadow: textLift }}
         >
           {gallery.description}
         </p>
@@ -295,7 +293,7 @@ export function Gallery() {
             <span
               className="flex h-7 w-7 items-center justify-center rounded-full sm:h-8 sm:w-8"
               style={{
-                border: "1px solid color-mix(in srgb, var(--color-motif-accent) 55%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--color-welcome-gold) 60%, transparent)",
                 background: C.paper,
               }}
             >
@@ -312,42 +310,44 @@ export function Gallery() {
             <div
               className="h-12 w-12 animate-spin rounded-full border-[3px]"
               style={{
-                borderColor: "color-mix(in srgb, var(--color-motif-accent) 25%, transparent)",
+                borderColor: "color-mix(in srgb, var(--color-welcome-gold) 25%, transparent)",
                 borderTopColor: C.accent,
               }}
             />
           </div>
         ) : (
           <>
-            {/* Mobile: swipeable sliding gallery (scroll-snap carousel) */}
+            {/* Mobile: swipeable sliding gallery (scroll-snap carousel).
+                Full-bleed (cancels the wrapper's px-6) with 11% side padding, so every
+                card — first and last included — snaps to the center with even margins
+                and the neighbours peek in on both sides. */}
             <div className="sm:hidden">
               <div
-                className="flex gap-3 overflow-x-auto px-1 pt-1 pb-4 snap-x snap-mandatory scroll-px-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="-mx-6 flex gap-3 overflow-x-auto px-[11%] pt-2 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 aria-label="Gallery carousel"
               >
                 {galleryItems.map((item, index) => (
                   <button
                     key={item.image + index}
                     type="button"
-                    className="group relative snap-center shrink-0 w-[80%] rounded-xl p-1.5 transition-transform duration-300 active:scale-[0.98]"
+                    className="group relative snap-center shrink-0 w-[78%] rounded-lg transition-transform duration-300 active:scale-[0.98]"
                     style={frameStyle}
                     onPointerDown={handleThumbPointerDown}
                     onPointerMove={handleThumbPointerMove}
                     onClick={() => openLightbox(item, index)}
                     aria-label={`Open image ${index + 1}`}
                   >
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
+                    <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
                       <Image
                         src={item.image}
                         alt={item.text || `Gallery image ${index + 1}`}
                         fill
-                        sizes="80vw"
+                        sizes="78vw"
                         className="object-cover"
                       />
-                      <div className="pointer-events-none absolute inset-0 rounded-lg" style={innerFrameStyle} />
                     </div>
 
-                    <div className="absolute top-3.5 right-3.5 rounded-full px-2 py-0.5 backdrop-blur-sm" style={badgeStyle}>
+                    <div className="absolute top-2 right-2 rounded-full px-2 py-0.5 backdrop-blur-sm" style={badgeStyle}>
                       <span className="text-[11px] font-medium tracking-wider">
                         {index + 1}/{galleryItems.length}
                       </span>
@@ -358,7 +358,7 @@ export function Gallery() {
 
               <p
                 className={`${cinzel.className} mt-1 text-center tracking-[0.2em] uppercase ${sectionType.label}`}
-                style={{ color: C.eyebrow }}
+                style={{ color: C.eyebrow, textShadow: textLift }}
               >
                 Swipe to explore
               </p>
@@ -370,7 +370,7 @@ export function Gallery() {
                 <button
                   key={item.image + index}
                   type="button"
-                  className={`group relative w-full rounded-xl p-1.5 transition-all duration-300 hover:-translate-y-1 ${index % 2 === 1 ? "lg:translate-y-8 lg:hover:translate-y-7" : ""}`}
+                  className={`group relative w-full rounded-lg transition-all duration-300 hover:-translate-y-1 ${index % 2 === 1 ? "lg:translate-y-8 lg:hover:translate-y-7" : ""}`}
                   style={frameStyle}
                   onPointerDown={handleThumbPointerDown}
                   onPointerMove={handleThumbPointerMove}
@@ -389,14 +389,13 @@ export function Gallery() {
                       className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                       style={{
                         background:
-                          "linear-gradient(to top, color-mix(in srgb, var(--color-welcome-navy) 55%, transparent), transparent 55%)",
+                          "linear-gradient(to top, color-mix(in srgb, var(--color-motif-deep) 60%, transparent), transparent 55%)",
                       }}
                     />
-                    <div className="pointer-events-none absolute inset-0 rounded-lg" style={innerFrameStyle} />
                   </div>
 
                   <div
-                    className="absolute top-3.5 right-3.5 rounded-full px-2 py-0.5 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
+                    className="absolute top-2 right-2 rounded-full px-2 py-0.5 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
                     style={badgeStyle}
                   >
                     <span className="text-[11px] font-medium tracking-wider">
@@ -412,10 +411,10 @@ export function Gallery() {
                 href={gallery.buttonHref}
                 className={`${cinzel.className} inline-flex items-center justify-center rounded-full border px-8 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] transition-all duration-300 hover:scale-[1.03] hover:brightness-110 active:scale-[0.98] sm:text-[0.6875rem] sm:tracking-[0.22em]`}
                 style={{
-                  background: "var(--color-welcome-green)",
-                  borderColor: "color-mix(in srgb, var(--color-motif-medium) 70%, transparent)",
-                  color: C.light,
-                  boxShadow: "0 10px 22px -10px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+                  background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
+                  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 70%, transparent)",
+                  color: "#fff",
+                  boxShadow: "0 12px 26px -10px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)",
                 }}
               >
                 {gallery.buttonText}
@@ -424,7 +423,7 @@ export function Gallery() {
 
             <p
               className={`font-goudy-italic mx-auto mt-6 max-w-lg px-2 text-center leading-relaxed sm:mt-8 ${sectionType.textRelaxed}`}
-              style={{ color: C.soft }}
+              style={{ color: C.soft, textShadow: textLift }}
             >
               {gallery.footnote}
             </p>

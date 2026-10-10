@@ -1,0 +1,726 @@
+/* ==========================================================================
+   Loader — "red velvet soirée" poster look (components/loader/LoadingScreen.tsx)
+   Deep red velvet, ivory high-contrast serif, tracked sans labels, gold + pearls.
+   Loaded after loading-screen.css; every rule is scoped to .loading-screen.ls-velvet
+   so it wins over the older plain / photo styles without touching them.
+   Colors come from the palette in app/globals.css.
+   ========================================================================== */
+
+.loading-screen.ls-velvet {
+  /* Velvet + type tokens */
+  --lv-velvet-deep: color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep));
+  --lv-velvet: var(--color-motif-deep);
+  --lv-velvet-sheen: color-mix(in srgb, var(--color-motif-accent) 80%, white 6%);
+  --lv-ivory: color-mix(in srgb, var(--color-motif-soft) 92%, var(--color-welcome-gold));
+  --lv-ivory-soft: color-mix(in srgb, var(--color-motif-soft) 72%, transparent);
+  --lv-gold: var(--color-welcome-gold);
+  --lv-gold-pale: var(--color-motif-blush);
+  --lv-line: color-mix(in srgb, var(--color-welcome-gold) 55%, transparent);
+  --lv-display: var(--ls-font-display), "Bodoni Moda", Didot, "Times New Roman", serif;
+  --lv-sans: var(--ls-font-sans), "Montserrat", "Helvetica Neue", Arial, sans-serif;
+
+  /* Shared loader tokens (photo mode reads these) */
+  --ls-shadow: var(--color-coastal-deep);
+  --ls-type-light: var(--lv-ivory);
+
+  /* Plain-mode headline + date palette → ivory, champagne, gold */
+  --ls-c-teal: var(--lv-gold-pale);
+  --ls-c-aqua: var(--lv-gold);
+  --ls-c-peach: var(--lv-gold-pale);
+  --ls-c-coral: var(--lv-ivory);
+  --ls-c-deep: var(--lv-ivory);
+  --ls-c-sky: var(--color-motif-silver);
+  --ls-date-line: var(--lv-line);
+
+  /* Text lift over the photo backdrop */
+  --lv-text-shadow: 0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent),
+    0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent);
+}
+
+/* ---- Velvet backdrop (plain mode) ---------------------------------------- */
+
+.ls-velvet-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 70% at 78% 18%, color-mix(in srgb, var(--lv-velvet-sheen) 55%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 60% at 10% 85%, color-mix(in srgb, var(--lv-velvet-sheen) 35%, transparent) 0%, transparent 60%),
+    linear-gradient(160deg, var(--lv-velvet) 0%, var(--lv-velvet-deep) 100%);
+}
+
+/* Soft diagonal folds of light, slowly breathing */
+.ls-velvet-bg__folds {
+  position: absolute;
+  inset: -20%;
+  background:
+    linear-gradient(118deg, transparent 18%, color-mix(in srgb, white 9%, transparent) 27%, transparent 36%),
+    linear-gradient(118deg, transparent 48%, color-mix(in srgb, black 30%, transparent) 58%, transparent 68%),
+    linear-gradient(64deg, transparent 58%, color-mix(in srgb, white 7%, transparent) 66%, transparent 74%),
+    linear-gradient(64deg, transparent 8%, color-mix(in srgb, black 26%, transparent) 20%, transparent 32%);
+  filter: blur(14px);
+  animation: lv-folds 16s ease-in-out infinite alternate;
+}
+
+@keyframes lv-folds {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(2%, 1.5%, 0) scale(1.05); }
+}
+
+/* Gold baroque sun (the monogram) glowing behind the name */
+.ls-velvet-bg__sun {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: min(118vw, 34rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(140deg, var(--lv-gold-pale), var(--lv-gold) 50%, color-mix(in srgb, var(--lv-gold) 50%, black));
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  opacity: 0.16;
+  animation: lv-sun-turn 120s linear infinite;
+}
+
+@keyframes lv-sun-turn {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Draped pearl strands */
+.ls-velvet-pearls {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 3px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent));
+}
+
+.ls-velvet-pearls__strand {
+  opacity: 0.85;
+  animation: lv-strand-sway 9s ease-in-out infinite alternate;
+  transform-origin: 50% 0;
+}
+
+.ls-velvet-pearls__strand--1 {
+  opacity: 0.55;
+  animation-duration: 11s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes lv-strand-sway {
+  from { transform: translateY(0) rotate(-0.6deg); }
+  to { transform: translateY(6px) rotate(0.6deg); }
+}
+
+.ls-velvet-bg__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(85% 70% at 50% 45%, transparent 40%, color-mix(in srgb, var(--color-coastal-deep) 70%, transparent) 100%);
+}
+
+/* Motes become pearls, gold dust and rose petals */
+.loading-screen.ls-velvet .ls-plain-motes {
+  z-index: 1;
+}
+
+.loading-screen.ls-velvet .ls-plain-mote {
+  background: radial-gradient(circle at 35% 30%, white 0%, var(--c) 60%, color-mix(in srgb, var(--c) 60%, black) 100%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c) 45%, transparent);
+}
+
+.loading-screen.ls-velvet .ls-plain-mote--petal {
+  background: linear-gradient(135deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%);
+  box-shadow: none;
+}
+
+/* ---- Photo mode: motif-tinted gradient over the photos ----------------- */
+
+/* Wine at the top and bottom where the text sits, thinner in the middle so the photos still show */
+.loading-screen.ls-velvet .env-invite-readability-scrim {
+  background:
+    radial-gradient(80% 45% at 50% 46%, color-mix(in srgb, var(--color-coastal-deep) 28%, transparent) 0%, transparent 75%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--lv-velvet-deep) 78%, transparent) 0%,
+      color-mix(in srgb, var(--lv-velvet) 42%, transparent) 24%,
+      color-mix(in srgb, var(--lv-velvet) 22%, transparent) 50%,
+      color-mix(in srgb, var(--lv-velvet) 42%, transparent) 72%,
+      color-mix(in srgb, var(--lv-velvet-deep) 84%, transparent) 100%
+    );
+}
+
+/* ---- The poster ---------------------------------------------------------- */
+
+/* No card: the content sits straight on the velvet inside a fine gold frame */
+.loading-screen.ls-velvet .loading-screen__save-date {
+  position: relative;
+  z-index: 3;
+  width: min(100vw, 30rem);
+  height: 100%;
+  margin: 0 auto;
+  padding: max(0.9rem, env(safe-area-inset-top, 0px)) 0 max(0.9rem, env(safe-area-inset-bottom, 0px));
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  animation: lv-poster-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.loading-screen.ls-velvet .loading-screen__save-date::before,
+.loading-screen.ls-velvet .loading-screen__save-date::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 0;
+  border: 1px solid var(--lv-line);
+}
+
+.loading-screen.ls-velvet .loading-screen__save-date::before {
+  inset: max(0.7rem, env(safe-area-inset-top, 0px)) 0.7rem max(0.7rem, env(safe-area-inset-bottom, 0px));
+}
+
+.loading-screen.ls-velvet .loading-screen__save-date::after {
+  inset: calc(max(0.7rem, env(safe-area-inset-top, 0px)) + 5px) calc(0.7rem + 5px) calc(max(0.7rem, env(safe-area-inset-bottom, 0px)) + 5px);
+  border-color: color-mix(in srgb, var(--lv-gold) 25%, transparent);
+}
+
+@keyframes lv-poster-in {
+  from { opacity: 0; transform: scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Top bar: monogram + "The Debut" left, venue right */
+.ls-velvet-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.15rem 1.6rem 0;
+  font-family: var(--lv-sans);
+  font-size: clamp(0.5rem, 2.2vw, 0.62rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--lv-ivory);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.ls-velvet-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--lv-ivory);
+}
+
+.ls-velvet-topbar__mark {
+  display: inline-block;
+  width: 1.9em;
+  height: 1.9em;
+  background: linear-gradient(140deg, var(--lv-gold-pale), var(--lv-gold));
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.ls-velvet-topbar__right {
+  text-align: right;
+}
+
+/* "SAVE the DATE": engraved Cinzel capitals with a script "the", in white + champagne */
+.loading-screen.ls-velvet .ls-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 0.18em;
+  margin: 0;
+  font-family: var(--font-cinzel, "Cinzel", serif);
+  font-size: clamp(1.85rem, 8.4vw, 2.9rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  /* gradient-filled glyphs: lift with drop-shadow, not text-shadow */
+  text-shadow: none;
+  perspective: 600px;
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent))
+    drop-shadow(0 4px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent));
+}
+
+.loading-screen.ls-velvet .ls-headline__letter {
+  background: linear-gradient(180deg, #fff 0%, var(--lv-ivory) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: none;
+  animation-name: lv-letter-rise;
+}
+
+@keyframes lv-letter-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0.55em) rotateX(-75deg) scale(0.9);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.loading-screen.ls-velvet .ls-headline__script {
+  background: linear-gradient(100deg, #fff 0%, var(--lv-gold-pale) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Countdown under the headline */
+.loading-screen.ls-velvet .loading-screen__std-kicker {
+  margin: 0.55rem 0 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  font-family: var(--lv-display);
+  font-style: italic;
+  font-size: clamp(0.88rem, 3.8vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--lv-gold-pale);
+  text-shadow: var(--lv-text-shadow);
+}
+
+/* Lines around the name */
+.loading-screen.ls-velvet .loading-screen__plain-line {
+  display: block;
+  margin: 0;
+  padding: 0 2rem;
+  text-align: center;
+  font-family: var(--lv-display);
+  font-style: italic;
+  font-size: clamp(0.95rem, 3.9vw, 1.12rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+  text-shadow: var(--lv-text-shadow);
+}
+
+/* Line above the name: pushed down toward the middle, with room before the name */
+.loading-screen.ls-velvet .loading-screen__plain-line--above {
+  margin-top: clamp(1.25rem, 6vh, 3rem);
+  margin-bottom: clamp(1.75rem, 5vh, 2.75rem);
+}
+
+/* The celebrant's name — the big poster title */
+.loading-screen.ls-velvet .loading-screen__std-names-slot {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.75rem 0.2rem;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-names-slot::before {
+  display: none;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-names-slot {
+  justify-content: center;
+  text-align: center;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-names.name-lockup--text {
+  width: max-content;
+  max-width: none;
+  margin: 0 auto;
+  text-align: center;
+  font-family: var(--lv-display);
+  font-weight: 500;
+  font-size: clamp(2.8rem, 15vw, 5.4rem);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  /* left padding = letter-spacing, balancing the trailing space after the last letter */
+  padding: 0.08em 0 0.06em 0.06em;
+  background: linear-gradient(180deg, #fff 0%, #fffdf8 40%, var(--lv-ivory) 70%, var(--lv-gold-pale) 100%);
+  filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--ls-shadow) 55%, transparent))
+    drop-shadow(0 10px 24px color-mix(in srgb, var(--ls-shadow) 45%, transparent));
+}
+
+/* Name + "turns eighteen": identical to the home hero (components/sections/hero.tsx).
+   Fonts, sizes, tracking and overlap come from the same classes in LoadingScreen.tsx;
+   colors + shadows match .home-hero--photos .home-hero-title-* in loading-screen.css. */
+.ls-hero-title {
+  margin: 0;
+  font-weight: 400;
+}
+
+.ls-hero-title__main {
+  color: #fff;
+  text-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-motif-soft) 35%, transparent),
+    0 2px 18px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent),
+    0 12px 36px color-mix(in srgb, var(--color-welcome-navy) 40%, transparent);
+}
+
+.ls-hero-title__script {
+  color: var(--color-welcome-gold);
+  text-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-motif-soft) 28%, transparent),
+    0 4px 18px color-mix(in srgb, var(--color-welcome-navy) 50%, transparent),
+    0 0 28px color-mix(in srgb, var(--color-welcome-gold) 45%, transparent);
+}
+
+/* Lettering image (if one is set in site.ts) */
+.loading-screen.ls-velvet .loading-screen__std-names:not(.name-lockup--text) {
+  background: linear-gradient(180deg, #fff 0%, var(--lv-ivory) 60%, var(--lv-gold-pale) 100%);
+}
+
+/* ---- Date (same layout, poster colors) ---------------------------------- */
+
+.loading-screen.ls-velvet .ls-silk-date {
+  padding-top: 0.5rem;
+}
+
+.loading-screen.ls-velvet .ls-silk-date__weekday,
+.loading-screen.ls-velvet .ls-silk-date__side {
+  font-family: var(--lv-sans);
+  font-weight: 600;
+  color: var(--lv-ivory);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.loading-screen.ls-velvet .ls-silk-date__day {
+  font-family: var(--lv-display);
+  font-weight: 500;
+  color: var(--lv-ivory);
+  filter: drop-shadow(0 4px 14px color-mix(in srgb, var(--ls-shadow) 55%, transparent));
+}
+
+.loading-screen.ls-velvet .ls-silk-date__digit-inner {
+  background: linear-gradient(180deg, #fff 0%, var(--lv-ivory) 55%, var(--lv-gold-pale) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Photo mode date cards: sit a little lower, under the name */
+.loading-screen.ls-velvet .loading-screen__std-boxes {
+  margin-top: clamp(2rem, 8vh, 4rem);
+}
+
+/* Date card entrance: rises out of a soft blur while a curtain opens from the
+   bottom, the photo settles from a slow zoom, a light sheen glides across,
+   then the number and label fade up last. Each card waits --ls-box-delay
+   (set per card in LoadingScreen.tsx) from first paint. */
+.loading-screen.ls-velvet .loading-screen__std-box {
+  opacity: 0;
+  animation: lv-box-in 1.8s cubic-bezier(0.16, 1, 0.3, 1) var(--ls-box-delay, 0ms) both;
+}
+
+@keyframes lv-box-in {
+  0% {
+    opacity: 0;
+    transform: translateY(34px) scale(0.965);
+    filter: blur(10px);
+    clip-path: inset(100% 0 0 0 round 0.5rem);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: inset(0 0 0 0 round 0.5rem);
+  }
+}
+
+.loading-screen.ls-velvet .loading-screen__std-box-img {
+  animation: lv-box-img 3.2s cubic-bezier(0.16, 1, 0.3, 1) var(--ls-box-delay, 0ms) both;
+}
+
+@keyframes lv-box-img {
+  from { transform: scale(1.22); }
+  to { transform: scale(1.04); }
+}
+
+/* One-time light sheen */
+.loading-screen.ls-velvet .loading-screen__std-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    color-mix(in srgb, var(--lv-gold-pale) 35%, transparent) 46%,
+    color-mix(in srgb, white 45%, transparent) 50%,
+    color-mix(in srgb, var(--lv-gold-pale) 35%, transparent) 54%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: lv-box-sheen 1.6s cubic-bezier(0.45, 0, 0.25, 1) calc(var(--ls-box-delay, 0ms) + 900ms) both;
+}
+
+@keyframes lv-box-sheen {
+  0% { transform: translateX(-120%); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+
+.loading-screen.ls-velvet .loading-screen__std-box-caption {
+  z-index: 3;
+  animation: lv-box-caption 1.2s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--ls-box-delay, 0ms) + 700ms) both;
+}
+
+@keyframes lv-box-caption {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.loading-screen.ls-velvet.is-reduced-motion .loading-screen__std-box,
+.loading-screen.ls-velvet.is-reduced-motion .loading-screen__std-box-img,
+.loading-screen.ls-velvet.is-reduced-motion .loading-screen__std-box-caption {
+  animation: none;
+  opacity: 1;
+}
+
+.loading-screen.ls-velvet.is-reduced-motion .loading-screen__std-box::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-screen.ls-velvet .loading-screen__std-box,
+  .loading-screen.ls-velvet .loading-screen__std-box-img,
+  .loading-screen.ls-velvet .loading-screen__std-box-caption {
+    animation: none;
+    opacity: 1;
+  }
+  .loading-screen.ls-velvet .loading-screen__std-box::before {
+    display: none;
+  }
+}
+
+/* Photo mode date cards: gold hairline + serif numbers */
+.loading-screen.ls-velvet .loading-screen__std-box {
+  border-color: var(--lv-line);
+  border-radius: 0.5rem;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-box-num {
+  font-family: var(--lv-display);
+  color: #fff;
+  text-shadow: var(--lv-text-shadow);
+}
+
+.loading-screen.ls-velvet .loading-screen__std-box-label {
+  font-family: var(--lv-sans);
+  font-weight: 600;
+  color: var(--lv-gold-pale);
+  text-shadow: var(--lv-text-shadow);
+}
+
+/* ---- Footer: highlights, details, progress ------------------------------ */
+
+.loading-screen.ls-velvet .loading-screen__std-footer {
+  margin-top: auto;
+  padding: 0 1.6rem 1.35rem;
+  text-align: center;
+}
+
+.ls-velvet-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 0.9rem;
+}
+
+.ls-velvet-highlights__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ls-velvet-highlights__item:first-child {
+  text-align: left;
+}
+
+.ls-velvet-highlights__item:last-child {
+  text-align: right;
+}
+
+.ls-velvet-highlights__label {
+  font-family: var(--lv-sans);
+  font-size: clamp(0.52rem, 2.3vw, 0.64rem);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lv-ivory);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.ls-velvet-highlights__text {
+  font-family: var(--lv-sans);
+  font-size: clamp(0.52rem, 2.2vw, 0.62rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lv-ivory);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.ls-velvet-details {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  align-items: end;
+  gap: 0.75rem;
+  width: 100%;
+  margin: 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--lv-line);
+}
+
+.ls-velvet-details__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.ls-velvet-details__item dt {
+  font-family: var(--lv-display);
+  font-style: italic;
+  font-size: clamp(0.66rem, 2.8vw, 0.78rem);
+  color: var(--lv-gold-pale);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.ls-velvet-details__item dd {
+  margin: 0;
+  font-family: var(--lv-sans);
+  font-size: clamp(0.5rem, 2.2vw, 0.62rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  color: var(--lv-ivory);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.loading-screen.ls-velvet .loading-screen__std-rule {
+  width: 3rem;
+  margin: 0.85rem auto 0.55rem;
+  background: linear-gradient(90deg, transparent, var(--lv-gold), transparent);
+}
+
+.loading-screen.ls-velvet .loading-screen__std-rule::after {
+  display: none;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-status {
+  width: 100%;
+  margin: 0 auto 0.5rem;
+  padding-left: 0.3em;
+  text-align: center;
+  font-family: var(--lv-sans);
+  font-size: clamp(0.5rem, 2.2vw, 0.6rem);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--lv-gold-pale);
+  text-shadow: var(--lv-text-shadow);
+}
+
+.loading-screen.ls-velvet [role="progressbar"] {
+  display: flex;
+  justify-content: center;
+  width: min(60%, 14rem);
+  margin: 0 auto;
+}
+
+.loading-screen.ls-velvet .loading-screen__std-track {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  overflow: visible;
+  background: color-mix(in srgb, var(--lv-ivory) 22%, transparent);
+}
+
+.loading-screen.ls-velvet .loading-screen__std-bar {
+  background: linear-gradient(90deg, var(--lv-gold), var(--lv-gold-pale), var(--lv-ivory));
+}
+
+.loading-screen.ls-velvet .ls-plain-progress-glow {
+  width: 7px;
+  height: 7px;
+  background: radial-gradient(circle at 35% 30%, white, var(--lv-ivory) 55%, var(--color-motif-teal-light));
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--lv-gold-pale) 60%, transparent);
+}
+
+/* ---- Small screens: keep everything on one screen ----------------------- */
+
+@media (max-height: 760px) {
+  .ls-velvet-highlights {
+    display: none;
+  }
+}
+
+@media (max-height: 660px) {
+  .loading-screen.ls-velvet .loading-screen__plain-line {
+    display: none;
+  }
+  .loading-screen.ls-velvet .loading-screen__std-names.name-lockup--text {
+    font-size: clamp(2.4rem, 12.5vw, 3.8rem);
+  }
+}
+
+/* ---- Reduced motion ----------------------------------------------------- */
+
+.loading-screen.ls-velvet.is-reduced-motion .ls-headline__letter,
+.loading-screen.ls-velvet.is-reduced-motion .ls-headline__script {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  clip-path: none;
+}
+
+.loading-screen.ls-velvet.is-reduced-motion .ls-velvet-bg__folds,
+.loading-screen.ls-velvet.is-reduced-motion .ls-velvet-bg__sun,
+.loading-screen.ls-velvet.is-reduced-motion .ls-velvet-pearls__strand,
+.loading-screen.ls-velvet.is-reduced-motion .loading-screen__save-date {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-velvet-bg__folds,
+  .ls-velvet-bg__sun,
+  .ls-velvet-pearls__strand,
+  .loading-screen.ls-velvet .loading-screen__save-date {
+    animation: none;
+  }
+}
+
+/* Name + date float in the middle, between the headline and the footer */
+.loading-screen.ls-velvet .loading-screen__save-date > header {
+  margin-bottom: auto;
+}

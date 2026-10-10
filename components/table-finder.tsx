@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import Link from "next/link"
 import {
@@ -375,8 +376,7 @@ const howItWorks = [
 export function TableFinder() {
   const siteConfig = useSiteConfig()
   const tfDecos = siteConfig.tableFinder.decos
-  const groomName = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const brideName = siteConfig.couple.brideNickname || siteConfig.couple.bride
+  const celebrant = celebrantName(siteConfig)
 
   const [entries, setEntries] = useState<SeatEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -489,19 +489,7 @@ export function TableFinder() {
             className={`${cinzel.className} ${sectionType.label} font-semibold uppercase leading-normal tracking-[0.18em] min-[400px]:tracking-[0.28em] sm:tracking-[0.36em]`}
             style={{ color: GOLD }}
           >
-            {groomName}
-            <span
-              className={`${aboveTheBeyond.className} mx-1 inline-block normal-case tracking-normal sm:mx-2`}
-              style={{
-                fontSize: "1.35em",
-                color: SCRIPT,
-                verticalAlign: "middle",
-              }}
-              aria-hidden
-            >
-              &
-            </span>
-            {brideName}
+            {celebrant}&rsquo;s Debut
           </p>
 
           <h1

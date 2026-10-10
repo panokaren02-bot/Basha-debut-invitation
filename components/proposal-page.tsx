@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import {
   useState,
   useEffect,
@@ -205,23 +206,18 @@ function SmallCaps({
   )
 }
 
-/** "JV & Jemiree" in The Seasons with a script "&". */
+/** The celebrant's name in The Seasons, with a script "turns eighteen" line. */
 function CoupleNamesText({ className = "" }: { className?: string }) {
   const siteConfig = useSiteConfig()
-  const groom = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const bride = siteConfig.couple.brideNickname || siteConfig.couple.bride
   return (
     <p className={`${theSeasons.className} uppercase leading-snug tracking-[0.12em] ${className}`} style={{ color: INK }}>
-      {groom}
+      {celebrantName(siteConfig)}
       <span
-        className={`${aboveTheBeyond.className} mx-2 inline-block text-[1.25em] normal-case tracking-normal`}
+        className={`${aboveTheBeyond.className} block text-[0.9em] normal-case tracking-normal`}
         style={{ color: SCRIPT_GREEN }}
-        aria-hidden
       >
-        &
+        {siteConfig.footer.nameLine}
       </span>
-      <span className="sr-only">and</span>
-      {bride}
     </p>
   )
 }
@@ -387,8 +383,7 @@ function DateLockup() {
 function CardHeader() {
   const siteConfig = useSiteConfig()
   const { ornament, labels, coupleNameImage, nameDecos, showDate } = siteConfig.proposal
-  const groom = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const bride = siteConfig.couple.brideNickname || siteConfig.couple.bride
+  const celebrant = celebrantName(siteConfig)
   const sprig = "pointer-events-none absolute top-1/2 h-auto w-12 -translate-y-1/2 select-none opacity-90 sm:w-20"
 
   return (
@@ -414,7 +409,7 @@ function CardHeader() {
           <img src={nameDecos.right} alt="" aria-hidden className={`${sprig} right-0`} />
         ) : null}
         {coupleNameImage ? (
-          <CoupleNameLockup src={coupleNameImage} alt={`${groom} and ${bride}`} />
+          <CoupleNameLockup src={coupleNameImage} alt={celebrant} />
         ) : (
           <CoupleNamesText className="text-[clamp(1.3rem,5vw,1.8rem)]" />
         )}
@@ -725,14 +720,13 @@ function ProposalPageInner({ role }: ProposalPageProps) {
   const copy = siteConfig.proposal.copy[copyKey]
   const confirmedDisplayName = (inviteeFromLink || preferredName).trim()
 
-  const groom = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const bride = siteConfig.couple.brideNickname || siteConfig.couple.bride
   const fill = (text: string) =>
-    text
-      .split("{name}").join(confirmedDisplayName || "Friend")
-      .split("{role}").join(role.title)
-      .split("{groom}").join(groom)
-      .split("{bride}").join(bride)
+    fillCelebrant(
+      text
+        .split("{name}").join(confirmedDisplayName || "Friend")
+        .split("{role}").join(role.title),
+      siteConfig,
+    )
 
   // Playful roles (bearers, flower girl) read in Playfair; the rest in Goudy italic
   const bodyClass = isPlayful(copyKey)

@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import React from "react"
 import { useState, useEffect, useMemo, useRef } from "react"
 import localFont from "next/font/local"
@@ -10,6 +11,8 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
 import { fetchInvitationList, readCachedInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -28,39 +31,44 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-const PAPER = "var(--color-welcome-bg-soft)"
+// Red velvet vibe (same as My Story, Gallery, Event Details): white + gold text on the
+// red circle pattern; the arched name card stays ivory paper with wine + gold ink.
+// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
+const PAPER =
+  "radial-gradient(120% 40% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)"
 const ACCENT = "var(--color-motif-accent)"
-const NAVY = "var(--color-welcome-navy)"
-const SCRIPT = "var(--color-welcome-script)"
-const BODY = "var(--color-welcome-text)"
-const HAIRLINE = "color-mix(in srgb, var(--color-motif-medium) 60%, transparent)"
+const NAVY = "var(--color-motif-deep)" // headings + names on the card: wine
+const SCRIPT = GOLD_INK // role titles on the card
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 88%, var(--color-motif-deep))"
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)"
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+
+// Text sitting directly on the red pattern
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: GOLD, textShadow: textLift } as const
 
 const onBgLineStyle = {
-  background: "var(--color-on-pattern-line)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const dividerLineStyle = {
-  background: "linear-gradient(to right, transparent, var(--color-motif-medium), transparent)",
+  background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
 const cardStyle = {
   background: PAPER,
   boxShadow:
-    "0 26px 56px -30px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
+    "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 const palette = {
   body: BODY,
@@ -80,9 +88,9 @@ function DecoImg({ src, className }: { src: string; className: string }) {
 function OutsideDivider() {
   return (
     <div className="flex items-center justify-center gap-2">
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ background: "var(--color-on-pattern-line)" }} aria-hidden />
-      <span className="h-px w-10 sm:w-16" style={{ background: "var(--color-on-pattern-line)" }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
+      <span className="h-1.5 w-1.5 rotate-45" style={{ background: GOLD }} aria-hidden />
+      <span className="h-px w-10 sm:w-16" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
     </div>
   )
 }
@@ -221,7 +229,7 @@ function EntourageTitle({ title, subtitle }: { title: string; subtitle: string }
         className={`${aboveTheBeyond.className} relative z-10 mx-auto mt-1.5 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2 sm:leading-[0.9]`}
         style={{
           fontSize: "var(--script-size)",
-          ...onBg,
+          ...onBgGold,
         }}
       >
         {subtitle}
@@ -288,7 +296,9 @@ const ct = {
   bodyLg: sectionType.subheader,
 } as const
 
-const ROLE_CATEGORY_ORDER = [
+// Template (wedding) categories. A debut's own categories come first from
+// content/site.ts → entourage.categoryOrder (see Entourage below).
+const TEMPLATE_CATEGORY_ORDER = [
   "OFFICIATING MINISTER",
   "The Couple",
   "Parents of the Groom",
@@ -469,8 +479,11 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
   const siteConfig = useSiteConfig()
   const content = siteConfig.entourage
   const { decos } = content
-  const groomName = siteConfig.couple.groom
-  const brideName = siteConfig.couple.bride
+  const celebrant = siteConfig.celebrant?.fullName || celebrantName(siteConfig)
+  const ROLE_CATEGORY_ORDER = useMemo(
+    () => [...(content.categoryOrder ?? []), ...TEMPLATE_CATEGORY_ORDER.filter((c) => !(content.categoryOrder ?? []).includes(c))],
+    [content.categoryOrder],
+  )
   const [entourage, setEntourage] = useState<EntourageMember[]>([])
   const [sponsors, setSponsors] = useState<PrincipalSponsor[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -638,7 +651,7 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
       >
         <div
           className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 rounded-md"
-          style={{ background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-silver) 70%, transparent), transparent)" }}
+          style={{ background: "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-motif-blush) 45%, transparent), transparent)" }}
         />
         <p
           className={`${theSeasons.className} relative ${textAlign} transition-all duration-300 max-w-full break-words`}
@@ -749,10 +762,10 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
   return (
     <div
       ref={sectionRef}
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the hero */}
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <Section
         id="entourage"
@@ -782,7 +795,7 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
         </div>
         <p
           className={`${cinzel.className} mx-auto max-w-[20rem] px-2 text-[0.625rem] font-semibold leading-snug tracking-[0.12em] min-[400px]:max-w-none min-[400px]:text-[0.6875rem] min-[400px]:tracking-[0.16em] sm:text-[0.8125rem] sm:tracking-[0.2em] md:text-sm md:tracking-[0.22em]`}
-          style={onBg}
+          style={onBgGold}
         >
           {content.eyebrow}
         </p>
@@ -850,31 +863,17 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
               <CouplePromiseMark kicker={content.coupleKicker} line={content.coupleLine} />
               <div className="mb-2 sm:mb-2.5 md:mb-3">
                 <SectionTitle>{content.coupleHeading}</SectionTitle>
-                <div className="grid grid-cols-2 gap-x-1.5 sm:gap-x-3 md:gap-x-5 gap-y-1 sm:gap-y-1.5">
-                  <div className="px-0.5 sm:px-1 md:px-1.5 min-w-0">
-                    <NameItem
-                      member={{
-                        name: groomName,
-                        roleCategory: "The Couple",
-                        roleTitle: content.groomRole,
-                        email: "",
-                      }}
-                      align="right"
-                      featured
-                    />
-                  </div>
-                  <div className="px-0.5 sm:px-1 md:px-1.5 min-w-0">
-                    <NameItem
-                      member={{
-                        name: brideName,
-                        roleCategory: "The Couple",
-                        roleTitle: content.brideRole,
-                        email: "",
-                      }}
-                      align="left"
-                      featured
-                    />
-                  </div>
+                <div className="flex justify-center">
+                  <NameItem
+                    member={{
+                      name: celebrant,
+                      roleCategory: "The Couple",
+                      roleTitle: content.celebrantRole,
+                      email: "",
+                    }}
+                    align="center"
+                    featured
+                  />
                 </div>
               </div>
               {ROLE_CATEGORY_ORDER.map((category, categoryIndex) => {

@@ -1,8 +1,10 @@
 "use client"
 
+import { fillCelebrant } from "@/lib/celebrant"
 import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
@@ -26,6 +28,8 @@ const aboveTheBeyond = localFont({
 
 const IVORY = "#fffaf4"
 const entryEase = [0.22, 1, 0.36, 1] as const
+// Photo background: each photo holds this long before crossfading to the next
+const PHOTO_HOLD_MS = 6000
 
 const titleSize = "clamp(2.85rem, 13.5vw, 6.75rem)"
 const photoTitleShadow =
@@ -83,9 +87,7 @@ function PlainSeeYouThere() {
   const content = siteConfig.seeYouThere
   const plain = content.plain
   const reduceMotion = useReducedMotion()
-  const { groomNickname, brideNickname } = siteConfig.couple
-  const couple = `${groomNickname} & ${brideNickname}`
-  const fill = (text: string) => text.split("{couple}").join(couple)
+  const fill = (text: string) => fillCelebrant(text, siteConfig)
 
   return (
     <section
@@ -178,17 +180,87 @@ function PlainSeeYouThere() {
   )
 }
 
+// One stack of full-bleed photos that crossfade (with a slow zoom) on a shared clock
+function PhotoStack({
+  photos,
+  activeIndex,
+  alt,
+  className,
+  imageClassName,
+  sizes,
+}: {
+  photos: readonly string[]
+  activeIndex: number
+  alt: string
+  className: string
+  imageClassName: string
+  sizes: string
+}) {
+  return (
+    <div className={`absolute inset-0 ${className}`}>
+      {photos.map((src, i) => {
+        const active = i === activeIndex % photos.length
+        return (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-[1800ms] ease-in-out ${active ? "opacity-100" : "opacity-0"}`}
+            aria-hidden={!active}
+          >
+            <Image
+              src={encodeURI(src)}
+              alt={active ? alt : ""}
+              fill
+              sizes={sizes}
+              priority={i === 0}
+              loading={i === 0 ? undefined : "eager"}
+              className={`object-cover transition-transform duration-[7000ms] ease-out ${active ? "scale-[1.06]" : "scale-100"} ${imageClassName}`}
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function PhotoSeeYouThere() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.seeYouThere
-  const { groomNickname, brideNickname } = siteConfig.couple
-  const alt = content.photoAlt.split("{couple}").join(`${groomNickname} & ${brideNickname}`)
-  const photo = encodeURI(content.photo)
+  const alt = fillCelebrant(content.photoAlt, siteConfig)
+  const { mobile, desktop } = content.photos
+  const reduceMotion = useReducedMotion()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const slideCount = Math.max(mobile.length, desktop.length)
+
+  useEffect(() => {
+    if (reduceMotion || slideCount <= 1) return
+    const timer = setInterval(() => setActiveIndex((i) => (i + 1) % slideCount), PHOTO_HOLD_MS)
+    return () => clearInterval(timer)
+  }, [reduceMotion, slideCount])
 
   return (
     <section id="see-you-there" className={`${theSeasons.variable} relative isolate w-full overflow-hidden`}>
       <div className="relative min-h-[100svh] w-full">
-        <Image src={photo} alt={alt} fill sizes="100vw" className="object-cover object-[center_42%] sm:object-[center_38%]" />
+        {/* Phones: portrait photos · tablets / desktops: landscape photos */}
+        {mobile.length > 0 && (
+          <PhotoStack
+            photos={mobile}
+            activeIndex={activeIndex}
+            alt={alt}
+            className="md:hidden"
+            imageClassName="object-[center_35%]"
+            sizes="100vw"
+          />
+        )}
+        {desktop.length > 0 && (
+          <PhotoStack
+            photos={desktop}
+            activeIndex={activeIndex}
+            alt={alt}
+            className="hidden md:block"
+            imageClassName="object-[center_40%]"
+            sizes="100vw"
+          />
+        )}
 
         <div
           className="pointer-events-none absolute inset-0"

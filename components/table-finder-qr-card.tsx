@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { Download, ExternalLink } from "lucide-react"
@@ -92,11 +93,9 @@ export function TableFinderQrCard() {
   // QR colors come from --color-qr-fg / --color-qr-bg in globals.css
   const { fg: qrFg, bg: qrBg } = useQrColors()
 
-  const groomName = siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const brideName = siteConfig.couple.brideNickname || siteConfig.couple.bride
-  const coupleLine = `${groomName} & ${brideName}`
-  const fill = (text: string) => text.split("{couple}").join(coupleLine)
-  const fileSlug = `${groomName}-${brideName}`
+  const coupleLine = celebrantName(siteConfig)
+  const fill = (text: string) => fillCelebrant(text, siteConfig)
+  const fileSlug = `${coupleLine.replace(/\s+/g, "")}-debut`
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
@@ -112,7 +111,7 @@ export function TableFinderQrCard() {
     if (!canvas) return
 
     const link = document.createElement("a")
-    link.download = `${fileSlug || "wedding"}-find-your-table-qr.png`
+    link.download = `${fileSlug || "debut"}-find-your-table-qr.png`
     link.href = canvas.toDataURL("image/png")
     link.click()
   }

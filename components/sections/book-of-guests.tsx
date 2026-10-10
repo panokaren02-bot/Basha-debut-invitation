@@ -9,6 +9,8 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { fetchInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import "@/components/loader/loading-screen.css"
+import "@/components/sections/love-story-red.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -27,28 +29,32 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Palette lives in globals.css → motif / welcome tokens.
-// Cards are plain light with teal text; buttons/badges are coral (#D0899A); guest names are coral.
-const TEAL = "#1F3460"
-const BUTTON = "#D0899A"
+// Red velvet vibe (same as My Story, Gallery, Event Details, Entourage): white + gold
+// text on the red circle pattern; the stats and guest cards are ivory paper with wine
+// names, gold labels and crimson → wine badges.
+// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// TEAL keeps its template name but is now the wine ink used on the ivory cards.
+const TEAL = "var(--color-motif-deep)"
 const IVORY = "var(--color-motif-soft)"
 const PAPER = "var(--color-motif-soft)"
+const GOLD = "var(--color-welcome-gold)"
+const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
 const NAVY = TEAL
-const BODY = TEAL
-const ACCENT = TEAL
-const HAIRLINE = "color-mix(in srgb, #1F3460 22%, transparent)"
-const TEAL_SOFT = "color-mix(in srgb, #1F3460 65%, transparent)"
-const DEEP_GRADIENT = BUTTON
-const SAGE_GRADIENT = TEAL
+const BODY = "color-mix(in srgb, var(--color-welcome-text) 85%, var(--color-motif-deep))"
+const ACCENT = GOLD_INK
+const HAIRLINE = "color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)"
+const TEAL_SOFT = "color-mix(in srgb, var(--color-motif-deep) 60%, transparent)"
+const DEEP_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
+const SAGE_GRADIENT = "linear-gradient(180deg, var(--color-motif-deep) 0%, color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep)) 100%)"
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Text sitting directly on the circle pattern (colors: globals.css → --color-on-pattern*)
-const onBg = {
-  color: "var(--color-on-pattern)",
-  textShadow: "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)",
-} as const
+const textLift =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+
+// Text sitting directly on the red pattern: white, or gold for scripts / eyebrows
+const onBg = { color: "#fff", textShadow: textLift } as const
+const onBgGold = { color: GOLD, textShadow: textLift } as const
 
 const palette = {
   body: BODY,
@@ -58,24 +64,25 @@ const palette = {
 } as const
 
 const cardStyle = {
-  background: PAPER,
+  background:
+    "radial-gradient(120% 50% at 50% 0%, color-mix(in srgb, white 70%, transparent) 0%, transparent 60%), linear-gradient(180deg, var(--color-motif-soft) 0%, var(--color-motif-cream) 100%)",
   boxShadow:
-    "0 22px 48px -26px color-mix(in srgb, var(--color-welcome-navy) 55%, transparent)",
+    "0 24px 50px -24px color-mix(in srgb, var(--color-coastal-deep) 75%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 35%, transparent)",
 } as const
 
 const CORNER_DECO_CLASS =
-  "block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none opacity-90"
+  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 const refreshButtonStyle = {
-  borderColor: BUTTON,
-  backgroundColor: BUTTON,
-  boxShadow: "0 4px 14px -4px color-mix(in srgb, #D0899A 45%, transparent)",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+  background: DEEP_GRADIENT,
+  boxShadow: "0 4px 14px -4px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent)",
 } as const
 
 const chipPrimaryStyle = {
   color: NAVY,
-  borderColor: "color-mix(in srgb, #1F3460 40%, transparent)",
-  backgroundColor: "color-mix(in srgb, #1F3460 10%, var(--color-motif-soft))",
+  borderColor: "color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)",
+  backgroundColor: "color-mix(in srgb, var(--color-motif-blush) 35%, var(--color-motif-soft))",
 } as const
 
 const chipSecondaryStyle = {
@@ -111,14 +118,14 @@ function DecoImg({ src, className }: { src: string; className: string }) {
   )
 }
 
-// onBg = sits directly on the circle pattern (plain line in --color-on-pattern-line)
+// Gold hairlines + diamond; onBg = sits directly on the red pattern (bright gold)
 function DiamondDivider({ onBg: onPattern = false }: { onBg?: boolean }) {
-  const line = onPattern ? "var(--color-on-pattern-line)" : "color-mix(in srgb, #1F3460 55%, transparent)"
+  const line = onPattern ? GOLD : GOLD_INK
   return (
     <div className="flex items-center justify-center gap-2" aria-hidden>
-      <span className="h-px w-10 sm:w-16" style={{ background: onPattern ? line : `linear-gradient(to right, transparent, ${line})` }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ background: onPattern ? line : ACCENT }} />
-      <span className="h-px w-10 sm:w-16" style={{ background: onPattern ? line : `linear-gradient(to left, transparent, ${line})` }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: `linear-gradient(to right, transparent, ${line})` }} />
+      <span className="h-1.5 w-1.5 rotate-45" style={{ background: line }} />
+      <span className="h-px w-10 sm:w-16" style={{ background: `linear-gradient(to left, transparent, ${line})` }} />
     </div>
   )
 }
@@ -157,7 +164,7 @@ function BookOfGuestsTitle({ title, subtitle }: { title: string; subtitle: strin
         className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
         style={{
           fontSize: "var(--script-size)",
-          ...onBg,
+          ...onBgGold,
         }}
       >
         {subtitle}
@@ -326,10 +333,10 @@ export function BookOfGuests() {
   return (
     <div
       id="guests"
-      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative isolate z-10 overflow-hidden pt-12 pb-10 sm:pt-14 sm:pb-12 md:pt-16 md:pb-14 lg:pt-20 lg:pb-16`}
+      className={`red-velvet-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative isolate z-10 overflow-hidden pt-12 pb-10 sm:pt-14 sm:pb-12 md:pt-16 md:pb-14 lg:pt-20 lg:pb-16`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the hero */}
+      {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
 
       {/* Corner decorations (from site.ts) */}
@@ -371,7 +378,7 @@ export function BookOfGuests() {
         <div className="flex items-center justify-center pt-4 sm:pt-5">
           <span
             className="h-px w-16 sm:w-24 md:w-32"
-            style={{ background: "var(--color-on-pattern-line)" }}
+            style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }}
           />
         </div>
       </motion.div>
@@ -501,7 +508,7 @@ export function BookOfGuests() {
             >
               <p
                 className={`${cinzel.className} ${ct.label} uppercase tracking-[0.22em] font-semibold`}
-                style={onBg}
+                style={onBgGold}
               >
                 {copy.listEyebrow}
               </p>
@@ -534,7 +541,7 @@ export function BookOfGuests() {
                       {/* Hairline inner frame — turns olive on hover */}
                       <span
                         aria-hidden
-                        className="pointer-events-none absolute inset-1.5 rounded-[0.85rem] border transition-colors duration-300 group-hover:border-[color-mix(in_srgb,#16828F_45%,transparent)]"
+                        className="pointer-events-none absolute inset-1.5 rounded-[0.85rem] border transition-colors duration-300 group-hover:border-[color-mix(in_srgb,var(--color-welcome-gold)_75%,transparent)]"
                         style={{ borderColor: HAIRLINE }}
                       />
 
@@ -544,7 +551,7 @@ export function BookOfGuests() {
                           className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full transition-transform duration-500 group-hover:scale-105 sm:h-12 sm:w-12"
                           style={{
                             background: SAGE_GRADIENT,
-                            boxShadow: `0 0 0 2px ${IVORY}, 0 0 0 3px ${HAIRLINE}, 0 6px 14px -6px color-mix(in srgb, #1F3460 55%, transparent)`,
+                            boxShadow: `0 0 0 2px ${IVORY}, 0 0 0 3px ${HAIRLINE}, 0 6px 14px -6px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)`,
                           }}
                         >
                           <span className={`${theSeasons.className} text-[1rem] tracking-[0.06em] sm:text-[1.08rem]`} style={{ color: IVORY }}>
@@ -556,7 +563,7 @@ export function BookOfGuests() {
                           <div className="flex min-w-0 items-center gap-1.5">
                             <h3
                               className={`${theSeasons.className} min-w-0 truncate text-[0.98rem] uppercase leading-tight tracking-[0.07em] sm:text-[1.06rem]`}
-                              style={{ color: BUTTON }}
+                              style={{ color: TEAL }}
                               title={guest.name}
                             >
                               {guest.name}
@@ -608,7 +615,7 @@ export function BookOfGuests() {
                         return (
                           <div
                             className="relative z-[1] mt-2.5 rounded-xl px-2.5 pb-2 pt-1.5"
-                            style={{ background: "color-mix(in srgb, #1F3460 7%, transparent)" }}
+                            style={{ background: "color-mix(in srgb, var(--color-motif-blush) 22%, transparent)" }}
                           >
                             {/* Label row */}
                             <div className="mb-1.5 flex items-center gap-1.5">
@@ -618,7 +625,7 @@ export function BookOfGuests() {
                               >
                                 {copy.companionsLabel}
                               </span>
-                              <span className="h-px flex-1" style={{ background: "linear-gradient(to right, color-mix(in srgb, #1F3460 50%, transparent), transparent)" }} aria-hidden />
+                              <span className="h-px flex-1" style={{ background: "linear-gradient(to right, var(--color-welcome-gold), transparent)" }} aria-hidden />
                               <span
                                 className={`${cinzel.className} rounded-full px-1.5 py-[1px] text-[0.46rem] font-semibold leading-none tracking-[0.06em]`}
                                 style={{ background: IVORY, color: palette.label, boxShadow: `inset 0 0 0 1px ${HAIRLINE}` }}
@@ -696,7 +703,7 @@ export function BookOfGuests() {
                       className="h-1.5 rounded-full transition-all duration-500"
                       style={{
                         width: isActive ? "1.5rem" : "0.375rem",
-                        background: isActive ? "var(--color-on-pattern)" : "color-mix(in srgb, var(--color-on-pattern) 35%, transparent)",
+                        background: isActive ? GOLD : "color-mix(in srgb, white 40%, transparent)",
                       }}
                     />
                   )

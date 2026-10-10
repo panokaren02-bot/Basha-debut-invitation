@@ -15,50 +15,37 @@ const mobileHero = siteConfig.linkPreviewImage
 const eventImageUrl = `${canonicalUrl}${desktopHero}`
 const OG_IMAGE_FALLBACK = `${canonicalUrl}${desktopHero}`
 
-const coupleNames = `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`
-const eventTitle = `${coupleNames} - Wedding Invitation`
-const eventDescription = `Celebrate the wedding of ${siteConfig.couple.groomNickname} and ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date} at ${siteConfig.ceremony.venue}. RSVP, explore their story, and find everything you need to join the celebration.`
+const celebrant = siteConfig.celebrant.nickname
+const hashtag = siteConfig.snapShare.hashtag[0] ?? `#${celebrant}Turns18`
+const eventTitle = `${celebrant}'s Debut - ${siteConfig.event.theme}`
+const eventDescription = `Celebrate ${celebrant}'s 18th birthday debut on ${siteConfig.wedding.date} at ${siteConfig.ceremony.location}. ${siteConfig.event.theme} — RSVP, see the program, dress code, and everything you need for the night.`
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} Wedding`,
-  startDate: "2026-04-18T14:00:00+08:00",
-  endDate: "2026-04-18T22:00:00+08:00",
+  name: `${celebrant}'s Debut`,
+  startDate: "2026-10-25T19:00:00+08:00",
+  endDate: "2026-10-26T01:00:00+08:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  location: [
-    {
-      "@type": "Place",
-      name: siteConfig.ceremony.venue,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: siteConfig.ceremony.venue,
-        addressLocality: siteConfig.ceremony.location,
-        addressRegion: siteConfig.ceremony.location,
-        addressCountry: "PH",
-      },
+  location: {
+    "@type": "Place",
+    name: siteConfig.ceremony.location,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: siteConfig.ceremony.venue,
+      addressLocality: "Makati City",
+      addressRegion: "Metro Manila",
+      addressCountry: "PH",
     },
-    {
-      "@type": "Place",
-      name: siteConfig.reception.venue,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: siteConfig.reception.location,
-        addressLocality: siteConfig.reception.location,
-        addressRegion: siteConfig.reception.location,
-        addressCountry: "PH",
-      },
-    },
-  ],
+  },
   image: [OG_IMAGE_FALLBACK],
-  description:
-    `You're invited to celebrate the wedding of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}. Discover ceremony and reception details, RSVP, and explore their story.`,
+  description: eventDescription,
   organizer: {
     "@type": "Person",
-    name: coupleNames,
+    name: celebrant,
   },
-  eventHashtag: `#${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
+  eventHashtag: hashtag,
 }
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -81,18 +68,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(canonicalUrl),
   title: {
     default: eventTitle,
-    template: `%s | ${coupleNames}`,
+    template: `%s | ${celebrant}'s Debut`,
   },
   description: eventDescription,
   keywords:
-    `${siteConfig.couple.groomNickname} ${siteConfig.couple.brideNickname} wedding, ${siteConfig.ceremony.venue} wedding, ${siteConfig.reception.venue} wedding, wedding invitation, RSVP, wedding gallery, message wall, love story, #${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
-  applicationName: `${coupleNames} Wedding Invitation`,
-  authors: [
-    { name: siteConfig.couple.groomNickname },
-    { name: siteConfig.couple.brideNickname },
-  ],
-  creator: coupleNames,
-  publisher: coupleNames,
+    `${celebrant} debut, ${celebrant} 18th birthday, debut invitation, ${siteConfig.ceremony.location}, 18 roses, RSVP, ${hashtag}`,
+  applicationName: `${celebrant}'s Debut`,
+  authors: [{ name: celebrant }],
+  creator: celebrant,
+  publisher: celebrant,
   category: "Event",
   formatDetection: {
     email: false,
@@ -116,11 +100,10 @@ export const metadata: Metadata = {
   },
   manifest: "/favicon_io/site.webmanifest",
   openGraph: {
-    title: `${coupleNames} | ${siteConfig.wedding.date}`,
-    description:
-      `Celebrate the union of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date}. Discover their story, RSVP, and find important details for the ceremony and reception.`,
+    title: `${celebrant}'s Debut | ${siteConfig.wedding.date}`,
+    description: eventDescription,
     url: canonicalUrl,
-    siteName: `${coupleNames} Wedding`,
+    siteName: `${celebrant}'s Debut`,
     locale: "en_PH",
     type: "website",
     images: [
@@ -129,27 +112,16 @@ export const metadata: Metadata = {
         secureUrl: OG_IMAGE_FALLBACK,
         width: 1200,
         height: 630,
-        type: "image/jpeg",
-        alt: `${coupleNames} Wedding Invitation - ${siteConfig.wedding.date}`,
-      },
-      {
-        url: OG_IMAGE_FALLBACK,
-        secureUrl: OG_IMAGE_FALLBACK,
-        width: 1200,
-        height: 630,
         type: "image/png",
-        alt: `${coupleNames} Wedding Invitation - ${siteConfig.wedding.date}`,
+        alt: `${celebrant}'s Debut Invitation - ${siteConfig.wedding.date}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${coupleNames} Wedding Invitation`,
-    description:
-      `You're invited to the wedding of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date}. RSVP, explore their story, and get all the details for the big day! #${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
-    images: [OG_IMAGE_FALLBACK, eventImageUrl ],
-    creator: `@${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}`,
-    site: `@${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}`,
+    title: `${celebrant}'s Debut Invitation`,
+    description: `You're invited to ${celebrant}'s debut on ${siteConfig.wedding.date}. RSVP and get all the details for the night! ${hashtag}`,
+    images: [OG_IMAGE_FALLBACK, eventImageUrl],
   },
   robots: {
     index: true,
@@ -163,7 +135,7 @@ export const metadata: Metadata = {
     },
   },
   appleWebApp: {
-    title: coupleNames,
+    title: `${celebrant}'s Debut`,
     statusBarStyle: "default",
     capable: true,
   },
@@ -174,7 +146,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   colorScheme: "light",
-  themeColor: "#D2A4A4",
+  themeColor: "#0E0B0C", // --color-coastal-deep (meta tags need a literal color)
 }
 
 export default function RootLayout({
@@ -187,7 +159,7 @@ export default function RootLayout({
       <head>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#D2A4A4" />
+        <meta name="theme-color" content="#0E0B0C" />
         <meta name="format-detection" content="telephone=yes,email=no,address=no" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

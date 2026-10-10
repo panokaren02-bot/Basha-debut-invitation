@@ -1,5 +1,6 @@
 "use client"
 
+import { celebrantName } from "@/lib/celebrant"
 import React, { useMemo } from "react"
 import localFont from "next/font/local"
 import { motion, useReducedMotion } from "motion/react"
@@ -9,6 +10,7 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import "@/components/loader/loading-screen.css"
+import "./love-story-red.css"
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -24,20 +26,17 @@ const aboveTheBeyond = localFont({
 
 const revealEase = [0.22, 1, 0.36, 1] as const
 
-// Section background = the hero's circle pattern (PlainBubbles paints its own aqua base)
-const sectionBg = "var(--color-bg-pattern-base)"
+// Section background: deep wine under a red circle pattern (PlainBubbles, recolored in love-story-red.css)
+const sectionBg = "color-mix(in srgb, var(--color-motif-deep) 70%, var(--color-coastal-deep))"
 
-// Soft white halo so text stays readable over the circles (globals.css → --color-on-pattern-glow)
-const onBgGlow = "0 1px 0 var(--color-on-pattern-glow), 0 2px 12px var(--color-on-pattern-glow)"
+// Dark lift so light text stays readable over the red circles
+const onBgGlow =
+  "0 1px 2px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent), 0 2px 14px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)"
+const WHITE = "#fff"
+const GOLD = "var(--color-welcome-gold)"
 
-function formatStoryParagraph(
-  paragraph: string,
-  groom: string,
-  bride: string,
-): string {
-  return paragraph
-    .replace(/\{groom\}/g, groom)
-    .replace(/\{bride\}/g, bride)
+function formatStoryParagraph(paragraph: string, celebrant: string): string {
+  return paragraph.split("{celebrant}").join(celebrant)
 }
 
 function OrnamentalDivider() {
@@ -45,16 +44,12 @@ function OrnamentalDivider() {
     <div className="flex items-center justify-center gap-1.5">
       <span
         className="h-px w-6 sm:w-10"
-        style={{
-          background: "color-mix(in srgb, #1F3460 35%, transparent)",
-        }}
+        style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }}
       />
-      <span className="h-0.5 w-0.5 rounded-full bg-motif-deep sm:h-1 sm:w-1" aria-hidden />
+      <span className="h-1 w-1 rotate-45 sm:h-1.5 sm:w-1.5" style={{ background: GOLD }} aria-hidden />
       <span
         className="h-px w-6 sm:w-10"
-        style={{
-          background: "color-mix(in srgb, #1F3460 35%, transparent)",
-        }}
+        style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }}
       />
     </div>
   )
@@ -81,7 +76,7 @@ function LoveStoryTitle({
         className={`${theSeasons.className} block pb-1 uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
         style={{
           fontSize: "var(--title-size)",
-          color: "#1F3460",
+          color: WHITE,
           textShadow: onBgGlow,
         }}
       >
@@ -92,7 +87,7 @@ function LoveStoryTitle({
         className={`${aboveTheBeyond.className} mx-auto mt-2 block w-fit max-w-full px-1 leading-[0.88] sm:mt-2.5 sm:leading-[0.9] md:mt-3`}
         style={{
           fontSize: "var(--script-size)",
-          color: "#D0899A",
+          color: GOLD,
           textShadow: onBgGlow,
         }}
       >
@@ -145,11 +140,7 @@ function SectionCornerDecos({
   )
 }
 
-function chapterTextFromParagraphs(
-  paragraphs: readonly string[],
-  groom: string,
-  bride: string,
-) {
+function chapterTextFromParagraphs(paragraphs: readonly string[], celebrant: string) {
   return (
     <>
       {paragraphs.map((paragraph, index) => (
@@ -159,7 +150,7 @@ function chapterTextFromParagraphs(
             paragraphs.length > 1 && index < paragraphs.length - 1 ? "mb-4" : undefined
           }
         >
-          {formatStoryParagraph(paragraph, groom, bride)}
+          {formatStoryParagraph(paragraph, celebrant)}
         </p>
       ))}
     </>
@@ -175,10 +166,7 @@ export function LoveStory() {
     loading.cornerDecos ?? defaultSiteConfig.loadingScreen.cornerDecos
   const reduceMotion = useReducedMotion()
 
-  const groom =
-    siteConfig.couple.groomNickname || siteConfig.couple.groom
-  const bride =
-    siteConfig.couple.brideNickname || siteConfig.couple.bride
+  const celebrant = celebrantName(siteConfig)
 
   const chapters = useMemo(
     () => loveStory.chapters ?? defaultSiteConfig.loveStory.chapters,
@@ -219,13 +207,14 @@ export function LoveStory() {
           theme={chapter.theme}
           layout={chapter.layout}
           imageSrc={chapter.image}
-          text={chapterTextFromParagraphs(chapter.paragraphs, groom, bride)}
+          text={chapterTextFromParagraphs(chapter.paragraphs, celebrant)}
           plain={isPlain}
           chapterIndex={index}
           isFirst={index === 0}
           isLast={index === chapters.length - 1}
           eucalyptusDecos={isPlain ? eucalyptusDecos : undefined}
           chapterLabelText={loveStory.chapterLabel}
+          surface={isPlain ? "solid" : "pattern"}
         />
       ))}
 
@@ -243,13 +232,13 @@ export function LoveStory() {
           <blockquote className="mt-5 sm:mt-6">
             <p
               className={`font-goudy-italic ${sectionType.textRelaxed} italic leading-relaxed`}
-              style={{ color: "#1F3460", textShadow: onBgGlow }}
+              style={{ color: WHITE, textShadow: onBgGlow }}
             >
               &ldquo;{loveStory.closingQuote}&rdquo;
             </p>
             <footer
               className={`font-goudy-italic mt-2 sm:mt-3 ${sectionType.label} not-italic tracking-wide`}
-              style={{ color: "#D0899A", textShadow: onBgGlow }}
+              style={{ color: GOLD, textShadow: onBgGlow }}
             >
               — {loveStory.closingCitation}
             </footer>

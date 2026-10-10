@@ -104,7 +104,7 @@ function RetryableGalleryImage({
           ? undefined
           : {
               aspectRatio: `${width} / ${height}`,
-              backgroundColor: "color-mix(in srgb, var(--color-welcome-gold) 10%, #fffaf4)",
+              backgroundColor: "color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep))",
             }
       }
     >
@@ -181,7 +181,7 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
       </div>
 
       {images.length === 0 ? (
-        <div className="font-goudy-italic text-center" style={{ color: "var(--color-welcome-text)" }}>
+        <div className="font-goudy-italic text-center" style={{ color: "#fff" }}>
           No images to display.
         </div>
       ) : (
@@ -198,7 +198,8 @@ export default function MasonryGallery({ images }: { images: ImageItem[] }) {
                 className="relative w-full overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl"
                 style={{
                   borderColor: GOLD_BORDER,
-                  backgroundColor: IVORY,
+                  backgroundColor: "var(--color-motif-deep)",
+                  boxShadow: "0 14px 30px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)",
                 }}
               >
                 <RetryableGalleryImage
