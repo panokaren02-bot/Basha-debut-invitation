@@ -4,7 +4,7 @@ import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useState, type CSSProperties } from "react"
 import Image from "next/image"
 import localFont from "next/font/local"
-import { Cinzel, Lora } from "next/font/google"
+import { Cinzel, Cormorant_Garamond } from "next/font/google"
 import { Gift, Heart } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
@@ -15,10 +15,10 @@ const cinzel = Cinzel({
   weight: ["400", "600", "700"],
 })
 
-// Upright, screen-friendly serif for the letter (same as the My Story paragraphs)
-const lora = Lora({
+// Refined Garamond for the letter — calligraphic, keepsake feel on the ivory card
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["500", "600"],
   style: ["normal", "italic"],
   display: "swap",
 })
@@ -45,7 +45,6 @@ const onBgGold = { color: "var(--color-welcome-gold)", textShadow: textLift } as
 const SEAL_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
 
 const ct = {
-  body: sectionType.text,
   bodyLg: sectionType.textRelaxed,
 } as const
 
@@ -126,6 +125,14 @@ export function Registry() {
   }
   const dividerLineStyle = { background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)" }
 
+  // "Dear family and friends — eighteen years…" → salutation line + letter body
+  const [firstParagraph = "", ...restParagraphs] = content.paragraphs
+  const salutationMatch = firstParagraph.match(/^(.{1,48}?)\s+[—–]\s+(.+)$/s)
+  const salutation = salutationMatch ? `${salutationMatch[1].replace(/[,:]$/, "")},` : null
+  const letter = salutationMatch
+    ? [salutationMatch[2].charAt(0).toUpperCase() + salutationMatch[2].slice(1), ...restParagraphs]
+    : content.paragraphs
+
   const accounts = content.showAccounts
     ? content.accounts.filter((a) => a.show && (a.accountNumber || a.qr))
     : []
@@ -191,28 +198,30 @@ export function Registry() {
               </span>
             </motion.div>
 
+            {/* Formal salutation, set apart in engraved capitals */}
+            {salutation ? (
+              <motion.div variants={itemVariants} className="relative mb-6 sm:mb-7">
+                <p
+                  className={`${cinzel.className} text-[0.8rem] font-semibold uppercase tracking-[0.24em] sm:text-[0.9rem] sm:tracking-[0.28em]`}
+                  style={{ color: c.title }}
+                >
+                  {salutation}
+                </p>
+                <div className="mt-3 flex items-center justify-center gap-2" aria-hidden>
+                  <span className="h-px w-8 sm:w-12" style={{ background: `linear-gradient(to right, transparent, ${c.eyebrow})` }} />
+                  <span className="h-1 w-1 rotate-45" style={{ background: c.eyebrow }} />
+                  <span className="h-px w-8 sm:w-12" style={{ background: `linear-gradient(to left, transparent, ${c.eyebrow})` }} />
+                </div>
+              </motion.div>
+            ) : null}
+
             <div
-              className={`${lora.className} relative mx-auto max-w-xl space-y-4 text-[0.9rem] font-medium leading-[1.75] sm:text-[0.98rem] md:text-[1.02rem]`}
+              className={`${cormorant.className} relative mx-auto max-w-[34rem] space-y-5 text-center text-[1.0625rem] font-medium leading-[1.8] tracking-[0.01em] [font-feature-settings:'liga','kern'] [text-wrap:pretty] sm:space-y-6 sm:text-[1.15rem] md:text-[1.2rem]`}
               style={{ color: c.body }}
             >
-              {content.paragraphs.map((text, i) => (
-                <motion.p key={i} variants={itemVariants} className={i === 0 ? "text-left sm:text-center" : ""}>
-                  {i === 0 && text.length > 1 ? (
-                    <>
-                      {/* Drop cap on the first paragraph */}
-                      <span
-                        className={`${theSeasons.className} float-left mr-2 mt-1 text-[2.6rem] leading-[0.8] sm:float-none sm:mr-1 sm:inline sm:text-[2.2rem] sm:leading-none`}
-                        style={{ color: c.script }}
-                        aria-hidden
-                      >
-                        {text.charAt(0)}
-                      </span>
-                      <span className="sr-only">{text.charAt(0)}</span>
-                      {text.slice(1)}
-                    </>
-                  ) : (
-                    text
-                  )}
+              {letter.map((text, i) => (
+                <motion.p key={i} variants={itemVariants}>
+                  {text}
                 </motion.p>
               ))}
             </div>
@@ -316,7 +325,7 @@ export function Registry() {
                         </span>
                       )}
                       {active.accountName ? (
-                        <p className={`${lora.className} mt-3 text-sm font-medium`} style={{ color: c.body }}>
+                        <p className={`${cormorant.className} mt-3 text-base font-semibold`} style={{ color: c.body }}>
                           {active.accountName}
                         </p>
                       ) : null}
@@ -339,11 +348,11 @@ export function Registry() {
             {/* Sign-off */}
             <motion.div variants={itemVariants} className="relative space-y-1.5">
               {content.thankYou ? (
-                <p className={`${lora.className} ${ct.body} font-medium`} style={{ color: c.body }}>
+                <p className={`${cormorant.className} text-[1.0625rem] font-semibold tracking-[0.01em] sm:text-[1.15rem]`} style={{ color: c.body }}>
                   {content.thankYou}
                 </p>
               ) : null}
-              <p className={`${lora.className} ${ct.body} italic`} style={{ color: c.soft }}>
+              <p className={`${cormorant.className} text-[1.0625rem] font-medium italic sm:text-[1.15rem]`} style={{ color: c.soft }}>
                 {content.signOff}
               </p>
               <p className={`${aboveTheBeyond.className} pt-1 text-2xl leading-tight sm:text-3xl`} style={{ color: c.script }}>
