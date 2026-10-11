@@ -167,10 +167,10 @@ const HASHTAGS = ["#YohanaTurns18", "#YohanaRegalEighteen"] // ⚠ check
 //   image:     illustration path in /public ("" = no image)
 //   palette:   colors for this card — "#9CAF88" or { name: "Sage", hex: "#9CAF88" }
 //   ladies / gentlemen:
-//     label:     e.g. "Ladies", "Gentlemen"
+//     label:     e.g. "Ladies", "Gentlemen" — leave "" to hide the heading (good for one inclusive blurb)
 //     details:   the dress code text ("" hides this half of the card)
 //     highlight: phrase inside details shown bold + underlined ("" for none)
-// Brief: "Silver or Black Formal Attire (May wear short length)"
+// Brief: silver or black dress code — inclusive silhouettes; short length OK
 const DRESS_CODE_PALETTE: AttireColor[] = [
   { name: "Silver", hex: "#C0C0C6" },
   { name: "Pearl Grey", hex: "#8E8E96" },
@@ -218,16 +218,15 @@ const ATTIRE = {
     image: "/Details/guest.png", // add an illustration in /public/Details if you have one
     palette: DRESS_CODE_PALETTE,
     ladies: {
-      label: "Ladies",
+      label: "",
       details:
-        "Formal dresses or gowns in silver or black. Short-length dresses are welcome — pearls, lace, and a touch of gold make it even more regal.",
-      highlight: "Silver or Black Formal Attire",
+        "Please dress in silver or black. Gowns, dresses, suits, slacks, and separates are all welcome — pants or a dress, whatever makes you feel like yourself.\n\nShort lengths are welcome. Pearls, lace, and a soft touch of gold fit the night beautifully.",
+      highlight: "silver or black",
     },
     gentlemen: {
-      label: "Gentlemen",
-      details:
-        "Black or silver-grey suit, or a black long-sleeved dress shirt with tailored slacks and dress shoes.",
-      highlight: "Silver or Black Formal Attire",
+      label: "",
+      details: "",
+      highlight: "",
     },
   },
 }
@@ -381,11 +380,9 @@ export const siteConfig = {
   welcome: {
     title: "Welcome",
     script: "to my eighteenth",
-    quote: "She is clothed in strength and dignity, and she laughs without fear of the future.",
-    quoteCitation: "Proverbs 31:25",
     paragraphs: [
       "Dear family and friends — eighteen years ago, my story began in your arms. Tonight, under a baroque sun and a silver moon, I step into a brand-new chapter, and there is no one I would rather have beside me than you.",
-      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come in silver or black, bring your warmest smile, and get ready for a night of roses, pearls, and music.",
+      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come in silver or black — dressed in whatever makes you feel like yourself — and bring your warmest smile for a night of roses, pearls, and music.",
       "Thank you for every lesson, every laugh, and every prayer that carried me here. Sharing this night with the people who shaped me is the most beautiful gift I could ask for.",
     ],
     signOff: "With all my love and gratitude,",
@@ -427,7 +424,7 @@ export const siteConfig = {
     },
     // Two numbered highlights, like a poster's "01 / 02" offers ([] hides the row)
     highlights: [
-      { label: "Dress Code", text: "Silver or black formal" },
+      { label: "Dress Code", text: "Silver or black — any style" },
       { label: "The Night", text: "Pearls, roses & gold" },
     ],
     // Bottom details row — {guestsTime}, {programTime}, {endTime}, {venue} are filled in
@@ -694,11 +691,13 @@ export const siteConfig = {
     },
     attire: {
       title: "Attire Guidelines",
-      description: "Silver or black formal attire — short length is welcome.",
+      description:
+        "Silver or black, in whatever silhouette feels like you — dresses, pants, suits, and separates are all welcome.",
       paletteTitle: "Dress Code Palette",
-      paletteSubtitle: "Silver or Black Formal",
+      paletteSubtitle: "Silver or Black",
       colorGuideTitle: "Color Guide",
-      colorGuideNote: "Our motif is red, black, gold and silver — guests, please wear silver or black.",
+      colorGuideNote:
+        "Our motif is red, black, gold, and silver. Guests, please wear silver or black — how dressy you go is entirely up to you.",
       // Order and visibility come from ATTIRE.show (skips blanks, typos and repeats)
       groups: ATTIRE.show
         .filter((id, i, list) => ["sponsors", "entourage", "guests"].includes(id) && list.indexOf(id) === i)
@@ -717,8 +716,8 @@ export const siteConfig = {
           variant: "accent" as "accent" | "soft",
           showPalette: true,
           paragraphs: [
-            "Silver or black formal attire, please — short length is welcome.",
-            "Kindly avoid red and white; those are reserved for the debutante.",
+            "Please wear silver or black. Dresses, gowns, suits, slacks, or separates are all welcome — pants or a dress, your choice. Short lengths are welcome.",
+            "Kindly avoid red and white; those colors are reserved for the debutante.",
           ],
         },
         {
@@ -1110,7 +1109,7 @@ export const siteConfig = {
       {
         question: "What should I wear?",
         answer:
-          "Formal attire in silver or black. Short-length dresses are welcome, and pearls, lace, or a touch of gold are perfect for the night.\n\nKindly avoid red and white — those are reserved for the debutante.",
+          "Please dress in silver or black — stay in the palette and wear what feels right:\n\n• Dresses, gowns, suits, slacks, or separates\n• Pants or a dress — your choice\n• Short lengths are fine; pearls, lace, or a touch of gold are lovely accents\n\nKindly avoid red and white — those colors are reserved for the debutante.",
       },
       {
         question: "What time should I arrive?",
@@ -1502,13 +1501,13 @@ export const siteConfig = {
     guests: {
       title: "Guests",
       label: "Guests",
-      description: "Silver or black formal attire (may wear short length).",
+      description: "Silver or black — any style; short lengths welcome.",
       image: "",
       palette: ["#C0C0C6", "#8E8E96", "#3A3A40", "#111013"],
     },
-    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: silver or black formal attire (may wear short length).`,
+    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: silver or black dress code (short length welcome).`,
     closing: "Thank you for helping bring this regal night to life. I can't wait to celebrate with you!",
-    note: "Kindly dress in silver or black formal attire.",
+    note: "Kindly dress in silver or black.",
   },
   narratives: {
     ourStory: "",

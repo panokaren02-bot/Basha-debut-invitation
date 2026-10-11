@@ -389,15 +389,18 @@ function highlightPhrase(text: string, phrase?: string): ReactNode {
 }
 
 function AttirePaletteGroup({ label, description }: { label: string; description: ReactNode }) {
+  const showLabel = label.trim().length > 0
   return (
     <div className="space-y-2 sm:space-y-2.5">
-      <p
-        className={`${cinzel.className} text-center ${ct.labelSm} uppercase tracking-[0.16em] font-semibold`}
-        style={{ color: C.label }}
-      >
-        {label}
-      </p>
-      <p className={`font-goudy-italic ${ct.body} px-1 text-center leading-relaxed`} style={{ color: C.body }}>
+      {showLabel ? (
+        <p
+          className={`${cinzel.className} text-center ${ct.labelSm} uppercase tracking-[0.16em] font-semibold`}
+          style={{ color: C.label }}
+        >
+          {label}
+        </p>
+      ) : null}
+      <p className={`font-goudy-italic ${ct.body} px-1 text-center leading-relaxed whitespace-pre-line`} style={{ color: C.body }}>
         {description}
       </p>
     </div>

@@ -142,25 +142,6 @@ export function Welcome() {
               <OrnamentalDivider compact />
             </header>
 
-            <figure className="mx-auto max-w-[36rem] text-center">
-              <blockquote>
-                <p
-                  className={`font-goudy-italic ${sectionType.textSnug}`}
-                  style={{ color: WELCOME_COLORS.wine }}
-                >
-                  &ldquo;{content.quote}&rdquo;
-                </p>
-                <figcaption className="mt-2 sm:mt-2.5">
-                  <cite
-                    className={`${cinzel.className} ${sectionType.label} not-italic uppercase tracking-[0.2em] sm:tracking-[0.24em]`}
-                    style={{ color: WELCOME_COLORS.gold }}
-                  >
-                    {content.quoteCitation}
-                  </cite>
-                </figcaption>
-              </blockquote>
-            </figure>
-
             <div
               className={`font-goudy-italic mx-auto max-w-[36rem] space-y-3 text-center sm:space-y-3.5 md:space-y-4 ${sectionType.textRelaxed}`}
               style={{ color: WELCOME_COLORS.ink }}
