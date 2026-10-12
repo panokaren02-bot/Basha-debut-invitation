@@ -1533,8 +1533,8 @@ export const siteConfig = {
     // Leave any path "" to hide that decoration
     decos: { ...CORNER_DECOS, headerOrnament: DECOR.headerOrnament },
     // ⚠ check — Spotify link for "Goth" by Sidewalks and Skeletons (track, playlist or album links all work)
-    embedUrl: "https://open.spotify.com/embed/playlist/7JWx1lUkrv2jIJOxTjV6so?utm_source=generator&si=99bf3239c6414fbd",
-    spotifyUrl: "https://open.spotify.com/playlist/7JWx1lUkrv2jIJOxTjV6so",
+    embedUrl: "https://open.spotify.com/embed/playlist/3QI5wOhXQo8PzDGo33eioz?utm_source=generator&si=6e7cdd630f664aed",
+    spotifyUrl: "https://open.spotify.com/playlist/3QI5wOhXQo8PzDGo33eioz",
   },
   // Closing "See you there!" section (components/sections/see-you-there.tsx).
   //   photos mode (loadingScreen.display "photos") → full-screen celebrant photo
