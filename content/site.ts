@@ -143,7 +143,7 @@ const VENUE_CARDS = {
   },
   reception: {
     show: false,
-    badge: "After Party",
+    badge: "After Glow",
     sectionLabel: "Venue",
     showDate: false,
     showArrival: false,
@@ -369,9 +369,9 @@ export const siteConfig = {
   },
   // Top hero on the main page (components/sections/hero.tsx)
   hero: {
-    srTitle: "You're invited to {celebrant}'s debut",
-    titleMain: "{celebrant}", // big serif line — usually the celebrant's nickname
-    titleScript: "turns eighteen", // script line overlapping it
+    srTitle: "Ars Regia: {celebrant} XVII — you're invited to {celebrant}'s debut",
+    titleMain: "Ars Regia", // big serif line
+    titleScript: "{celebrant} XVII", // script line overlapping it
     eyebrow: "A regal night of pearls, roses & gold",
     countdownHeading: "Until the eighteenth chapter begins",
     countdownLabels: { days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds" },
@@ -737,11 +737,11 @@ export const siteConfig = {
           ],
         },
         {
-          title: "After Party",
+          title: "After Glow",
           variant: "soft" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
-            "Stay for the after party from 10:00 PM until midnight — the night ends at {endTime}.",
+            "Stay for the after glow from 10:00 PM until midnight — the night ends at {endTime}.",
           ],
         },
       ],
@@ -820,7 +820,7 @@ export const siteConfig = {
       {
         show: true,
         time: "8:30 – 9:00 PM",
-        title: "18 Roses · 18 Treasures · 18 Cheers",
+        title: "18 Roses · 18 Cheers",
         description: "",
         location: "",
         image: "/debut-timeline/18roses-candle-lighting.png",
@@ -847,7 +847,7 @@ export const siteConfig = {
       {
         show: true,
         time: "10:00 PM – 12 MN",
-        title: "After Party",
+        title: "After Glow",
         description: "",
         location: "",
         image: "/debut-timeline/dance-party.png",
@@ -1144,7 +1144,7 @@ export const siteConfig = {
       {
         question: "How long is the celebration?",
         answer:
-          "The program begins at {programTime}, followed by an after party. The night comes to a close at {endTime}.",
+          "The program begins at {programTime}, followed by an after glow. The night comes to a close at {endTime}.",
       },
       {
         question: "I have dietary restrictions or allergies.",

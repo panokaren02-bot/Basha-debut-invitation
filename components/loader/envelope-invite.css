@@ -2892,7 +2892,7 @@
 
 .env-invite-letter-title__main {
   display: block;
-  font-size: 3em;
+  font-size: 2.4em;
   line-height: 0.8;
   letter-spacing: 0.08em;
   padding-left: 0.08em; /* balances trailing tracking so the name is centered */
@@ -2908,9 +2908,9 @@
   position: relative;
   z-index: 1;
   display: block;
-  margin-top: -0.32em;
+  margin-top: -0.18em;
   padding: 0 0.15em;
-  font-size: 2.15em;
+  font-size: 1.85em;
   line-height: 0.9;
   white-space: nowrap;
   color: color-mix(in srgb, var(--color-welcome-gold) 72%, var(--color-motif-deep));

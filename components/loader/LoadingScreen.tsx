@@ -9,6 +9,7 @@ import { siteConfig as defaultSiteConfig } from '@/content/site';
 import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
 import { Bodoni_Moda, Montserrat } from 'next/font/google';
 import localFont from 'next/font/local';
+import { withRomanNumerals } from '@/components/title-numerals';
 import './loading-screen.css';
 import './loading-screen-velvet.css';
 
@@ -28,9 +29,9 @@ const montserrat = Montserrat({
 // Same lettering as the home hero (components/sections/hero.tsx): serif name + overlapping script line.
 // Sizes and classes below mirror that file exactly.
 const heroTitleSize = {
-  main: 'clamp(3.35rem, min(16vw, 18cqi), 8.25rem)',
-  script: 'clamp(2.55rem, min(12vw, 14cqi), 5.6rem)',
-  overlap: 'clamp(-0.95rem, min(-3.8vw, -3.2cqi), -1.85rem)',
+  main: 'clamp(2.7rem, min(13vw, 14.5cqi), 6.75rem)',
+  script: 'clamp(2.2rem, min(10vw, 11.5cqi), 4.75rem)',
+  overlap: 'clamp(-1.1rem, -2.2vw, -0.45rem)',
 } as const;
 const theSeasons = localFont({
   src: '../../Font/Fontspring-DEMO-theseasons-reg.otf',
@@ -433,7 +434,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
                 fontSize: 'var(--hero-script-size)',
               }}
             >
-              {fill(hero.titleScript)}
+              {withRomanNumerals(fill(hero.titleScript), theSeasons.className)}
             </span>
           </h2>
         </div>

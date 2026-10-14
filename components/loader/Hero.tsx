@@ -23,6 +23,7 @@ import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
 import { PlainAtmosphere } from '@/components/loader/PlainAtmosphere';
 import { PlainBubbles } from '@/components/loader/PlainBubbles';
 import localFont from 'next/font/local';
+import { withRomanNumerals } from '@/components/title-numerals';
 import { Lora, Playfair_Display } from 'next/font/google';
 import './envelope-invite.css';
 
@@ -767,7 +768,7 @@ export const Hero: React.FC<HeroProps> = ({
                           {fill(hero.titleMain)}
                         </span>
                         <span className={`${aboveTheBeyond.className} env-invite-letter-title__script`}>
-                          {fill(hero.titleScript)}
+                          {withRomanNumerals(fill(hero.titleScript), theSeasons.className)}
                         </span>
                       </span>
                       <div className="env-invite-letter-bottom">
