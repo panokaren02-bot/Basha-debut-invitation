@@ -145,10 +145,26 @@ function FaqTitle({ title, subtitle }: { title: string; subtitle: string }) {
   )
 }
 
-// "[guest list](#guest-list)" → smooth-scrolling link; everything else stays text
+// "[guest list](#guest-list)" → smooth-scrolling link; "[label](https://…)" → opens in a
+// new tab; everything else stays text
 function renderInline(text: string): ReactNode[] {
-  const parts = text.split(/(\[[^\]]+\]\(#[^)]+\))/g)
+  const parts = text.split(/(\[[^\]]+\]\((?:#|https?:\/\/)[^)]+\))/g)
   return parts.map((part, i) => {
+    const external = part.match(/^\[([^\]]+)\]\((https?:\/\/[^)]+)\)$/)
+    if (external) {
+      return (
+        <a
+          key={i}
+          href={external[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold underline decoration-[var(--color-welcome-gold)] decoration-1 underline-offset-[3px] transition-opacity hover:opacity-80"
+          style={{ color: CRIMSON }}
+        >
+          {external[1]}
+        </a>
+      )
+    }
     const match = part.match(/^\[([^\]]+)\]\(#([^)]+)\)$/)
     if (!match) return part
     const [, label, id] = match

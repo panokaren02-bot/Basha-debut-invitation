@@ -9,7 +9,7 @@ import type { AttireColor } from "@/content/site"
 import Image from "next/image"
 import localFont from "next/font/local"
 import { Cinzel } from "next/font/google"
-import { Shirt, Copy, Check, Navigation, Heart, MapPin } from "lucide-react"
+import { Shirt, Copy, Check, Navigation, Heart, MapPin, Route, Landmark } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
@@ -761,10 +761,117 @@ function EventVenueCard({
   )
 }
 
+type Directions = {
+  title: string
+  subtitle: string
+  steps: readonly string[]
+  landmarksLabel: string
+  landmarks: readonly string[]
+  address: string
+  mapButton: string
+  map: string
+}
+
+function DirectionsCard({
+  directions,
+  onOpenMaps,
+}: {
+  directions: Directions
+  onOpenMaps: (link: string) => void
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]" style={cardStyle}>
+      <div className="p-5 sm:p-7 md:p-9">
+        <div className="text-center">
+          <span
+            className="mx-auto flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)" }}
+            aria-hidden
+          >
+            <Route className="h-4.5 w-4.5" style={{ color: "var(--color-welcome-gold)" }} />
+          </span>
+          <h3
+            className={`${theSeasons.className} ${ct.sectionTitle} mt-3 font-semibold uppercase tracking-[0.16em]`}
+            style={{ color: C.heading }}
+          >
+            {directions.title}
+          </h3>
+          <p className={`font-goudy-italic ${ct.body} mt-1`} style={{ color: C.soft }}>
+            {directions.subtitle}
+          </p>
+          <FadeRule className="mt-4" />
+        </div>
+
+        <ol className="mx-auto mt-5 max-w-2xl space-y-4 sm:mt-6">
+          {directions.steps.map((step, i) => (
+            <li key={i} className="flex items-start gap-3 sm:gap-4">
+              <span
+                className={`${cinzel.className} flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8 sm:text-sm`}
+                style={{ background: C.light, color: C.accent, boxShadow: `inset 0 0 0 1px ${hairline}` }}
+              >
+                {i + 1}
+              </span>
+              <p className={`font-goudy-italic ${ct.body} pt-0.5 leading-relaxed`} style={{ color: C.body }}>
+                {step}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        {directions.landmarks.length > 0 && (
+          <div className="mx-auto mt-6 max-w-2xl rounded-2xl border p-4 sm:p-5" style={softPanelStyle}>
+            <p
+              className={`${cinzel.className} ${ct.label} flex items-center gap-1.5 font-semibold uppercase tracking-[0.18em]`}
+              style={{ color: C.label }}
+            >
+              <Landmark className="h-3.5 w-3.5" aria-hidden />
+              {directions.landmarksLabel}
+            </p>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {directions.landmarks.map((place) => (
+                <span
+                  key={place}
+                  className={`${cinzel.className} rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.06em] sm:text-xs`}
+                  style={{ background: C.light, color: C.heading, boxShadow: `inset 0 0 0 1px ${hairline}` }}
+                >
+                  {place}
+                </span>
+              ))}
+            </div>
+            <p className={`${theSeasons.className} ${ct.body} mt-3 flex items-start gap-1.5 tracking-[0.04em]`} style={{ color: C.body }}>
+              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: C.accent }} aria-hidden />
+              <span className="min-w-0">
+                <SpecialCharFont text={directions.address} />
+              </span>
+            </p>
+          </div>
+        )}
+
+        {directions.map ? (
+          <button
+            type="button"
+            onClick={() => onOpenMaps(directions.map)}
+            className={`${cinzel.className} mx-auto mt-6 flex w-full max-w-sm items-center justify-center gap-2 rounded-full border px-5 py-3 font-semibold uppercase tracking-[0.12em] ${ct.btn} transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]`}
+            style={{
+              background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
+              borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
+              color: "#fff",
+              boxShadow: "0 12px 24px -10px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
+            }}
+          >
+            <Navigation className="h-4 w-4" />
+            {directions.mapButton}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
 export function Details() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.eventDetails
-  const { venues, labels, attire, reminders } = content
+  const { venues, labels, attire, reminders, directions } = content
   const { ceremony, reception } = siteConfig
 
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
@@ -948,6 +1055,10 @@ export function Details() {
               showDateDetails={venues.reception.showDate}
               labels={labels}
             />
+          )}
+          {/* How to get there — numbered route, landmarks and the map button */}
+          {directions.steps.length > 0 && (
+            <DirectionsCard directions={directions} onOpenMaps={openInMaps} />
           )}
         </div>
 

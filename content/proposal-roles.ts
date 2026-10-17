@@ -4,7 +4,7 @@ import type { ProposalRoleDefinition } from "@/lib/proposal-types"
  * Proposal invite roles — edit this file to add, remove, or update roles.
  * `roleCategory` must match the RoleCategory column in your entourage Google Sheet.
  *
- * Debut roles: 18 Roses, 18 Treasures, 18 Cheers, 18 Candles, Escort, Cotillion.
+ * Debut roles: 18 Roses, 18 Candles, 18 Cheers, 18 Treasure Gifts, 18 Monetary Gifts.
  */
 export const proposalRoleDefinitions: ProposalRoleDefinition[] = [
   {
@@ -17,13 +17,13 @@ export const proposalRoleDefinitions: ProposalRoleDefinition[] = [
       "To offer a single red rose and share a dance with me — one of the eighteen gentlemen who have guarded, guided, and cheered me on as I step into this new chapter of my life.",
   },
   {
-    id: "18-treasures",
-    title: "One of My 18 Treasures",
+    id: "18-candles",
+    title: "One of My 18 Candles",
     category: "Entourage",
     type: "entourage",
-    roleCategory: "18 Treasures",
+    roleCategory: "18 Candles",
     description:
-      "To present a treasure and a few words from your heart — a keepsake I will carry with me long after the night ends, from someone whose presence has shaped who I am.",
+      "To light a candle and share a wish for me — one of the eighteen ladies whose warmth, wisdom, and friendship have lit my way to this moment.",
   },
   {
     id: "18-cheers",
@@ -35,31 +35,25 @@ export const proposalRoleDefinitions: ProposalRoleDefinition[] = [
       "To raise a glass and share a toast, a memory, or a wish for my future — lifting the night with your words as I turn eighteen.",
   },
   {
-    id: "18-candles",
-    title: "One of My 18 Candles",
+    id: "18-treasures",
+    title: "One of My 18 Treasure Gifts",
     category: "Entourage",
     type: "entourage",
-    roleCategory: "18 Candles",
+    // Kept as "18 Treasures" so existing rows in the entourage sheet still match
+    roleCategory: "18 Treasures",
+    roleCategoryAliases: ["18 Treasure Gifts"],
     description:
-      "To light a candle and share a wish for me — one of the eighteen ladies whose warmth, wisdom, and friendship have lit my way to this moment.",
+      "To present a treasured gift and a few words from your heart — a keepsake I will carry with me long after the night ends, from someone whose presence has shaped who I am.",
   },
   {
-    id: "escort",
-    title: "Escort",
+    id: "18-monetary-gifts",
+    title: "One of My 18 Monetary Gifts",
     category: "Entourage",
     type: "entourage",
-    roleCategory: "Escort",
+    roleCategory: "18 Monetary Gifts",
+    roleCategoryAliases: ["18 Bills", "Monetary Gift"],
     description:
-      "To walk beside me as I make my entrance and stay by my side through the night — a steady arm and a familiar smile on one of the most important evenings of my life.",
-  },
-  {
-    id: "cotillion",
-    title: "Cotillion Dancer",
-    category: "Entourage",
-    type: "entourage",
-    roleCategory: "Cotillion",
-    description:
-      "To dance the cotillion with me — learning the steps together and opening my debut with grace, elegance, and a little bit of magic.",
+      "To present a monetary gift with a blessing for my future — a token of love and encouragement as I take my first steps into adulthood and the dreams ahead of me.",
   },
 ]
 
@@ -69,4 +63,9 @@ export const proposalRoleIdAliases: Record<string, string> = {
   treasures: "18-treasures",
   cheers: "18-cheers",
   candles: "18-candles",
+  "18-treasure-gifts": "18-treasures",
+  "treasure-gifts": "18-treasures",
+  monetary: "18-monetary-gifts",
+  "monetary-gift": "18-monetary-gifts",
+  "18-bills": "18-monetary-gifts",
 }
