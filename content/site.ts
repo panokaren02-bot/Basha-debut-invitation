@@ -315,7 +315,7 @@ const SECTION_DECOS = {
 
 // Principal sponsors Google Apps Script — used by the main page and /inviteone
 // ⚠ check — every googleAPI URL below still points to the template's sheets.
-const SPONSORS_API = "https://script.google.com/macros/s/AKfycbz0Ndy92Ddr9oFPKABEOYsvsO6KUXl4kk-JaPhewoYgMpmW_wGIrel0P7-Vx6elbcs/exec"
+const SPONSORS_API = "https://script.google.com/macros/s/AKfycbzo96CZ3_PXZ9xm8_KLx5I_O14-2x44mVD6fpjKAmXuW76q8knjy7voB2KyXa42KbI2Vw/exec"
 
 export const siteConfig = {
   siteUrl: SITE_URL,
@@ -358,16 +358,16 @@ export const siteConfig = {
     backgroundMusic: BRAND.backgroundMusic,
   },
   googleAPI:{
-    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSeiWYHZH0Cikyw56VpmboL81080FtEM2qTA5wk37GRde7MEMQ/formResponse", // ⚠ check
-    message: "https://script.google.com/macros/s/AKfycbwJopsjlONOJgczhBqj-NT89Vxo5RiBCN5OIxVd5ZNJeb5h4oDAZCLZO9d66C56NR81HA/exec", // ⚠ check
-    guestList: "https://script.google.com/macros/s/AKfycbyAql9Jraj7bDw0tOa17fRPXzZafjPqCrNSkBXyZi1iBSf2cPE5vH6CCqbzx1Qwx_j9wg/exec", // ⚠ check
-    guestRequest: "https://script.google.com/macros/s/AKfycbx8v7bDxuk45mf_HLYhpE4T_jjJH8tVuJTDwq6vf3UDXOv0hnSMfZ3Wv2X2eFUs7EIehA/exec", // ⚠ check
-    entourage: "https://script.google.com/macros/s/AKfycbwmtA5nr4Qd-r_4GUzDl-FN139c9YHZ7Ji5ckyDemdN7NfRtXtZ3kzlSmwqMR0zlwPm2w/exec", // ⚠ check
+    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScLB7r_-OfWdCFBxw2vblcCZGbzAMc8B7wkG9SljaOVp9XuYQ/formResponse", // ⚠ check
+    message: "https://script.google.com/macros/s/AKfycbzKnD53EvOpAu-MqB3z13bgYDryUTalkIglLzYQzSNunDsxKiroXrcn2Dz7dz5TWwvrKg/exec", // ⚠ check
+    guestList: "https://script.google.com/macros/s/AKfycbyki1HG1XVHCIkE9Q0nQcfdEq7DQyQmjBvSQyiTWcLi2Wce4uN6D1D6Z2HifjDwD3MUWA/exec", // ⚠ check
+    guestRequest: "https://script.google.com/macros/s/AKfycbyJ7uy-6GqUpSPmkGVNuFCjeiGzgenAknkVpxfCzg3-W3DsQ97GoOjAlqWgQPq3EOoKlw/exec", // ⚠ check
+    entourage: "https://script.google.com/macros/s/AKfycbxYLmro6-Gu9YF7BItT4OmXIE0RjGU4UedKREl4bIvQu24jsJ9K7SSSQGDx-CbNBiR4_Q/exec", // ⚠ check
     sponsors: SPONSORS_API,
     // Principal sponsors shown on /inviteone and /invitetwo (entourage section)
     sponsorsInviteOne: SPONSORS_API,
-    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbz0Ndy92Ddr9oFPKABEOYsvsO6KUXl4kk-JaPhewoYgMpmW_wGIrel0P7-Vx6elbcs/exec",
-    googleShare: "https://docs.google.com/spreadsheets/d/1uNdninGTgugmzspWeI0UdSXtSNWIUprPsLVjHMl-inM/edit?usp=sharing", // ⚠ check
+    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbzo96CZ3_PXZ9xm8_KLx5I_O14-2x44mVD6fpjKAmXuW76q8knjy7voB2KyXa42KbI2Vw/exec",
+    googleShare: "https://docs.google.com/spreadsheets/d/1XFuCKtVvN4qXNIevVbghCZd1Xb-Iiah0yXHH1OHqYug/edit?usp=sharing", // ⚠ check
     videoMessageForm:
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform",
   },
@@ -1677,16 +1677,16 @@ export const siteConfig = {
       developedBy: "Developed by",
       developerName: "Lance Valle",
       developerUrl: "https://lance28-beep.github.io/portfolio-website/",
-      promoText: "Want a website like this? Visit",
-      promoName: "Wedding Invitation Naga",
-      promoUrl: "https://www.facebook.com/WeddingInvitationNaga",
+      promoText: "Visit and follow us:",
+      promoName: "Debut Digital Invites",
+      promoUrl: "https://www.facebook.com/debutinvitation/",
     },
   },
   // Snap & Share (components/sections/snap-share.tsx). {celebrant} → nickname.
   snapShare: {
     // ⚠ check — Google Drive upload folder + its QR are still from the template
     googleDriveLink:
-      "https://drive.google.com/drive/folders/1gtJslPNpyWQUtmd9wBvunbTxdYrO1kzT?usp=sharing",
+      "https://drive.google.com/drive/folders/1UnYn0ZkNX92Q4HNE48JErNNZOhBU2U3B?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
     hashtag: HASHTAGS,
     instructions: "Please scan this QR code and upload the photos and videos you took during the debut. I'd love to see the night through your eyes!",
