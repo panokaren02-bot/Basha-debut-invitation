@@ -3,6 +3,7 @@ import { fetchGalleryImages } from "@/lib/fetch-gallery-images"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { siteConfig } from "@/content/site"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 import localFont from "next/font/local"
@@ -40,13 +41,6 @@ const goldDividerStyle = {
 const goldDividerStyleLeft = {
   background: "linear-gradient(to left, transparent, var(--color-welcome-gold), transparent)",
 } as const
-
-const CORNERS = [
-  { key: "topLeft", className: "left-0 top-0" },
-  { key: "topRight", className: "right-0 top-0" },
-  { key: "bottomLeft", className: "left-0 bottom-0" },
-  { key: "bottomRight", className: "right-0 bottom-0" },
-] as const
 
 export const dynamic = "force-static"
 
@@ -103,7 +97,6 @@ function GalleryTitle({ title, script }: { title: string; script: string }) {
 export default async function GalleryPage() {
   const { desktop, mobile } = await fetchGalleryImages()
   const copy = siteConfig.gallery
-  const cornerDecos = siteConfig.loadingScreen.cornerDecos
   const images = [
     ...desktop.map((image) => ({
       ...image,
@@ -122,19 +115,10 @@ export default async function GalleryPage() {
       className={`gallery-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen overflow-x-hidden`}
       style={{ background: BG }}
     >
-      {/* Red circle pattern + crimson corners (colors: components/sections/love-story-red.css) */}
+      {/* Red circle pattern, softly blurred, with gold dust rising behind the photos
+          (colors + blur: components/sections/love-story-red.css) */}
       <PlainBubbles />
-      <div className="invite-section-corners z-10" aria-hidden="true">
-        {CORNERS.map(({ key, className }) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={key}
-            src={cornerDecos[key]}
-            alt=""
-            className={`invite-section-corner-img absolute ${className}`}
-          />
-        ))}
-      </div>
+      <RisingMotes count={60} />
 
       <section className="relative z-20 mx-auto max-w-7xl px-3 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
         <div className="relative z-20 mb-8 px-3 text-center sm:mb-10 sm:px-4 md:mb-12">

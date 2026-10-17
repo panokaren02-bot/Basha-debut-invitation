@@ -12,6 +12,7 @@ import { Cinzel } from "next/font/google"
 import { Shirt, Copy, Check, Navigation, Heart, MapPin } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
@@ -34,7 +35,7 @@ const aboveTheBeyond = localFont({
 
 // Red velvet vibe (same as My Story + Gallery): white + gold text on the red circle
 // pattern; the venue / attire / reminder cards stay ivory paper with wine + gold ink.
-// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// Circle colors + blur: components/sections/love-story-red.css (.red-velvet-root); gold dust rises behind the content
 const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
 const C = {
   heading: "var(--color-motif-deep)",
@@ -74,17 +75,6 @@ const softPanelStyle = {
   backgroundColor: "color-mix(in srgb, var(--color-motif-blush) 22%, var(--color-motif-soft))",
 } as const
 
-
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
-
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
-}
 
 function SectionIconDivider({ icon }: { icon: ReactNode }) {
   return (
@@ -296,7 +286,7 @@ function PhotoDeck({
         return (
           <motion.div
             key={image}
-            className="absolute inset-x-0 top-0 mx-auto h-[7rem] w-[5.5rem] overflow-hidden rounded-md sm:h-[8.5rem] sm:w-[6.5rem]"
+            className="absolute inset-x-0 top-0 mx-auto aspect-[4/5] w-[5.6rem] overflow-hidden rounded-md sm:w-[6.8rem]"
             style={{
               zIndex: count - depth,
               padding: 3,
@@ -432,14 +422,16 @@ function AttireCard({
         className="relative flex h-full flex-col overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]"
         style={cardStyle}
       >
-        <div className="px-4 pt-6 pb-2 sm:px-5 sm:pt-8">
-          <h4
-            className={`${cinzel.className} ${ct.attireCardTitle} text-center uppercase tracking-[0.22em] font-semibold leading-tight`}
-            style={{ color: C.heading }}
-          >
-            {title}
-          </h4>
-        </div>
+        {title ? (
+          <div className="px-4 pt-6 pb-2 sm:px-5 sm:pt-8">
+            <h4
+              className={`${cinzel.className} ${ct.attireCardTitle} text-center uppercase tracking-[0.22em] font-semibold leading-tight`}
+              style={{ color: C.heading }}
+            >
+              {title}
+            </h4>
+          </div>
+        ) : null}
 
         {image ? (
           <div className="relative flex w-full shrink-0 items-center justify-center overflow-hidden" style={{ background: C.light }}>
@@ -772,7 +764,7 @@ function EventVenueCard({
 export function Details() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.eventDetails
-  const { decos, venues, labels, attire, reminders } = content
+  const { venues, labels, attire, reminders } = content
   const { ceremony, reception } = siteConfig
 
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
@@ -850,30 +842,14 @@ export function Details() {
     >
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
+      <RisingMotes count={40} />
       <Section
         id="details"
         className="relative z-10 pt-14 pb-12 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 overflow-hidden"
       >
-        {/* Corner decorations */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
 
         {/* Header */}
         <div className="relative z-20 mb-6 px-6 text-center sm:mb-8 sm:px-10 md:mb-10 md:px-12">
-          <DecoImg
-            src={decos.headerOrnament}
-            className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-          />
           <p
             className={`${cinzel.className} mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.34em] min-[400px]:tracking-[0.38em] sm:text-[0.65rem] sm:tracking-[0.44em]`}
             style={onBgGold}
@@ -1002,7 +978,7 @@ export function Details() {
                   key={group.id}
                   title={group.title}
                   image={group.image}
-                  alt={`${group.title} attire guide`}
+                  alt={group.title ? `${group.title} attire guide` : "Dress code guide"}
                   belowImage={
                     hasPalette ? (
                       <DressCodePaletteHeader
@@ -1058,12 +1034,7 @@ export function Details() {
                       currentIndex={reminderImageIndex}
                       reduceMotion={reduceMotion}
                     />
-                  ) : (
-                    <DecoImg
-                      src={decos.headerOrnament}
-                      className="mx-auto mb-3 block h-auto w-20 select-none sm:w-24"
-                    />
-                  )}
+                  ) : null}
                   <h3
                     className={`${theSeasons.className} ${ct.sectionTitle} font-semibold uppercase tracking-[0.18em]`}
                     style={{ color: C.heading }}
@@ -1104,10 +1075,6 @@ export function Details() {
             </div>
           </motion.div>
 
-          <DecoImg
-            src={decos.footerVine}
-            className="relative z-20 mx-auto mt-10 block h-auto w-56 select-none opacity-90 sm:mt-12 sm:w-72 md:w-96"
-          />
         </div>
       </Section>
     </div>

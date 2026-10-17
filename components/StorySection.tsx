@@ -171,13 +171,21 @@ export const StorySection: React.FC<StorySectionProps> = ({
 
   const plainAnimate = { opacity: 1, x: 0, y: 0, scale: 1 }
 
+  // Scroll reveal: the photo glides in from its own side, the text from the opposite side
   const imageInitial = reduceMotion
-    ? { opacity: 1, scale: 1, y: 0 }
-    : { opacity: 0, scale: 0.9, y: 24 }
+    ? { opacity: 1, x: 0, rotate: 0, filter: "blur(0px)" }
+    : {
+        opacity: 0,
+        x: slideFromLeft ? -90 : 90,
+        rotate: slideFromLeft ? -6 : 6,
+        filter: "blur(6px)",
+      }
+  const imageInView = { opacity: 1, x: 0, rotate: 0, filter: "blur(0px)" }
 
   const textInitial = reduceMotion
-    ? { opacity: 1, y: 0 }
-    : { opacity: 0, y: 16 }
+    ? { opacity: 1, x: 0, filter: "blur(0px)" }
+    : { opacity: 0, x: slideFromLeft ? 70 : -70, filter: "blur(6px)" }
+  const textInView = { opacity: 1, x: 0, filter: "blur(0px)" }
 
   const sectionSurfaceClass = plain
     ? `love-story-plain-track love-story-plain-track--theme-${theme}${isFirst ? " love-story-plain-track--first" : ""}${isLast ? " love-story-plain-track--last" : ""}`
@@ -231,15 +239,15 @@ export const StorySection: React.FC<StorySectionProps> = ({
               <motion.div
                 className={`relative w-full md:max-w-md ${rotation}`}
                 initial={imageInitial}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-12%" }}
-                transition={{ duration: 0.95, delay: stagger, ease: revealEase }}
+                whileInView={imageInView}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 1.3, ease: revealEase }}
               >
                 <div
                   className={`w-full p-1.5 md:p-3${onPattern ? " story-pattern-frame" : ""}`}
                   style={onPattern ? undefined : imageFrameStyle}
                 >
-                  <div className="group relative aspect-[2/3] w-full overflow-hidden">
+                  <div className="group relative aspect-[3/5] w-full overflow-hidden md:aspect-[5/7]">
                     <Image
                       src={imageSrc}
                       alt="Story moment"
@@ -316,9 +324,9 @@ export const StorySection: React.FC<StorySectionProps> = ({
               }${textCardClass}`}
               style={onPattern ? undefined : { color: isDark ? lightBg : "var(--color-welcome-text)" }}
               initial={textInitial}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.85, delay: stagger + 0.15, ease: revealEase }}
+              whileInView={textInView}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 1.3, delay: 0.15, ease: revealEase }}
             >
               {title && (
                 <h2

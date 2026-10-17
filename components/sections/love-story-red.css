@@ -138,3 +138,56 @@
     0 18px 40px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent),
     0 4px 10px color-mix(in srgb, var(--color-coastal-deep) 20%, transparent);
 }
+
+/* ---- Gold dust rising behind section content (components/rising-motes.tsx) ----
+   z 1: above the circle pattern, below the chapters (StorySection is z 2) and header/footer (z 20).
+   Motes are spread through the whole (tall) section and each rises a short way,
+   so every chapter has some drifting behind it. */
+.rising-motes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rising-mote {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #f3dc9f;
+  box-shadow: 0 0 6px 1px rgba(243, 220, 159, 0.6);
+  opacity: 0;
+  animation: rising-mote-rise var(--dur) linear var(--delay) infinite;
+}
+@keyframes rising-mote-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 40vh);
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -60vh);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rising-motes {
+    display: none;
+  }
+}
+
+/* ---- Soft-focus background: the circle pattern is slightly blurred, like the
+   loading screen's backdrop, so the chapters stand out in front of it ---- */
+.love-story-root .plain-bubble,
+.gallery-root .plain-bubble,
+.red-velvet-root .plain-bubble {
+  filter: blur(6px);
+}

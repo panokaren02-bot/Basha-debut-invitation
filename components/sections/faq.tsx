@@ -9,6 +9,7 @@ import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
@@ -47,7 +48,7 @@ const aboveTheBeyond = localFont({
 // Red velvet vibe (same as the sections around it): white + gold text on the red
 // circle pattern; the questions sit on an ivory card with wine questions, gold accents
 // and crimson → wine number badges.
-// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// Circle colors + blur: components/sections/love-story-red.css (.red-velvet-root); gold dust rises behind the content
 const WINE = "var(--color-motif-deep)"
 const CRIMSON = "var(--color-motif-accent)"
 const IVORY = "var(--color-motif-soft)"
@@ -76,9 +77,6 @@ const dividerLineStyle = {
   background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
 
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
-
 const ct = {
   body: sectionType.textRelaxed,
   // a touch smaller than sectionType.text (13 / 15 / 16px → 12.5 / 14 / 15px)
@@ -102,14 +100,6 @@ const listVariants: Variants = {
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease } },
-}
-
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
 }
 
 // Sits directly on the red pattern: gold hairlines + diamond
@@ -218,7 +208,6 @@ function FaqAnswer({ answer }: { answer: string }) {
 export function FAQ() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.faq
-  const { decos } = content
   const reduceMotion = useReducedMotion()
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
@@ -247,23 +236,12 @@ export function FAQ() {
     >
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
+      <RisingMotes count={30} />
       <section
         id="faq"
         className="relative z-10 overflow-hidden pt-14 pb-12 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"
       >
         {/* Corner decorations (from site.ts) */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
 
         {/* Header */}
         <motion.div
@@ -273,10 +251,6 @@ export function FAQ() {
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <DecoImg
-            src={decos.headerOrnament}
-            className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-          />
           <DiamondDivider />
           <p
             className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold uppercase leading-snug tracking-[0.16em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] sm:mt-5 sm:text-[0.875rem] sm:tracking-[0.22em]`}
@@ -397,10 +371,6 @@ export function FAQ() {
             </motion.ul>
           </motion.div>
 
-          <DecoImg
-            src={decos.footerVine}
-            className="mx-auto mt-10 block h-auto w-56 select-none opacity-90 sm:mt-12 sm:w-72 md:w-96"
-          />
         </div>
       </section>
     </div>

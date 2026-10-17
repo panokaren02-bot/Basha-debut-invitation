@@ -161,401 +161,353 @@
   --font-serif: "Great Vibes", "Great Vibes Fallback";
 
 /* ==========================================
- *  MOTIF COLORS — DEBUT
- *  Theme:  Regal Grunge Aesthetic
- *  Motif:  Baroque Sun / Moon, Pearls, Red Roses
- *  Colors: Red, Black, Gold, Silver
- *
- *  CHANGE THE WHOLE SITE FROM HERE.
- *  Token names are kept from the original
- *  template (e.g. "teal" = the main ink color)
- *  so every component keeps working — only
- *  the values below need editing.
- * ========================================== */
+   MOTIF COLORS — DEBUT
+
+   Theme: Luxury Fashion Gala
+   Motif: Baroque Sun / Moon, Pearls, Red Roses
+   Colors: Burgundy, Black, Champagne Gold, Silver
+========================================== */
 
 /* ------------------------------------------
- * Background / Paper — pearl & silver
- * ------------------------------------------ */
+   Background / Paper — pearl & silver
+------------------------------------------ */
 
- --color-motif-cream: #F4F1EB;
- /* Pearl ivory — main page background */
+--color-motif-cream: #F5EFE5;
+--color-motif-yellow: #E3D2AA;
+--color-motif-soft: #FCFAF6;
 
- --color-motif-yellow: #E4D6AE;
- /* Champagne gold — hairlines, paper texture */
+/* ------------------------------------------
+   Red Rose Accents
+------------------------------------------ */
 
- --color-motif-soft: #FBF9F4;
- /* Pearl white — cards, light text on dark */
+--color-motif-accent: #A51C35;
+--color-motif-deep: #5D0B1A;
+--color-motif-medium: #C9A45C;
 
+/* ------------------------------------------
+   Black / Silver (main ink)
+------------------------------------------ */
 
- /* ------------------------------------------
-  * Red Rose Accents
-  * ------------------------------------------ */
+--color-motif-teal: #171316;
+--color-motif-teal-medium: #4C4246;
+--color-motif-teal-light: #C8C9CE;
 
- --color-motif-accent: #A3172A;
- /* Rose red — script, flowers, highlights */
+/* ------------------------------------------
+   Gold / Pearl accent
+------------------------------------------ */
 
- --color-motif-deep: #7A0F1A;
- /* Oxblood — hover / active / buttons */
+--color-motif-blush: #E8D9B5;
 
- --color-motif-medium: #C9A24A;
- /* Antique gold — secondary decoration */
+/* ------------------------------------------
+   Neutral / Paper
+------------------------------------------ */
 
+--color-motif-silver: #E5E5E8;
 
- /* ------------------------------------------
-  * Black / Silver (main ink)
-  * ------------------------------------------ */
+/* ==========================================
+   WELCOME SECTION
+========================================== */
 
- --color-motif-teal: #1A1416;
- /* Regal black — headings, icons, strong text */
+--color-welcome-bg:
+    color-mix(
+        in srgb,
+        var(--color-motif-cream) 72%,
+        white
+    );
 
- --color-motif-teal-medium: #4A3F42;
- /* Smoke charcoal — secondary ink */
+--color-welcome-bg-soft:
+    color-mix(
+        in srgb,
+        var(--color-motif-teal-light) 22%,
+        white
+    );
 
- --color-motif-teal-light: #C7C9CE;
- /* Silver */
+/* ==========================================
+   TYPOGRAPHY
+========================================== */
 
+/* Main body text — luxury black */
+--color-welcome-text: #171316;
 
- /* ------------------------------------------
-  * Gold / Pearl accent
-  * ------------------------------------------ */
+/* Secondary / softer text */
+--color-welcome-text-soft:
+    color-mix(
+        in srgb,
+        #171316 62%,
+        white
+    );
 
- --color-motif-blush: #E8D6A0;
- /* Pale gold */
+/* Small headings — deep burgundy */
+--color-welcome-heading: #5D0B1A;
 
+/* Script / romantic accent — rose red */
+--color-welcome-script: #A51C35;
 
- /* ------------------------------------------
-  * Neutral / Paper
-  * ------------------------------------------ */
+/* Main hero heading — deepest black */
+--color-welcome-navy: #100D0F;
 
- --color-motif-silver: #E6E6EA;
- /* Pale silver */
+/* ==========================================
+   BUTTONS / DECORATION
+========================================== */
 
+/* Buttons */
+--color-welcome-green: #5D0B1A;
 
- /* ==========================================
-  *  WELCOME SECTION
-  * ========================================== */
+/* Decorative lines */
+--color-welcome-botanical: #92713A;
 
- --color-welcome-bg:
-     color-mix(
-         in srgb,
-         var(--color-motif-cream) 72%,
-         white
-     );
+/* Gold decorative details */
+--color-welcome-gold: #C9A45C;
 
- --color-welcome-bg-soft:
-     color-mix(
-         in srgb,
-         var(--color-motif-teal-light) 22%,
-         white
-     );
+/* Pale gold accents */
+--color-welcome-blush: #E8D9B5;
 
+/* ==========================================
+   ADDITIONAL PALETTE (legacy names)
+========================================== */
 
- /* ==========================================
-  *  TYPOGRAPHY
-  * ========================================== */
+/* Deepest black */
+--color-coastal-deep: #100D0F;
 
- /* Main body text — regal black */
- --color-welcome-text: #1A1416;
+/* Regal black */
+--color-coastal-teal: #171316;
 
- /* Secondary / softer text */
- --color-welcome-text-soft:
-     color-mix(
-         in srgb,
-         #1A1416 62%,
-         white
-     );
+/* Smoke charcoal */
+--color-coastal-soft: #4C4246;
 
- /* Small headings — oxblood */
- --color-welcome-heading: #7A0F1A;
+/* Silver */
+--color-coastal-light: #C8C9CE;
 
- /* Script / romantic accent — rose red */
- --color-welcome-script: #A3172A;
+/* Rose red */
+--color-romantic-coral: #A51C35;
 
- /* Main hero heading — deepest black */
- --color-welcome-navy: #0E0B0C;
+/* Deep burgundy */
+--color-romantic-deep: #5D0B1A;
+
+/* Champagne gold */
+--color-romantic-peach: #C9A45C;
+
+/* Pale gold */
+--color-romantic-blush: #E8D9B5;
+
+/* Silver champagne */
+--color-coastal-sand: #DED6C9;
+
+/* Pearl ivory */
+--color-coastal-ivory: #F5EFE5;
+
+/* ==========================================
+   CELEBRANT NAME LOCKUP
+========================================== */
+
+--couple-name-fill: var(--color-motif-deep);
+
+--couple-name-fill-mid: var(--color-motif-accent);
+
+--couple-name-fill-accent: color-mix(in srgb, var(--color-welcome-gold) 70%, var(--color-motif-deep));
 
+--couple-name-fill-soft: var(--color-motif-soft);
+
+/* ==========================================
+   BACKGROUND — PEARL PATTERN
+========================================== */
 
- /* ==========================================
-  *  BUTTONS / DECORATION
-  * ========================================== */
+/* Flat base painted behind the circles */
+--color-bg-pattern-base:
+    color-mix(
+        in srgb,
+        var(--color-motif-silver) 45%,
+        var(--color-motif-cream)
+    );
 
- /* Buttons */
- --color-welcome-green: #7A0F1A;
+/* Main circles — pearl / silver family */
+--color-bg-circle-deep: color-mix(in srgb, var(--color-coastal-light) 45%, transparent);
+--color-bg-circle-mid: color-mix(in srgb, var(--color-motif-silver) 70%, transparent);
+--color-bg-circle-light: color-mix(in srgb, white 60%, transparent);
 
- /* Decorative lines */
- --color-welcome-botanical: #8C7338;
+/* Accent circles — gold + rose */
+--color-bg-circle-accent-1: color-mix(in srgb, var(--color-romantic-coral) 14%, transparent);
+--color-bg-circle-accent-2: color-mix(in srgb, var(--color-welcome-gold) 28%, transparent);
+--color-bg-circle-accent-3: color-mix(in srgb, var(--color-coastal-sand) 70%, transparent);
 
- /* Gold decorative details */
- --color-welcome-gold: #C9A24A;
+/* Rose + gold circles scattered through the pattern */
+--color-bg-circle-rose: color-mix(in srgb, var(--color-romantic-deep) 16%, transparent);
+--color-bg-circle-peach: color-mix(in srgb, var(--color-romantic-blush) 50%, transparent);
 
- /* Pale gold accents */
- --color-welcome-blush: #E8D6A0;
+/* Text and divider lines sitting directly on the pattern */
+--color-on-pattern: var(--color-welcome-navy);
+--color-on-pattern-soft: var(--color-motif-deep);
+--color-on-pattern-glow: color-mix(in srgb, white 70%, transparent);
+--color-on-pattern-line: var(--color-welcome-gold);
 
+/* ==========================================
+   HERO COUNTDOWN
+========================================== */
 
- /* ==========================================
-  *  ADDITIONAL PALETTE (legacy names)
-  * ========================================== */
+/* Solid at the very bottom, fading to transparent upward */
+--color-countdown-fade: var(--color-coastal-deep);
 
- /* Deepest black */
- --color-coastal-deep: #0E0B0C;
+/* Numbers + heading on the faded band */
+--color-countdown-text: var(--color-motif-soft);
 
- /* Regal black */
- --color-coastal-teal: #1A1416;
+/* Unit labels (Days, Hours, ...) */
+--color-countdown-label: var(--color-welcome-gold);
 
- /* Smoke charcoal */
- --color-coastal-soft: #4A3F42;
+/* ==========================================
+   ENVELOPE — LUXURY RED FAMILY
+========================================== */
 
- /* Silver */
- --color-coastal-light: #C7C9CE;
+/* Main paper */
+--color-envelope-paper:
+    color-mix(
+        in srgb,
+        var(--color-motif-deep) 88%,
+        var(--color-coastal-deep)
+    );
+
+/* Back panel / inside */
+--color-envelope-base: var(--color-motif-deep);
+
+/* Lit edges */
+--color-envelope-highlight:
+    color-mix(
+        in srgb,
+        var(--color-motif-accent) 88%,
+        var(--color-welcome-gold)
+    );
+
+/* Flap folds */
+--color-envelope-fold:
+    color-mix(
+        in srgb,
+        var(--color-motif-deep) 72%,
+        var(--color-coastal-deep)
+    );
+
+/* Shadows */
+--color-envelope-shadow:
+    color-mix(
+        in srgb,
+        var(--color-motif-deep) 45%,
+        var(--color-coastal-deep)
+    );
+
+/* Crease hairlines on the paper — gold */
+--color-envelope-crease: color-mix(in srgb, var(--color-welcome-gold) 30%, transparent);
+
+/* ==========================================
+   OPTIONAL SEMANTIC COLORS
+========================================== */
+
+/* Primary CTA */
+--color-primary: #5D0B1A;
 
- /* Rose red */
- --color-romantic-coral: #A3172A;
+/* Primary CTA hover */
+--color-primary-hover: #3F0712;
 
- /* Oxblood */
- --color-romantic-deep: #7A0F1A;
+/* Romantic CTA */
+--color-romantic: #A51C35;
 
- /* Antique gold */
- --color-romantic-peach: #C9A24A;
+/* Romantic hover */
+--color-romantic-hover: #5D0B1A;
 
- /* Pale gold */
- --color-romantic-blush: #E8D6A0;
+/* Soft highlight */
+--color-highlight: #E8D9B5;
 
- /* Silver champagne */
- --color-coastal-sand: #E2DDD0;
+/* Section accent */
+--color-section-accent: #C9A45C;
 
- /* Pearl ivory */
- --color-coastal-ivory: #F4F1EB;
+/* Light section */
+--color-section-light: #C8C9CE;
 
+/* Card background */
+--color-card: #FCFAF6;
 
- /* ==========================================
-  *  CELEBRANT NAME LOCKUP
-  *  (image mask, or script text when no
-  *  lettering image is set in content/site.ts)
-  * ========================================== */
+/* Border */
+--color-border: #DED6C9;
 
- --couple-name-fill: var(--color-motif-deep);
+/* Dark text */
+--color-text-dark: #100D0F;
 
- /* mid + accent → a subtle oxblood → rose → gold sheen */
- --couple-name-fill-mid: var(--color-motif-accent);
+/* Muted text */
+--color-text-muted:
+    color-mix(
+        in srgb,
+        #100D0F 60%,
+        white
+    );
 
- --couple-name-fill-accent: color-mix(in srgb, var(--color-welcome-gold) 70%, var(--color-motif-deep));
+/* ==========================================
+   DASHBOARD
+========================================== */
 
- /* Used on dark/photo backgrounds */
- --couple-name-fill-soft: var(--color-motif-soft);
+/* Buttons, active states, icons */
+--color-dash-primary: var(--color-primary);
+--color-dash-primary-hover: var(--color-primary-hover);
 
+/* Secondary accent (ampersands, check marks, links) */
+--color-dash-accent: var(--color-section-accent);
 
- /* ==========================================
-  *  BACKGROUND — PEARL PATTERN
-  *  Used by every plain-mode section (loader,
-  *  envelope, hero, details, entourage, ...)
-  *  via components/loader/PlainBubbles.
-  *  Circles read as scattered pearls, gold and
-  *  a hint of rose red. Flat colors only.
-  * ========================================== */
+/* Text */
+--color-dash-ink: var(--color-text-dark);
+--color-dash-ink-strong: color-mix(in srgb, var(--color-text-dark) 80%, black);
+--color-dash-text: color-mix(in srgb, var(--color-text-dark) 80%, white);
+--color-dash-muted: var(--color-text-muted);
+--color-dash-faint: color-mix(in srgb, var(--color-text-dark) 45%, white);
 
- /* Flat base painted behind the circles — pearl silver */
- --color-bg-pattern-base:
-     color-mix(
-         in srgb,
-         var(--color-motif-silver) 45%,
-         var(--color-motif-cream)
-     );
+/* Lines + borders */
+--color-dash-line: var(--color-section-light);
+--color-dash-focus: color-mix(in srgb, var(--color-section-accent) 55%, white);
+--color-dash-border: color-mix(in srgb, var(--color-section-light) 50%, white);
 
- /* Main circles — pearl / silver family */
- --color-bg-circle-deep: color-mix(in srgb, var(--color-coastal-light) 45%, transparent);
- --color-bg-circle-mid: color-mix(in srgb, var(--color-motif-silver) 70%, transparent);
- --color-bg-circle-light: color-mix(in srgb, white 60%, transparent);
+/* Surfaces */
+--color-dash-tint: color-mix(in srgb, var(--color-section-light) 26%, white);
+--color-dash-surface: color-mix(in srgb, var(--color-section-light) 12%, white);
+--color-dash-bg: color-mix(in srgb, var(--color-motif-cream) 60%, white);
+--color-dash-bg-deep: var(--color-motif-cream);
 
- /* Accent circles — gold + rose */
- --color-bg-circle-accent-1: color-mix(in srgb, var(--color-romantic-coral) 14%, transparent);
- --color-bg-circle-accent-2: color-mix(in srgb, var(--color-welcome-gold) 28%, transparent);
- --color-bg-circle-accent-3: color-mix(in srgb, var(--color-coastal-sand) 70%, transparent);
+/* Small badges */
+--color-dash-badge-bg: color-mix(in srgb, var(--color-romantic-blush) 55%, white);
+--color-dash-badge-text: color-mix(in srgb, var(--color-romantic-deep) 55%, black);
 
- /* Rose + gold circles scattered through the pattern */
- --color-bg-circle-rose: color-mix(in srgb, var(--color-romantic-deep) 16%, transparent);
- --color-bg-circle-peach: color-mix(in srgb, var(--color-romantic-blush) 50%, transparent);
+/* Delete / danger */
+--color-dash-danger: color-mix(in srgb, var(--color-romantic-deep) 45%, #7A2E2E);
+--color-dash-danger-text: color-mix(in srgb, var(--color-romantic-deep) 35%, #6E2A2A);
+--color-dash-danger-soft: color-mix(in srgb, var(--color-romantic-blush) 35%, white);
+--color-dash-danger-softer: color-mix(in srgb, var(--color-romantic-blush) 18%, white);
+--color-dash-danger-border: color-mix(in srgb, var(--color-romantic-blush) 60%, white);
 
- /* Text and divider lines sitting directly on the pattern */
- --color-on-pattern: var(--color-welcome-navy);
- --color-on-pattern-soft: var(--color-motif-deep);
- --color-on-pattern-glow: color-mix(in srgb, white 70%, transparent);
- --color-on-pattern-line: var(--color-welcome-gold);
+/* ==========================================
+   COLOR USAGE GUIDE — DEBUT
+========================================== */
 
+/* REGAL BLACK   #171316
+   Headings, icons, navigation, strong text
 
- /* ==========================================
-  *  HERO COUNTDOWN — fades up from the bottom
-  *  (components/sections/hero.tsx, plain mode)
-  * ========================================== */
+   DEEP BLACK    #100D0F
+   Hero name, dark overlays, countdown band, QR codes
 
- /* Solid at the very bottom, fading to transparent upward */
- --color-countdown-fade: var(--color-coastal-deep);
+   DEEP BURGUNDY #5D0B1A
+   Buttons, hover/active states, small emphasis
 
- /* Numbers + heading on the faded band */
- --color-countdown-text: var(--color-motif-soft);
+   ROSE RED      #A51C35
+   Script lines, roses, highlights
 
- /* Unit labels (Days, Hours, ...) */
- --color-countdown-label: var(--color-welcome-gold);
+   CHAMPAGNE GOLD #C9A45C
+   Ornaments, dividers, seal, baroque sun details
 
+   PALE GOLD     #E8D9B5
+   Soft decoration, badges
 
- /* ==========================================
-  *  ENVELOPE — LUXURY RED FAMILY
-  *  The invitation envelope (components/loader/
-  *  envelope-invite.css). Letter inside stays light.
-  * ========================================== */
+   SILVER        #C8C9CE
+   Pearls, subtle cards, borders
 
- /* Main paper */
- --color-envelope-paper:
-     color-mix(
-         in srgb,
-         var(--color-motif-deep) 88%,
-         var(--color-coastal-deep)
-     );
+   PEARL IVORY   #F5EFE5
+   Page background, large negative space
 
- /* Back panel / inside */
- --color-envelope-base: var(--color-motif-deep);
-
- /* Lit edges */
- --color-envelope-highlight:
-     color-mix(
-         in srgb,
-         var(--color-motif-accent) 88%,
-         var(--color-welcome-gold)
-     );
-
- /* Flap folds */
- --color-envelope-fold:
-     color-mix(
-         in srgb,
-         var(--color-motif-deep) 72%,
-         var(--color-coastal-deep)
-     );
-
- /* Shadows */
- --color-envelope-shadow:
-     color-mix(
-         in srgb,
-         var(--color-motif-deep) 45%,
-         var(--color-coastal-deep)
-     );
-
- /* Crease hairlines on the paper — gold */
- --color-envelope-crease: color-mix(in srgb, var(--color-welcome-gold) 30%, transparent);
-
-
- /* ==========================================
-  *  OPTIONAL SEMANTIC COLORS
-  * ========================================== */
-
- /* Primary CTA */
- --color-primary: #7A0F1A;
-
- /* Primary CTA hover */
- --color-primary-hover: #5C0A13;
-
- /* Romantic CTA */
- --color-romantic: #A3172A;
-
- /* Romantic hover */
- --color-romantic-hover: #7A0F1A;
-
- /* Soft highlight */
- --color-highlight: #E8D6A0;
-
- /* Section accent */
- --color-section-accent: #C9A24A;
-
- /* Light section */
- --color-section-light: #C7C9CE;
-
- /* Card background */
- --color-card: #FBF9F4;
-
- /* Border */
- --color-border: #E2DDD0;
-
- /* Dark text */
- --color-text-dark: #0E0B0C;
-
- /* Muted text */
- --color-text-muted:
-     color-mix(
-         in srgb,
-         #0E0B0C 60%,
-         white
-     );
-
-
-
- /* ==========================================
-  *  DASHBOARD
-  *  Every dashboard color comes from here and is
-  *  derived from the palette above — change the
-  *  palette and the whole dashboard follows.
-  *  Use as Tailwind classes: bg-dash-primary,
-  *  text-dash-ink, border-dash-border, ...
-  *  Plain colors only (gradients: page bg only).
-  * ========================================== */
-
- /* Buttons, active states, icons */
- --color-dash-primary: var(--color-primary);
- --color-dash-primary-hover: var(--color-primary-hover);
-
- /* Secondary accent (ampersands, check marks, links) */
- --color-dash-accent: var(--color-section-accent);
-
- /* Text */
- --color-dash-ink: var(--color-text-dark);
- --color-dash-ink-strong: color-mix(in srgb, var(--color-text-dark) 80%, black);
- --color-dash-text: color-mix(in srgb, var(--color-text-dark) 80%, white);
- --color-dash-muted: var(--color-text-muted);
- --color-dash-faint: color-mix(in srgb, var(--color-text-dark) 45%, white);
-
- /* Lines + borders */
- --color-dash-line: var(--color-section-light);
- --color-dash-focus: color-mix(in srgb, var(--color-section-accent) 55%, white);
- --color-dash-border: color-mix(in srgb, var(--color-section-light) 50%, white);
-
- /* Surfaces */
- --color-dash-tint: color-mix(in srgb, var(--color-section-light) 26%, white);
- --color-dash-surface: color-mix(in srgb, var(--color-section-light) 12%, white);
- --color-dash-bg: color-mix(in srgb, var(--color-motif-cream) 60%, white);
- --color-dash-bg-deep: var(--color-motif-cream);
-
- /* Small badges */
- --color-dash-badge-bg: color-mix(in srgb, var(--color-romantic-blush) 55%, white);
- --color-dash-badge-text: color-mix(in srgb, var(--color-romantic-deep) 55%, black);
-
- /* Delete / danger — romantic coral family, darkened for contrast */
- --color-dash-danger: color-mix(in srgb, var(--color-romantic-deep) 45%, #7A2E2E);
- --color-dash-danger-text: color-mix(in srgb, var(--color-romantic-deep) 35%, #6E2A2A);
- --color-dash-danger-soft: color-mix(in srgb, var(--color-romantic-blush) 35%, white);
- --color-dash-danger-softer: color-mix(in srgb, var(--color-romantic-blush) 18%, white);
- --color-dash-danger-border: color-mix(in srgb, var(--color-romantic-blush) 60%, white);
-
-
- /* ==========================================
-  *  COLOR USAGE GUIDE — DEBUT
-  * ==========================================
-    REGAL BLACK   #1A1416  (--color-motif-teal)
-      Headings, icons, navigation, strong text
-    DEEP BLACK    #0E0B0C  (--color-coastal-deep / --color-welcome-navy)
-      Hero name, dark overlays, countdown band, QR codes
-    OXBLOOD       #7A0F1A  (--color-motif-deep)
-      Buttons, hover/active states, small emphasis
-    ROSE RED      #A3172A  (--color-motif-accent)
-      Script lines, roses, highlights
-    ANTIQUE GOLD  #C9A24A  (--color-motif-medium / --color-welcome-gold)
-      Ornaments, dividers, seal, baroque sun details
-    PALE GOLD     #E8D6A0  (--color-motif-blush)
-      Soft decoration, badges
-    SILVER        #C7C9CE  (--color-motif-teal-light)
-      Pearls, subtle cards, borders
-    PEARL IVORY   #F4F1EB  (--color-motif-cream)
-      Page background, large negative space
-    PEARL WHITE   #FBF9F4  (--color-motif-soft)
-      Cards, light text on dark sections
- */
-
+   PEARL WHITE   #FCFAF6
+   Cards, light text on dark sections
+*/
   /* ─────────────────────────────────────────────────────────── */
   --font-imperial-script: "Imperial Script", cursive;
   --font-anastasia-script: "CoupleAnastasia";

@@ -13,6 +13,7 @@ import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import { fillCelebrant } from "@/lib/celebrant"
 import "@/components/loader/loading-screen.css"
+import "./hero.css"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -32,10 +33,49 @@ const aboveTheBeyond = localFont({
 })
 
 const entryEase = [0.22, 1, 0.36, 1] as const
+
+// Gold dust rising through the hero: most drift behind the title, a few pass in front
+const HERO_MOTES_BACK = Array.from({ length: 22 }, (_, i) => ({
+  x: (i * 37 + 11) % 100,
+  size: 2 + ((i * 7) % 4),
+  dur: 11 + ((i * 5) % 10),
+  delay: -((i * 3.1) % 16),
+  drift: (i % 2 === 0 ? 1 : -1) * (10 + ((i * 11) % 22)),
+}))
+const HERO_MOTES_FRONT = Array.from({ length: 5 }, (_, i) => ({
+  x: (i * 23 + 14) % 90 + 5,
+  size: 3 + (i % 2),
+  dur: 14 + i * 2.5,
+  delay: -(i * 3.7),
+  drift: (i % 2 === 0 ? -1 : 1) * (14 + i * 6),
+}))
+
+function HeroMotes({ layer }: { layer: "back" | "front" }) {
+  const motes = layer === "back" ? HERO_MOTES_BACK : HERO_MOTES_FRONT
+  return (
+    <div className={`home-hero-motes home-hero-motes--${layer}`} aria-hidden="true">
+      {motes.map((m, i) => (
+        <span
+          key={i}
+          className="home-hero-mote"
+          style={
+            {
+              "--x": `${m.x}%`,
+              "--size": `${m.size}px`,
+              "--dur": `${m.dur}s`,
+              "--delay": `${m.delay}s`,
+              "--drift": `${m.drift}px`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  )
+}
 const heroTitleSize = {
-  main: "clamp(2.7rem, min(13vw, 14.5cqi), 6.75rem)",
+  main: "clamp(3.6rem, min(19vw, 20cqi), 10rem)",
   script: "clamp(2.2rem, min(10vw, 11.5cqi), 4.75rem)",
-  overlap: "clamp(-1.1rem, -2.2vw, -0.45rem)",
+  overlap: "clamp(-0.1rem, 1.2vw - 0.6rem, 0.9rem)", // grows with width: tiny tuck on phones, sits lower on desktop
 } as const
 
 interface TimeLeft {
@@ -306,6 +346,8 @@ export function Hero() {
         </>
       )}
 
+      {!reduceMotion && <HeroMotes layer="back" />}
+
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-5 pb-6 pt-[clamp(4.25rem,12vw,7rem)] text-center sm:px-8">
         <motion.h1
           className="relative mx-auto w-full max-w-full @container text-center"
@@ -318,6 +360,14 @@ export function Hero() {
           }
           {...fadeUp(0.08)}
         >
+          {hero.kicker && (
+            <span
+              aria-hidden
+              className={`${cinzel.className} home-hero-eyebrow relative mb-3 block text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase tracking-[0.3em] sm:mb-4`}
+            >
+              {fill(hero.kicker)}
+            </span>
+          )}
           <span
             aria-hidden
             className="home-hero-title-glow pointer-events-none absolute left-1/2 top-[42%] h-[min(18rem,58vw)] w-[min(36rem,96%)] -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -325,7 +375,7 @@ export function Hero() {
           <span className="sr-only">{fill(hero.srTitle)}</span>
           <span
             aria-hidden
-            className={`${theSeasons.className} home-hero-title-main relative block uppercase leading-[0.78] tracking-[0.06em] min-[400px]:tracking-[0.09em] sm:tracking-[0.11em] md:tracking-[0.12em]`}
+            className={`${theSeasons.className} home-hero-title-main relative block whitespace-nowrap uppercase leading-[0.82] tracking-[0.03em] min-[400px]:tracking-[0.05em] sm:tracking-[0.07em] md:tracking-[0.08em]`}
             style={{ fontSize: "var(--hero-title-size)" }}
           >
             {fill(hero.titleMain)}
@@ -343,7 +393,7 @@ export function Hero() {
         </motion.h1>
 
         <motion.p
-          className={`${cinzel.className} home-hero-eyebrow mt-4 max-w-[22rem] text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase leading-[1.7] tracking-[0.18em] sm:mt-5 sm:max-w-none sm:tracking-[0.22em]`}
+          className={`${cinzel.className} home-hero-eyebrow mt-[clamp(1.6rem,6vw,3rem)] max-w-[22rem] text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase leading-[1.7] tracking-[0.18em] [text-wrap:balance] sm:max-w-none sm:tracking-[0.22em]`}
           {...fadeUp(0.2)}
         >
           {fill(hero.eyebrow)}
@@ -367,6 +417,8 @@ export function Hero() {
       <motion.div className="home-hero-countdown-bar relative z-10 mt-auto w-full" {...fadeUp(0.42)}>
         <HeroCountdown heading={fill(hero.countdownHeading)} labels={hero.countdownLabels} />
       </motion.div>
+
+      {!reduceMotion && <HeroMotes layer="front" />}
     </section>
   )
 }

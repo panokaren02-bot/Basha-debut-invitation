@@ -11,6 +11,7 @@ import { Section } from "@/components/section"
 import { sectionType } from "@/lib/section-typography"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
@@ -31,8 +32,8 @@ const aboveTheBeyond = localFont({
   variable: "--font-above-beyond",
 })
 
-// Red velvet vibe, same as My Story and /gallery: white + gold text on a red circle
-// pattern (circle + corner colors: components/sections/love-story-red.css)
+// Red velvet vibe, same as My Story and /gallery: white + gold text on a blurred red
+// circle pattern (colors + blur: components/sections/love-story-red.css). No decorations.
 const C = {
   title: "#fff",
   script: "var(--color-welcome-gold)",
@@ -65,16 +66,6 @@ const frameStyle: React.CSSProperties = {
 const badgeStyle: React.CSSProperties = {
   backgroundColor: "color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)",
   color: C.light,
-}
-
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
-
-function DecoImg({ src, className }: { src: string; className: string }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
 }
 
 function DiamondDivider({ children }: { children?: React.ReactNode }) {
@@ -133,7 +124,6 @@ type GalleryItem = { image: string; text: string }
 export function Gallery() {
   const { gallery } = useSiteConfig()
   const galleryItems: GalleryItem[] = gallery.images
-  const decos = gallery.decos
   // Desktop mosaic: 1 featured (fills 4 cells) + 8 tiles = 12 cells → whole rows at 3 or 4 columns
   const DESKTOP_TILES = 9
   const desktopItems = galleryItems.slice(0, DESKTOP_TILES)
@@ -250,31 +240,16 @@ export function Gallery() {
       className={`gallery-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative w-full overflow-hidden`}
       style={{ background: sectionBg }}
     >
+      {/* Red circle pattern, softly blurred, with gold dust rising behind the photos */}
       <PlainBubbles />
+      <RisingMotes count={36} />
       <Section
         id="gallery"
         className="relative z-10 overflow-hidden pt-14 pb-10 sm:pt-16 sm:pb-12 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"
       >
-        {/* Corner decorations */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
 
       {/* Header */}
       <div className="relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center sm:mb-10 sm:px-4 md:mb-12">
-        <DecoImg
-          src={decos.headerOrnament}
-          className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-        />
         <DiamondDivider />
         <p
           className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold leading-snug tracking-[0.12em] uppercase min-[400px]:max-w-none min-[400px]:text-[0.75rem] min-[400px]:tracking-[0.16em] sm:mt-5 sm:text-[0.9375rem] sm:tracking-[0.2em] md:text-base md:tracking-[0.22em]`}
@@ -466,10 +441,6 @@ export function Gallery() {
             >
               {gallery.footnote}
             </p>
-            <DecoImg
-              src={decos.footerVine}
-              className="mx-auto mt-6 block h-auto w-56 select-none opacity-90 sm:mt-8 sm:w-72 md:w-96"
-            />
           </>
         )}
       </div>

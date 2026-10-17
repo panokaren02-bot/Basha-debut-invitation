@@ -18,12 +18,10 @@ import {
 import { useSiteConfig } from '@/hooks/use-site-config';
 import { siteConfig as defaultSiteConfig } from '@/content/site';
 import { parseWeddingDate } from '@/lib/wedding-date';
-import { InviteParticles } from '@/components/loader/InviteParticles';
 import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
 import { PlainAtmosphere } from '@/components/loader/PlainAtmosphere';
 import { PlainBubbles } from '@/components/loader/PlainBubbles';
 import localFont from 'next/font/local';
-import { withRomanNumerals } from '@/components/title-numerals';
 import { Lora, Playfair_Display } from 'next/font/google';
 import './envelope-invite.css';
 
@@ -61,8 +59,14 @@ interface HeroProps {
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-// Short joining words in the headline ("Save the Date") are set in script — matches the loading screen
-const SCRIPT_WORDS = new Set(['the', 'of', 'and', '&', 'a']);
+// Gold dust drifting up over the scene — same feel as the loading screen
+const RISING_MOTES = Array.from({ length: 26 }, (_, i) => ({
+  x: (i * 37 + 11) % 100,
+  size: 2 + ((i * 7) % 4),
+  dur: 11 + ((i * 5) % 10),
+  delay: -((i * 3.1) % 16),
+  drift: (i % 2 === 0 ? 1 : -1) * (10 + ((i * 11) % 22)),
+}));
 
 function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
@@ -121,6 +125,8 @@ export const Hero: React.FC<HeroProps> = ({
   const plainTheme = content.plainTheme ?? defaultSiteConfig.loadingScreen.plainTheme;
   const cornerDecos = content.cornerDecos ?? defaultSiteConfig.loadingScreen.cornerDecos;
   const plainInvite = content.plainInvite ?? defaultSiteConfig.loadingScreen.plainInvite;
+  // Paper card wording is shared with the loading screen poster
+  const gala = content.gala ?? defaultSiteConfig.loadingScreen.gala;
   const reduceMotion = useReducedMotion();
   const openedRef = useRef(false);
   const enterBtnRef = useRef<HTMLButtonElement>(null);
@@ -132,7 +138,6 @@ export const Hero: React.FC<HeroProps> = ({
   const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   const celebrant = celebrantName(siteConfig);
-  const hero = siteConfig.hero ?? defaultSiteConfig.hero;
   const fill = (text: string) => fillCelebrant(text, siteConfig);
 
   const letterDateNumeric = useMemo(() => {
@@ -187,10 +192,11 @@ export const Hero: React.FC<HeroProps> = ({
         { src: pick(0), side: 'left' as const },
         { src: pick(1), side: 'right' as const },
       ] as const,
+      // photos[0] is always the left polaroid and photos[1] the right one
       desktop: [
         { src: pick(0), side: 'left' as const },
-        { src: pick(1), side: 'center' as const },
-        { src: pick(2), side: 'right' as const },
+        { src: pick(2), side: 'center' as const },
+        { src: pick(1), side: 'right' as const },
         { src: pick(3), side: 'right-inner' as const },
       ] as const,
     };
@@ -215,14 +221,6 @@ export const Hero: React.FC<HeroProps> = ({
     phase === 'cta';
 
   const contentsVisible =
-    phase === 'rising' ||
-    phase === 'photos' ||
-    phase === 'revealed' ||
-    phase === 'cta';
-
-  const sealGone =
-    phase === 'seal-break' ||
-    phase === 'flap-open' ||
     phase === 'rising' ||
     phase === 'photos' ||
     phase === 'revealed' ||
@@ -354,10 +352,11 @@ export const Hero: React.FC<HeroProps> = ({
     open: { rotateX: 180 },
   };
 
+  // The seal is kept exactly where it is: a quick press, then it springs back to full size
   const sealVariants: Variants = {
     idle: { scale: 1, opacity: 1, rotate: 0, y: 0 },
     press: { scale: 0.94, opacity: 1, rotate: 0, y: 2 },
-    break: { scale: 0.2, opacity: 0, rotate: 12, y: -4 },
+    settled: { scale: 1, opacity: 1, rotate: 0, y: 0 },
   };
 
   /*
@@ -526,7 +525,7 @@ export const Hero: React.FC<HeroProps> = ({
   const photosInteractive = photoState === 'emerge';
 
   const sealState =
-    phase === 'idle' ? 'idle' : phase === 'seal-press' ? 'press' : 'break';
+    phase === 'idle' ? 'idle' : phase === 'seal-press' ? 'press' : 'settled';
 
   return (
     <motion.div
@@ -592,7 +591,21 @@ export const Hero: React.FC<HeroProps> = ({
 
       {!reduceMotion && (
         <div className="env-invite-particles pointer-events-none" aria-hidden="true">
-          <InviteParticles count={28} />
+          {RISING_MOTES.map((m, i) => (
+            <span
+              key={i}
+              className="env-invite-mote"
+              style={
+                {
+                  '--x': `${m.x}%`,
+                  '--size': `${m.size}px`,
+                  '--dur': `${m.dur}s`,
+                  '--delay': `${m.delay}s`,
+                  '--drift': `${m.drift}px`,
+                } as React.CSSProperties
+              }
+            />
+          ))}
         </div>
       )}
 
@@ -698,7 +711,11 @@ export const Hero: React.FC<HeroProps> = ({
               transition={flapEase}
               style={{ transformOrigin: 'top center' }}
               aria-hidden="true"
-            />
+            >
+              {/* Two-sided flap: velvet outside, gold-lattice liner on the back once it folds open */}
+              <span className="env-invite-flap-face env-invite-flap-face--outer" />
+              <span className="env-invite-flap-face env-invite-flap-face--liner" />
+            </motion.div>
 
             <div className="env-invite-envelope-body">
               {/* Back panel */}
@@ -746,32 +763,31 @@ export const Hero: React.FC<HeroProps> = ({
                             className="env-invite-letter-ornament"
                           />
                         )}
-                        <span className="env-invite-letter-label" aria-label={content.headline}>
-                          {content.headline.split(/\s+/).filter(Boolean).map((word, i) => (
-                            <span
-                              key={i}
-                              aria-hidden="true"
-                              className={
-                                SCRIPT_WORDS.has(word.toLowerCase())
-                                  ? 'env-invite-letter-label__script'
-                                  : 'env-invite-letter-label__word'
-                              }
-                            >
-                              {word}
-                            </span>
-                          ))}
-                        </span>
+                        <span className="env-invite-letter-eyebrow">{gala.cardEyebrow ?? gala.eyebrow}</span>
                         <span className="env-invite-letter-divider" aria-hidden="true" />
                       </div>
-                      <span className="env-invite-letter-title" role="img" aria-label={fill(hero.srTitle)}>
+                      <span className="env-invite-letter-title" role="img" aria-label={`${fill(gala.title)} ${gala.subtitle}`}>
                         <span className={`${theSeasons.className} env-invite-letter-title__main`}>
-                          {fill(hero.titleMain)}
+                          {fill(gala.title)}
                         </span>
                         <span className={`${aboveTheBeyond.className} env-invite-letter-title__script`}>
-                          {withRomanNumerals(fill(hero.titleScript), theSeasons.className)}
+                          {gala.subtitle}
                         </span>
                       </span>
                       <div className="env-invite-letter-bottom">
+                        <span
+                          className="env-invite-letter-occasion"
+                          role="img"
+                          aria-label={`${gala.occasionNumber}${gala.occasionSuffix} ${gala.occasion}`}
+                        >
+                          <span className={`${theSeasons.className} env-invite-letter-occasion__age`}>
+                            {gala.occasionNumber}
+                            <sup>{gala.occasionSuffix}</sup>
+                          </span>
+                          <span className={`${aboveTheBeyond.className} env-invite-letter-occasion__script`}>
+                            {gala.occasion}
+                          </span>
+                        </span>
                         <span className="env-invite-letter-divider" aria-hidden="true" />
                         <span className="env-invite-letter-date" role="img" aria-label={letterDate.label}>
                           <span className="env-invite-letter-date__weekday">{letterDate.weekday}</span>
@@ -868,13 +884,9 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="env-invite-pocket-right" />
             </div>
 
+
             {/* Wax seal — centered on flap junction */}
-            <div
-              className="env-invite-seal-wrap"
-              style={{
-                display: sealGone && phase !== 'seal-break' ? 'none' : undefined,
-              }}
-            >
+            <div className="env-invite-seal-wrap">
               <motion.button
                 type="button"
                 className="env-invite-seal-btn"
@@ -882,8 +894,8 @@ export const Hero: React.FC<HeroProps> = ({
                 initial="idle"
                 animate={sealState}
                 transition={
-                  sealState === 'break'
-                    ? { duration: 0.28, ease: 'easeIn' }
+                  sealState === 'settled'
+                    ? { duration: 0.3, ease: 'easeOut' }
                     : { duration: 0.16, ease: 'easeOut' }
                 }
                 onClick={handleSealClick}
@@ -901,31 +913,6 @@ export const Hero: React.FC<HeroProps> = ({
               </motion.button>
             </div>
 
-            {phase === 'seal-break' && !reduceMotion && (
-              <>
-                <motion.span
-                  className="env-invite-seal-shard"
-                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                  animate={{ x: -28, y: -30, opacity: 0, scale: 0.35 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  aria-hidden="true"
-                />
-                <motion.span
-                  className="env-invite-seal-shard"
-                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                  animate={{ x: 30, y: 18, opacity: 0, scale: 0.3 }}
-                  transition={{ duration: 0.38, ease: 'easeOut' }}
-                  aria-hidden="true"
-                />
-                <motion.span
-                  className="env-invite-seal-shard"
-                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                  animate={{ x: 14, y: -24, opacity: 0, scale: 0.4 }}
-                  transition={{ duration: 0.32, ease: 'easeOut' }}
-                  aria-hidden="true"
-                />
-              </>
-            )}
           </div>
         </motion.div>
 

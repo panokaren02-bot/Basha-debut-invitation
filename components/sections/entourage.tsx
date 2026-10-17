@@ -11,6 +11,7 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
 import { fetchInvitationList, readCachedInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
@@ -33,7 +34,7 @@ const aboveTheBeyond = localFont({
 
 // Red velvet vibe (same as My Story, Gallery, Event Details): white + gold text on the
 // red circle pattern; the arched name card stays ivory paper with wine + gold ink.
-// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// Circle colors + blur: components/sections/love-story-red.css (.red-velvet-root); gold dust rises behind the content
 const GOLD = "var(--color-welcome-gold)"
 const GOLD_INK = "color-mix(in srgb, var(--color-welcome-gold) 78%, var(--color-motif-deep))"
 const PAPER =
@@ -67,23 +68,12 @@ const cardStyle = {
     "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 40%, transparent)",
 } as const
 
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
-
 const palette = {
   body: BODY,
   heading: NAVY,
   label: ACCENT,
   accent: ACCENT,
 } as const
-
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
-}
 
 function OutsideDivider() {
   return (
@@ -478,7 +468,6 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
   const sponsorsPath = sponsorsUrl(sponsorsList)
   const siteConfig = useSiteConfig()
   const content = siteConfig.entourage
-  const { decos } = content
   const celebrant = siteConfig.celebrant?.fullName || celebrantName(siteConfig)
   const ROLE_CATEGORY_ORDER = useMemo(
     () => [...(content.categoryOrder ?? []), ...TEMPLATE_CATEGORY_ORDER.filter((c) => !(content.categoryOrder ?? []).includes(c))],
@@ -767,29 +756,14 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
     >
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
+      <RisingMotes count={60} />
       <Section
         id="entourage"
         className="relative z-10 overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"
       >
         {/* Corner decorations (from site.ts) */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10">
-          <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute right-0 top-0 z-10">
-          <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-          <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-        </div>
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-          <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-        </div>
 
       <div className={`relative z-20 mx-auto mb-8 max-w-5xl px-3 text-center @container/entourage sm:mb-10 sm:px-4 md:mb-12 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}`}>
-        <DecoImg
-          src={decos.headerOrnament}
-          className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-        />
         <div className="mx-auto mb-4 sm:mb-5 md:mb-6">
           <OutsideDivider />
         </div>
@@ -1668,10 +1642,6 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
           </div>
         </div>
         </div>
-        <DecoImg
-          src={decos.footerVine}
-          className="relative z-20 mx-auto mt-10 block h-auto w-56 select-none opacity-90 sm:mt-12 sm:w-72 md:w-96"
-        />
       </div>
       </Section>
     </div>

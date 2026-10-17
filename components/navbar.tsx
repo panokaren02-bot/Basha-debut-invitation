@@ -139,8 +139,8 @@ export function Navbar() {
                 fill
                 sizes="(max-width: 768px) 51px, 67px"
                 priority
-                // Monogram artwork as-is (original colors, no tint)
-                className="object-contain object-center p-0 group-hover:scale-105 group-active:scale-100 transition-transform duration-500 drop-shadow-[0_2px_6px_color-mix(in_srgb,var(--color-welcome-navy)_35%,transparent)]"
+                // Monogram shown in white: brightness-0 flattens the artwork, invert turns it white
+                className="object-contain object-center p-0 brightness-0 invert group-hover:scale-105 group-active:scale-100 transition-transform duration-500 drop-shadow-[0_2px_6px_color-mix(in_srgb,var(--color-welcome-navy)_35%,transparent)]"
               />
             </div>
             <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[color-mix(in_srgb,var(--color-motif-soft)_18%,transparent)] blur-md -z-10" />
@@ -178,7 +178,7 @@ export function Navbar() {
 
           <div className="xl:hidden flex items-center justify-end h-full">
             <StaggeredMenu
-              position="left"
+              position="right"
               items={menuItems}
               socialItems={[]}
               displaySocials={false}

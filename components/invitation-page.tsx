@@ -268,7 +268,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
               >
                <Welcome />
               {/* <CoupleVideo />  */}
-              {/* <LoveStory /> */}
+              <LoveStory />
               <Countdown />
               <Gallery />
               <Messages />

@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 import { sectionType } from "@/lib/section-typography"
@@ -52,7 +53,7 @@ const aboveTheBeyond = localFont({
 
 // Red velvet vibe (same as the sections above): white + gold text on the red circle
 // pattern; the cards are ivory paper with wine headings, gold labels and crimson → wine
-// buttons. Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// buttons. Circle colors + blur: components/sections/love-story-red.css (.red-velvet-root); gold dust rises behind the content
 // TEAL keeps its template name but is now the wine ink used on the ivory cards.
 const TEAL = "var(--color-motif-deep)"
 const BUTTON = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
@@ -91,9 +92,6 @@ const onBgLineStyle = {
 const dividerLineStyle = {
   background: "linear-gradient(to right, transparent, var(--color-welcome-gold), transparent)",
 } as const
-
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
 
 const ct = {
   label: sectionType.label,
@@ -159,14 +157,6 @@ const rise: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
 }
 
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
-}
-
 // The Seasons has no clean glyphs for "&" and digits — show those in Cinzel
 function SpecialCharFont({ text }: { text: string }) {
   return (
@@ -203,7 +193,6 @@ function Label({ children }: { children: ReactNode }) {
 export function Footer() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.footer
-  const { decos } = content
   const reduceMotion = useReducedMotion()
   const year = new Date().getFullYear()
   const ceremonyDate = siteConfig.ceremony.date
@@ -318,20 +307,7 @@ export function Footer() {
     >
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
-
-      {/* Corner decorations (from site.ts) */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10">
-        <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute right-0 top-0 z-10">
-        <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-        <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-        <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-      </div>
+      <RisingMotes count={30} />
 
       <footer className="relative z-20 pt-14 pb-10 sm:pt-16 sm:pb-12 md:pt-20 md:pb-14">
         {/* Header: monogram + celebrant */}
@@ -343,7 +319,7 @@ export function Footer() {
           viewport={{ once: true, amount: 0.3 }}
         >
           {content.showMonogram && monogram ? (
-            // The monogram artwork as-is (original colors, no tint) with a soft drop shadow
+            // Monogram in white (same as the navbar + countdown) with a soft drop shadow
             // eslint-disable-next-line @next/next/no-img-element
             <motion.img
               variants={rise}
@@ -351,18 +327,14 @@ export function Footer() {
               alt={`${celebrant} monogram`}
               loading="lazy"
               decoding="async"
-              className="block h-32 w-32 select-none object-contain sm:h-40 sm:w-40 md:h-48 md:w-48"
-              style={{ filter: "drop-shadow(0 4px 14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent))" }}
+              className="block h-28 w-28 select-none object-contain sm:h-36 sm:w-36 md:h-44 md:w-44"
+              style={{ filter: "brightness(0) invert(1) drop-shadow(0 4px 14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent))" }}
             />
-          ) : (
-            <motion.div variants={rise}>
-              <DecoImg src={decos.headerOrnament} className="mx-auto block h-auto w-28 select-none sm:w-36" />
-            </motion.div>
-          )}
+          ) : null}
 
           <motion.h2
             variants={rise}
-            className={`${theSeasons.className} mt-4 text-2xl uppercase tracking-[0.12em] sm:mt-5 sm:text-3xl md:text-4xl`}
+            className={`${theSeasons.className} mt-4 text-4xl uppercase tracking-[0.1em] sm:mt-5 sm:text-5xl md:text-6xl`}
             style={onBg}
           >
             {celebrant}
@@ -370,7 +342,7 @@ export function Footer() {
           {content.nameLine ? (
             <motion.p
               variants={rise}
-              className={`${aboveTheBeyond.className} mt-1 text-2xl sm:text-3xl`}
+              className={`${aboveTheBeyond.className} -mt-1 px-2 text-3xl sm:text-4xl`}
               style={onBgGold}
             >
               {content.nameLine}
@@ -380,18 +352,28 @@ export function Footer() {
           {ceremonyDate ? (
             <motion.p
               variants={rise}
-              className={`${cinzel.className} mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] sm:text-xs`}
+              className={`${cinzel.className} mt-4 text-[0.7rem] font-semibold uppercase tracking-[0.28em] sm:mt-5 sm:text-xs`}
               style={onBgGold}
             >
               {ceremonyDate}
             </motion.p>
           ) : null}
 
-          <motion.div variants={rise} className="mt-4 flex items-center justify-center gap-2" aria-hidden>
-            <span className="h-px w-12 sm:w-20" style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }} />
-            <span className="h-1.5 w-1.5 rotate-45" style={{ background: GOLD }} />
-            <span className="h-px w-12 sm:w-20" style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }} />
-          </motion.div>
+          {content.hashtags.length > 0 ? (
+            <motion.div variants={rise} className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              {content.hashtags.map((tag) => (
+                <span
+                  key={tag}
+                  className={`${lora.className} rounded-full border px-3.5 py-1 text-[0.8rem] font-semibold italic tracking-[0.02em] sm:text-[0.86rem]`}
+                  style={{ borderColor: HAIRLINE, color: GOLD, background: "color-mix(in srgb, var(--color-coastal-deep) 35%, transparent)" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
+          ) : null}
+
+          <motion.span variants={rise} className="mt-5 block h-px w-40 sm:w-56" style={onBgLineStyle} aria-hidden />
         </motion.div>
 
         <div className="relative z-10 mx-auto flex max-w-6xl min-w-0 flex-col px-4 @container/footer sm:px-6 md:px-8">
@@ -511,14 +493,21 @@ export function Footer() {
                 {content.rsvp.show && (
                   <>
                     <span className="my-4 block h-px w-full" style={dividerLineStyle} aria-hidden />
-                    <Label>{content.rsvp.title}</Label>
-                    <p className={`${lora.className} mt-1 ${ct.body} font-medium`} style={{ color: palette.body }}>
-                      {content.rsvp.label}{" "}
-                      <span className="font-semibold" style={{ color: palette.heading }}>
-                        {siteConfig.details.rsvp.deadline}
-                      </span>
-                    </p>
-                    {content.rsvp.note ? (
+                    {/* No deadline yet → plain "RSVP" heading + a gentle ask instead of an empty date */}
+                    <Label>{siteConfig.details.rsvp.deadline ? content.rsvp.title : "RSVP"}</Label>
+                    {siteConfig.details.rsvp.deadline ? (
+                      <p className={`${lora.className} mt-1 ${ct.body} font-medium`} style={{ color: palette.body }}>
+                        {content.rsvp.label}{" "}
+                        <span className="font-semibold" style={{ color: palette.heading }}>
+                          {siteConfig.details.rsvp.deadline}
+                        </span>
+                      </p>
+                    ) : (
+                      <p className={`${lora.className} mt-1 ${ct.body} italic`} style={{ color: palette.soft }}>
+                        Kindly let me know if you can join the celebration.
+                      </p>
+                    )}
+                    {content.rsvp.note && siteConfig.details.rsvp.deadline ? (
                       <p className={`${lora.className} mt-1 ${ct.body} italic`} style={{ color: palette.soft }}>
                         {content.rsvp.note}
                       </p>

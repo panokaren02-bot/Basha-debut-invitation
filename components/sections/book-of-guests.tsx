@@ -9,6 +9,7 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { fetchInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
@@ -16,6 +17,23 @@ const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 })
+
+// The Seasons (demo) has no clean number glyphs — set any digits in Cinzel
+function DigitsInCinzel({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\d+)/).map((part, i) =>
+        i % 2 === 1 ? (
+          <span key={i} className={`${cinzel.className} tracking-normal`}>
+            {part}
+          </span>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  )
+}
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -32,7 +50,7 @@ const aboveTheBeyond = localFont({
 // Red velvet vibe (same as My Story, Gallery, Event Details, Entourage): white + gold
 // text on the red circle pattern; the stats and guest cards are ivory paper with wine
 // names, gold labels and crimson → wine badges.
-// Circle + corner colors: components/sections/love-story-red.css (.red-velvet-root)
+// Circle colors + blur: components/sections/love-story-red.css (.red-velvet-root); gold dust rises behind the content
 // TEAL keeps its template name but is now the wine ink used on the ivory cards.
 const TEAL = "var(--color-motif-deep)"
 const IVORY = "var(--color-motif-soft)"
@@ -70,9 +88,6 @@ const cardStyle = {
     "0 24px 50px -24px color-mix(in srgb, var(--color-coastal-deep) 75%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 35%, transparent)",
 } as const
 
-const CORNER_DECO_CLASS =
-  "red-corner-deco block h-auto w-auto max-w-[130px] sm:max-w-[200px] md:max-w-[260px] lg:max-w-[320px] select-none"
-
 const refreshButtonStyle = {
   borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
   background: DEEP_GRADIENT,
@@ -108,14 +123,6 @@ const cardVariants: Variants = {
   hidden: { opacity: 0, y: 22, scale: 0.97, filter: "blur(4px)" },
   show: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.6, ease } },
   exit: { opacity: 0, y: -14, scale: 0.98, filter: "blur(3px)", transition: { duration: 0.35, ease } },
-}
-
-function DecoImg({ src, className }: { src: string; className: string }) {
-  if (!src) return null
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} loading="lazy" decoding="async" alt="" aria-hidden="true" className={className} />
-  )
 }
 
 // Gold hairlines + diamond; onBg = sits directly on the red pattern (bright gold)
@@ -194,7 +201,6 @@ interface Guest {
 export function BookOfGuests() {
   const siteConfig = useSiteConfig()
   const copy = siteConfig.bookOfGuests
-  const { decos } = copy
   const CARDS_PER_VIEW = Math.max(1, copy.cardsPerView || 4)
   const reduceMotion = useReducedMotion()
   const [totalGuests, setTotalGuests] = useState(0)
@@ -338,20 +344,9 @@ export function BookOfGuests() {
     >
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
+      <RisingMotes count={50} />
 
       {/* Corner decorations (from site.ts) */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10">
-        <DecoImg src={decos.topLeft} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute right-0 top-0 z-10">
-        <DecoImg src={decos.topRight} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10">
-        <DecoImg src={decos.bottomLeft} className={CORNER_DECO_CLASS} />
-      </div>
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10">
-        <DecoImg src={decos.bottomRight} className={CORNER_DECO_CLASS} />
-      </div>
 
       {/* Section Header */}
       <motion.div
@@ -361,10 +356,6 @@ export function BookOfGuests() {
         whileInView="show"
         viewport={{ once: true, amount: 0.3 }}
       >
-        <DecoImg
-          src={decos.headerOrnament}
-          className="mx-auto mb-3 block h-auto w-28 select-none sm:mb-4 sm:w-36 md:w-44"
-        />
         <DiamondDivider onBg />
         <div className="mt-4 mb-4 sm:mt-5 sm:mb-5">
           <BookOfGuestsTitle title={copy.title} subtitle={copy.subtitle} />
@@ -445,7 +436,7 @@ export function BookOfGuests() {
                     animate={{ opacity: 1, y: 0, scale: showIncrease ? 1.12 : 1 }}
                     exit={{ opacity: 0, y: -14 }}
                     transition={{ duration: 0.5, ease }}
-                    className={`${theSeasons.className} text-4xl font-semibold tabular-nums leading-none sm:text-5xl md:text-6xl`}
+                    className={`${cinzel.className} text-4xl font-semibold tabular-nums leading-none tracking-[0.02em] sm:text-5xl md:text-6xl`}
                     style={{ color: palette.heading }}
                   >
                     {totalGuests}
@@ -566,7 +557,7 @@ export function BookOfGuests() {
                               style={{ color: TEAL }}
                               title={guest.name}
                             >
-                              {guest.name}
+                              <DigitsInCinzel text={guest.name} />
                             </h3>
                             {guest.isVip && (
                               <span
@@ -732,10 +723,6 @@ export function BookOfGuests() {
           </motion.div>
         )}
 
-        <DecoImg
-          src={decos.footerVine}
-          className="mx-auto mt-10 block h-auto w-56 select-none opacity-90 sm:mt-12 sm:w-72 md:w-96"
-        />
       </div>
     </div>
   )

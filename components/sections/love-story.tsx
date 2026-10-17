@@ -9,6 +9,7 @@ import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
+import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "./love-story-red.css"
 
@@ -98,48 +99,6 @@ function LoveStoryTitle({
   )
 }
 
-const CORNER_ANIM_CLASS = {
-  topLeft: "invite-section-corner-img--animated invite-section-corner-img--tl",
-  topRight: "invite-section-corner-img--animated invite-section-corner-img--tr",
-  bottomLeft: "invite-section-corner-img--animated invite-section-corner-img--bl",
-  bottomRight: "invite-section-corner-img--animated invite-section-corner-img--br",
-} as const
-
-function SectionCornerDecos({
-  cornerDecos,
-}: {
-  cornerDecos: (typeof defaultSiteConfig.loadingScreen)["cornerDecos"]
-}) {
-  const corners = [
-    { src: cornerDecos.topLeft, className: "left-0 top-0", anim: CORNER_ANIM_CLASS.topLeft },
-    { src: cornerDecos.topRight, className: "right-0 top-0", anim: CORNER_ANIM_CLASS.topRight },
-    {
-      src: cornerDecos.bottomLeft,
-      className: "left-0 bottom-0",
-      anim: CORNER_ANIM_CLASS.bottomLeft,
-    },
-    {
-      src: cornerDecos.bottomRight,
-      className: "right-0 bottom-0",
-      anim: CORNER_ANIM_CLASS.bottomRight,
-    },
-  ] as const
-
-  return (
-    <div className="invite-section-corners" aria-hidden="true">
-      {corners.map(({ src, className, anim }) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={src}
-          src={src}
-          alt=""
-          className={`invite-section-corner-img absolute ${className} ${anim}`}
-        />
-      ))}
-    </div>
-  )
-}
-
 function chapterTextFromParagraphs(paragraphs: readonly string[], celebrant: string) {
   return (
     <>
@@ -162,8 +121,6 @@ export function LoveStory() {
   const loading = siteConfig.loadingScreen ?? defaultSiteConfig.loadingScreen
   const loveStory = siteConfig.loveStory ?? defaultSiteConfig.loveStory
   const isPlain = loading.display === "plain"
-  const cornerDecos =
-    loading.cornerDecos ?? defaultSiteConfig.loadingScreen.cornerDecos
   const reduceMotion = useReducedMotion()
 
   const celebrant = celebrantName(siteConfig)
@@ -181,9 +138,9 @@ export function LoveStory() {
       className={`love-story-root ${theSeasons.variable} ${aboveTheBeyond.variable} relative min-h-screen w-full overflow-x-hidden`}
       style={{ background: sectionBg }}
     >
-      {/* Same circle pattern as the other sections */}
+      {/* Same circle pattern as the other sections, softly blurred (love-story-red.css) */}
       <PlainBubbles />
-      <SectionCornerDecos cornerDecos={cornerDecos} />
+      <RisingMotes count={110} />
 
       <header
         className="relative z-20 px-4 pb-6 pt-8 text-center sm:px-6 sm:pb-4 sm:pt-10 md:px-8 md:pt-12"

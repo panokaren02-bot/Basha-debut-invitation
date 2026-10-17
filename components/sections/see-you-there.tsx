@@ -257,7 +257,7 @@ function PhotoSeeYouThere() {
             activeIndex={activeIndex}
             alt={alt}
             className="hidden md:block"
-            imageClassName="object-[center_40%]"
+            imageClassName="object-[center_12%]"
             sizes="100vw"
           />
         )}

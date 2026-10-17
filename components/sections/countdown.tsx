@@ -257,13 +257,13 @@ export function Countdown() {
           className="relative"
         >
           <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[40rem] xl:h-[40rem]">
-            {/* Monogram artwork as-is (original colors, no tint) */}
+            {/* Monogram shown in white: brightness-0 flattens the artwork, invert turns it white */}
             <Image
               src={siteConfig.couple.monogram}
               alt={`${celebrant} monogram`}
               fill
               sizes="(max-width: 640px) 18rem, (max-width: 768px) 24rem, (max-width: 1024px) 28rem, 40rem"
-              className="object-contain drop-shadow-[0_6px_18px_color-mix(in_srgb,var(--color-coastal-deep)_45%,transparent)]"
+              className="object-contain brightness-0 invert drop-shadow-[0_6px_18px_color-mix(in_srgb,var(--color-coastal-deep)_45%,transparent)]"
               priority={false}
             />
           </div>

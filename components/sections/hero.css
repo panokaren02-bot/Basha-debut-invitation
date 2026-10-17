@@ -1,0 +1,92 @@
+/* Gold dust rising through the home hero.
+   Back layer sits between the photo scrim (z 1) and the text (z 10);
+   the front layer (z 20) is a handful of motes that drift over the text. */
+.home-hero-motes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.home-hero-motes--back {
+  z-index: 5;
+}
+.home-hero-motes--front {
+  z-index: 20;
+}
+.home-hero-mote {
+  position: absolute;
+  left: var(--x);
+  bottom: -10px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #f3dc9f;
+  box-shadow: 0 0 6px 1px rgba(243, 220, 159, 0.6);
+  opacity: 0;
+  animation: home-hero-mote-rise var(--dur) linear var(--delay) infinite;
+}
+/* Front motes are a touch softer so they never compete with the lettering */
+.home-hero-motes--front .home-hero-mote {
+  box-shadow: 0 0 8px 2px rgba(243, 220, 159, 0.5);
+  filter: blur(0.4px);
+}
+@keyframes home-hero-mote-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  12% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -105dvh);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-motes {
+    display: none;
+  }
+}
+
+/* ---- Readability over bright marquee photos ----
+   A soft dark wash centered on the text block (photos stay visible at the edges)
+   plus tighter, darker shadows on every line. Colors and fonts are unchanged. */
+.home-hero--photos .home-hero-photo-scrim {
+  background:
+    radial-gradient(70% 38% at 50% 50%, color-mix(in srgb, var(--color-coastal-deep) 62%, transparent) 0%, color-mix(in srgb, var(--color-coastal-deep) 30%, transparent) 55%, transparent 85%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 78%, transparent) 0%,
+      color-mix(in srgb, var(--color-motif-deep) 48%, transparent) 24%,
+      color-mix(in srgb, var(--color-motif-deep) 40%, transparent) 50%,
+      color-mix(in srgb, var(--color-motif-deep) 48%, transparent) 72%,
+      color-mix(in srgb, color-mix(in srgb, var(--color-motif-deep) 55%, var(--color-coastal-deep)) 86%, transparent) 100%
+    );
+}
+.home-hero--photos .home-hero-title-main {
+  text-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.55),
+    0 4px 22px rgba(20, 0, 5, 0.65),
+    0 12px 40px rgba(20, 0, 5, 0.45);
+}
+.home-hero--photos .home-hero-title-script {
+  text-shadow:
+    0 2px 2px rgba(0, 0, 0, 0.6),
+    0 4px 18px rgba(20, 0, 5, 0.7),
+    0 0 24px color-mix(in srgb, var(--color-welcome-gold) 30%, transparent);
+}
+.home-hero--photos .home-hero-eyebrow,
+.home-hero--photos .home-hero-date,
+.home-hero--photos .home-hero-meta,
+.home-hero--photos .home-hero-countdown-value,
+.home-hero--photos .home-hero-countdown-label,
+.home-hero--photos .home-hero-countdown-heading {
+  color: #fff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 2px 12px rgba(20, 0, 5, 0.7);
+}
