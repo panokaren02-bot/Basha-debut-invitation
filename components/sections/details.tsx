@@ -818,7 +818,7 @@ function DirectionsCard({
           ))}
         </ol>
 
-        {directions.landmarks.length > 0 && (
+        {directions.landmarks?.length > 0 && (
           <div className="mx-auto mt-6 max-w-2xl rounded-2xl border p-4 sm:p-5" style={softPanelStyle}>
             <p
               className={`${cinzel.className} ${ct.label} flex items-center gap-1.5 font-semibold uppercase tracking-[0.18em]`}
@@ -1057,9 +1057,9 @@ export function Details() {
             />
           )}
           {/* How to get there — numbered route, landmarks and the map button */}
-          {directions.steps.length > 0 && (
+          {directions?.steps?.length ? (
             <DirectionsCard directions={directions} onOpenMaps={openInMaps} />
-          )}
+          ) : null}
         </div>
 
         {/* Attire Guidelines */}
