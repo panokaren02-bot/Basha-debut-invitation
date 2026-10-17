@@ -245,12 +245,23 @@ const ATTIRE = {
 
 // ── Website address (used for QR codes, link previews, table finder) ────────
 // NEXT_PUBLIC_SITE_URL (env) overrides this when set.
-const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/" // ⚠ check — set the live domain
-// Image shown when the link is shared (Facebook, Messenger, Viber, X, …) — 1200×630 JPG in /public
-const LINK_PREVIEW_IMAGE = "/Details/LinkPreview.png" // ⚠ check — replace with a debut preview image
+const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/"
+// Image shown when the link is shared (Facebook, Messenger, Viber, X, …).
+// Messenger is strict: use a JPG exactly 1200×630, under ~300 KB. When you replace it,
+// change the file name (or bump ?v=) so Facebook fetches the new one instead of its cache.
+const LINK_PREVIEW_IMAGE = "/Details/LinkPreview.jpg?v=2"
+const LINK_PREVIEW_IMAGE_SIZE = { width: 1200, height: 630, type: "image/jpeg" }
 
 // Site address with env override applied and no trailing slash — no need to edit
-export const canonicalSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? SITE_URL).replace(/\/$/, "")
+export const canonicalSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL || SITE_URL).replace(/\/$/, "")
+// A leftover NEXT_PUBLIC_SITE_URL from another client's project makes every link preview
+// point at the wrong site (Messenger follows og:url) — flag it in the build log.
+if (canonicalSiteUrl !== SITE_URL.replace(/\/$/, "")) {
+  console.warn(
+    `[site] NEXT_PUBLIC_SITE_URL (${canonicalSiteUrl}) differs from SITE_URL (${SITE_URL}). ` +
+      "Link previews, QR codes and canonical URLs will use the env value.",
+  )
+}
 
 // ── Look & feel ─────────────────────────────────────────────────────────────
 // "plain"  = no photos anywhere: pearl pattern backgrounds, gold ornaments,
@@ -320,6 +331,7 @@ const SPONSORS_API = "https://script.google.com/macros/s/AKfycbzo96CZ3_PXZ9xm8_K
 export const siteConfig = {
   siteUrl: SITE_URL,
   linkPreviewImage: LINK_PREVIEW_IMAGE,
+  linkPreviewImageSize: LINK_PREVIEW_IMAGE_SIZE,
   // The celebrant — read by every section. {celebrant} in any text → nickname.
   celebrant: {
     ...CELEBRANT,

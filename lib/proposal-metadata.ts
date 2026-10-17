@@ -43,9 +43,9 @@ export function buildProposalMetadata(options?: {
         {
           url: PROPOSAL_OG_IMAGE_URL,
           secureUrl: PROPOSAL_OG_IMAGE_URL,
-          width: 1200,
-          height: 630,
-          type: "image/jpeg",
+          width: siteConfig.linkPreviewImageSize.width,
+          height: siteConfig.linkPreviewImageSize.height,
+          type: siteConfig.linkPreviewImageSize.type,
           alt: roleTitle
             ? `Will you be ${roleTitle}? — ${celebrant}'s Debut`
             : `${celebrant}'s Debut`,

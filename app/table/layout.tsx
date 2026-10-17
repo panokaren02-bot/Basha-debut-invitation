@@ -18,6 +18,15 @@ export const metadata: Metadata = {
     siteName: `${celebrant}'s Debut`,
     locale: "en_PH",
     type: "website",
+    // A page-level openGraph replaces the root one, so the share image must be repeated here
+    images: [
+      {
+        url: `${canonicalSiteUrl}${siteConfig.linkPreviewImage}`,
+        width: siteConfig.linkPreviewImageSize.width,
+        height: siteConfig.linkPreviewImageSize.height,
+        type: siteConfig.linkPreviewImageSize.type,
+      },
+    ],
   },
 }
 

@@ -10,10 +10,9 @@ import { LOADING_BG_PHOTOS } from "@/lib/loading-bg-photos"
 import { anastasiaScript } from "@/lib/fonts"
 
 const canonicalUrl = canonicalSiteUrl
-const desktopHero = siteConfig.linkPreviewImage
-const mobileHero = siteConfig.linkPreviewImage
-const eventImageUrl = `${canonicalUrl}${desktopHero}`
-const OG_IMAGE_FALLBACK = `${canonicalUrl}${desktopHero}`
+// One absolute https URL for the share image — Messenger ignores relative / mismatched ones
+const OG_IMAGE_URL = `${canonicalUrl}${siteConfig.linkPreviewImage}`
+const OG_IMAGE_SIZE = siteConfig.linkPreviewImageSize
 
 const celebrant = siteConfig.celebrant.nickname
 const hashtag = siteConfig.snapShare.hashtag[0] ?? `#${celebrant}Turns18`
@@ -24,8 +23,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
   name: `${celebrant}'s Debut`,
-  startDate: "2026-10-25T19:00:00+08:00",
-  endDate: "2026-10-26T01:00:00+08:00",
+  startDate: "2027-02-20T15:45:00+08:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   location: {
@@ -34,12 +32,12 @@ const jsonLd = {
     address: {
       "@type": "PostalAddress",
       streetAddress: siteConfig.ceremony.venue,
-      addressLocality: "Makati City",
+      addressLocality: "Quezon City",
       addressRegion: "Metro Manila",
       addressCountry: "PH",
     },
   },
-  image: [OG_IMAGE_FALLBACK],
+  image: [OG_IMAGE_URL],
   description: eventDescription,
   organizer: {
     "@type": "Person",
@@ -102,17 +100,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${celebrant}'s Debut | ${siteConfig.wedding.date}`,
     description: eventDescription,
-    url: canonicalUrl,
+    url: `${canonicalUrl}/`,
     siteName: `${celebrant}'s Debut`,
     locale: "en_PH",
     type: "website",
     images: [
       {
-        url: OG_IMAGE_FALLBACK,
-        secureUrl: OG_IMAGE_FALLBACK,
-        width: 1200,
-        height: 630,
-        type: "image/png",
+        url: OG_IMAGE_URL,
+        secureUrl: OG_IMAGE_URL,
+        width: OG_IMAGE_SIZE.width,
+        height: OG_IMAGE_SIZE.height,
+        type: OG_IMAGE_SIZE.type,
         alt: `${celebrant}'s Debut Invitation - ${siteConfig.wedding.date}`,
       },
     ],
@@ -121,7 +119,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${celebrant}'s Debut Invitation`,
     description: `You're invited to ${celebrant}'s debut on ${siteConfig.wedding.date}. RSVP and get all the details for the night! ${hashtag}`,
-    images: [OG_IMAGE_FALLBACK, eventImageUrl],
+    images: [OG_IMAGE_URL],
   },
   robots: {
     index: true,
@@ -186,8 +184,6 @@ export default function RootLayout({
             {...(index === 0 ? { fetchPriority: "high" as const } : {})}
           />
         ))}
-        <link rel="preload" as="image" href={mobileHero} media="(max-width: 767px)" />
-        <link rel="preload" as="image" href={desktopHero} media="(min-width: 768px)" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body
