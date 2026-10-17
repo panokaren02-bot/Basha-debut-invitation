@@ -76,7 +76,7 @@ export type AttireColor = string | { name: string; hex: string }
 
 // ── The celebrant ───────────────────────────────────────────────────────────
 const CELEBRANT = {
-  fullName: "Basha", // Add surname only if provided
+  fullName: "Basha Alexa Tidon", // Add surname only if provided
   nickname: "Basha", // Used everywhere as {celebrant}
   age: "18",
   ageWords: "Eighteen",
@@ -110,14 +110,7 @@ const VENUE = {
   name: "Angelica's Catering",
   address:
     "42 N. Ramirez St., cor. Matimyas St., Brgy. Don Manuel, Quezon City",
-  map: "https://maps.app.goo.gl/HN8e51pKYfmSieZ16", // Google Maps pin (directions button + QR)
-  // Step-by-step directions (Event Details card + FAQ)
-  directions: [
-    "From Quiapo / UST, go straight along España Blvd. towards the Welcome Rotonda / Quezon Ave.",
-    "At the right side of the rotonda is UDMC Hospital — turn right immediately onto N. Ramirez St. (For commuters, there's a trike terminal beside UDMC.)",
-    "Go straight along N. Ramirez St. About 100 meters from UDMC, Angelica's Catering is on the right side, at the corner of Matimyas St.",
-  ],
-  landmarks: ["UDMC Hospital", "Bulaluhan sa Ramirez"],
+  map: "https://maps.app.goo.gl/jSF6U7BsZ6ADEdWU6", // Add a verified Google Maps link
   // Add confirmed venue photos when available
   photos: [ "/Details/reception (1).jpg", "/Details/reception (2).jpg", "/Details/reception (3).jpg" ] as string[],
 }
@@ -252,7 +245,7 @@ const ATTIRE = {
 
 // ── Website address (used for QR codes, link previews, table finder) ────────
 // NEXT_PUBLIC_SITE_URL (env) overrides this when set.
-const SITE_URL = "https://yohana-debut.weddinginvitationrsvp.com/" // ⚠ check — set the live domain
+const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/" // ⚠ check — set the live domain
 // Image shown when the link is shared (Facebook, Messenger, Viber, X, …) — 1200×630 JPG in /public
 const LINK_PREVIEW_IMAGE = "/Details/LinkPreview.png" // ⚠ check — replace with a debut preview image
 
@@ -748,17 +741,6 @@ export const siteConfig = {
         .map((id) => ({ id, ...ATTIRE[id] })),
       palette: [] as AttireColor[], // no dress code palette
     },
-    // "How to get there" card under the venue (steps + landmarks come from VENUE)
-    directions: {
-      title: "How to Get There",
-      subtitle: `Directions to ${VENUE.name}`,
-      steps: VENUE.directions,
-      landmarksLabel: "Landmarks",
-      landmarks: VENUE.landmarks,
-      address: VENUE.address,
-      mapButton: "Open in Google Maps",
-      map: VENUE.map,
-    },
     reminders: {
       title: "Gentle Reminders",
       description: "A few thoughtful notes so everyone can enjoy the night.",
@@ -952,6 +934,7 @@ export const siteConfig = {
     // Sheet RoleCategory values shown in this order (anything else shows after them)
     categoryOrder: [
       "Parents of the Debutante",
+      "Escort",
       "18 Roses",
       "One of My 18 Roses",
       "18 Candles",
@@ -960,8 +943,8 @@ export const siteConfig = {
       "One of My 18 Treasures",
       "18 Cheers",
       "One of My 18 Cheers",
-      "18 Monetary Gifts",
-      "One of My 18 Monetary Gifts",
+      "Cotillion",
+      "Cotillion Dancer",
     ],
     // Leave any path "" to hide that decoration
     decos: { ...SECTION_DECOS },
@@ -971,16 +954,15 @@ export const siteConfig = {
       Escort: "Escort",
       "18 Roses": "18 Roses",
       "18 Candles": "18 Candles",
-      "18 Treasures": "18 Treasure Gifts",
+      "18 Treasures": "18 Treasures",
       "18 Cheers": "18 Cheers",
-      "18 Monetary Gifts": "18 Monetary Gifts",
+      Cotillion: "Cotillion Dancers",
       // Category names as written in the entourage sheet
       "One of My 18 Roses": "18 Roses",
       "One of My 18 Candles": "18 Candles",
-      "One of My 18 Treasures": "18 Treasure Gifts",
-      "One of My 18 Treasure Gifts": "18 Treasure Gifts",
+      "One of My 18 Treasures": "18 Treasures",
       "One of My 18 Cheers": "18 Cheers",
-      "One of My 18 Monetary Gifts": "18 Monetary Gifts",
+      "Cotillion Dancer": "Cotillion Dancers",
     } as Record<string, string>,
   },
   // RSVP / guest list (components/sections/guest-list.tsx) — card, search, RSVP form and all modals.
@@ -1184,15 +1166,6 @@ export const siteConfig = {
           "{venueName}, {venueAddress}. You'll find the map, directions, and a QR code in [Event Details](#details).",
       },
       {
-        question: "How do I get to Angelica's Catering?",
-        answer:
-          "1. From Quiapo / UST, go straight along España Blvd. towards the Welcome Rotonda / Quezon Ave.\n" +
-          "2. At the right side of the rotonda is UDMC Hospital — turn right immediately onto N. Ramirez St. (For commuters, there's a trike terminal beside UDMC.)\n" +
-          "3. Go straight along N. Ramirez St. About 100 meters from UDMC, Angelica's Catering is on the right side, at the corner of Matimyas St.\n\n" +
-          "Landmarks:\n• UDMC Hospital\n• Bulaluhan sa Ramirez\n\n" +
-          "42 N. Ramirez St. cor. Matimyas St., Brgy. Don Manuel, Quezon City — [Open in Google Maps](https://maps.app.goo.gl/HN8e51pKYfmSieZ16)",
-      },
-      {
         question: "May I bring a plus one?",
         answer:
           "Seating is limited and the celebration is by invitation only. Kindly RSVP only for the number of seats reserved under your name.",
@@ -1205,7 +1178,7 @@ export const siteConfig = {
       {
         question: "Is parking available?",
         answer:
-          "Parking around N. Ramirez St. can be limited, so please allow a few extra minutes to park and make your way to the venue. A ride-share or the trike beside UDMC Hospital are easy alternatives.",
+          "Yes — The Peninsula Manila offers parking for guests. Please allow a few extra minutes to park and make your way to the venue.",
       },
       {
         question: "May I take photos and videos?",
@@ -1287,7 +1260,7 @@ export const siteConfig = {
   // Roles live in content/proposal-roles.ts (18 Roses, 18 Treasures, 18 Cheers, …).
   // Text placeholders: {name} = invitee, {role} = role title, {celebrant} = nickname.
   // Each invitation type has its own wording:
-  //   party      → every debut role (18 Roses, Candles, Cheers, Treasure Gifts, Monetary Gifts)
+  //   party      → every debut role (18 Roses, Treasures, Cheers, Candles, Escort, Cotillion)
   //   sponsor    → Principal Sponsors (only if you add sponsor roles)
   //   bearer     → kept from the template (unused)
   //   flowerGirl → kept from the template (unused)
@@ -1306,15 +1279,12 @@ export const siteConfig = {
     roleIdAliases: proposalRoleIdAliases,
     // Shared labels used on every invitation
     labels: {
-      // Two lines above the picture ("" hides one)
-      topEyebrow: "A Personal Invitation",
-      topLine: "From my heart to yours",
-      headerEyebrow: "A Special Place", // small gold line above the heading
-      headerScript: "in my 18th Birthday", // big heading under the image
+      headerEyebrow: "A Personal Invitation",
+      headerScript: "from my heart to yours",
       saveTheDate: "Save the Date",
       roleOffered: "Role offered",
       preparedFor: "Prepared for",
-      askQuestion: "Will you be", // + role title, e.g. "Will you be one of my 18 Roses?"
+      askQuestion: "Will you be our",
       registeredName: "Registered name",
       returnButton: "Return to the Invitation",
       saving: "Saving...",
@@ -1338,15 +1308,21 @@ export const siteConfig = {
     copy: {
       party: {
         greeting: "Dear",
-        intro: [],
-        body: [
-          "Your presence would make this milestone even more meaningful. I would be honored to have you by my side as a symbol of love, friendship, and the beautiful memories we share.",
+        intro: [
+          "I have some exciting news that I would love to share with you.",
+          "I am turning eighteen, and I am celebrating my debut at Angelica's Catering, Quezon City.",
         ],
-        askLead: "",
-        askNote: "",
+        body: [
+          "This isn't just an invitation. This is a personal ask, especially meant for you.",
+          "As I imagine the night I step into a new chapter of my life, I keep thinking of the people who shaped my first eighteen years.",
+          "You are someone I would truly love to have there — not just as a guest, but as part of the moments I will remember for the rest of my life.",
+        ],
+        askLead: "So, with all my heart, I would like to ask you",
+        askNote:
+          "It only takes a little of your time on the night — and it would mean the world to me to have you be part of my debut.",
         yesButton: "Yes, I'd Love To!",
         noButton: "No, With Love & Warm Wishes",
-        signOff: "With love,", // followed by the celebrant's name
+        signOff: "With love,",
         yes: {
           title: "You Said Yes",
           script: "thank you",
@@ -1372,7 +1348,7 @@ export const siteConfig = {
           body: [
             "Your love and warmest wishes mean the world to me. Thank you!",
           ],
-          signOff: "With love,",
+          signOff: "With love and warmest wishes,",
         },
       },
       sponsor: {
@@ -1416,7 +1392,7 @@ export const siteConfig = {
           body: [
             "We are simply grateful to have shared this moment with you. Your love and warmest wishes mean the world to us.",
           ],
-          signOff: "With love,",
+          signOff: "With love and warmest wishes,",
         },
       },
       bearer: {
