@@ -11,10 +11,10 @@ import React, {
 import Image from 'next/image';
 import {
   motion,
-  useReducedMotion,
   type Transition,
   type Variants,
 } from 'motion/react';
+import { useHydratedReducedMotion } from '@/hooks/use-hydrated-reduced-motion';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import { siteConfig as defaultSiteConfig } from '@/content/site';
 import { parseWeddingDate } from '@/lib/wedding-date';
@@ -127,7 +127,7 @@ export const Hero: React.FC<HeroProps> = ({
   const plainInvite = content.plainInvite ?? defaultSiteConfig.loadingScreen.plainInvite;
   // Paper card wording is shared with the loading screen poster
   const gala = content.gala ?? defaultSiteConfig.loadingScreen.gala;
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const openedRef = useRef(false);
   const enterBtnRef = useRef<HTMLButtonElement>(null);
   const [mounted, setMounted] = useState(false);

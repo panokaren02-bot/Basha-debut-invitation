@@ -1092,6 +1092,37 @@ img[src*="%2Flovestorydeco%2F"] {
   .dash-sheet { animation: none; }
 }
 
+/* Share Invite panel: slides up inside the invite modal */
+.dash-share-panel {
+  animation: dash-sheet-up 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (min-width: 640px) {
+  .dash-share-panel {
+    animation-name: dash-sheet-pop;
+    animation-duration: 0.2s;
+  }
+}
+.dash-share-backdrop {
+  animation: dash-fade-in 0.2s ease-out;
+}
+@keyframes dash-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-share-panel,
+  .dash-share-backdrop { animation: none; }
+}
+/* Swipeable app row: no visible scrollbar */
+.dash-app-row,
+.dashboard-root .dash-app-row {
+  scrollbar-width: none;
+}
+.dash-app-row::-webkit-scrollbar,
+.dashboard-root .dash-app-row::-webkit-scrollbar {
+  display: none;
+}
+
 /* Elegant scrolling inside the dashboard: thin sage scrollbars, smooth + contained */
 .dashboard-root,
 .dashboard-root * {

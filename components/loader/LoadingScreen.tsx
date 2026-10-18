@@ -1,9 +1,9 @@
 'use client';
 
 import { fillCelebrant } from '@/lib/celebrant';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { useReducedMotion } from 'motion/react';
+import { useHydratedReducedMotion } from '@/hooks/use-hydrated-reduced-motion';
 import { Cinzel, Cormorant_Garamond, Playfair_Display } from 'next/font/google';
 import localFont from 'next/font/local';
 import { useSiteConfig } from '@/hooks/use-site-config';
@@ -103,15 +103,27 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   // Fall back to the bundled config if a remote override is missing these blocks.
   const content = siteConfig.loadingScreen ?? defaultSiteConfig.loadingScreen;
   const gala = content.gala ?? defaultSiteConfig.loadingScreen.gala;
-  const totalDurationMs = content.durationMs;
-  const statusMessages = content.statusMessages;
+  // Locked at mount: the remote config (/api/wedding-details) lands mid-animation as a
+  // fresh object — re-reading these would reset the timer and the progress bar.
+  const [totalDurationMs] = useState(content.durationMs);
+  const [statusMessages] = useState(content.statusMessages);
   const fill = (text: string) => fillCelebrant(text, siteConfig);
+  // Keyed by the photo list's contents, not its reference, so the same photos arriving
+  // in the remote config don't reshuffle the marquee
+  const photosKey = (content.backgroundPhotos ?? []).join('\n');
   const backgroundPhotos = useMemo(
-    () => (content.backgroundPhotos ?? []).map((src) => encodeURI(src)),
-    [content.backgroundPhotos],
+    () => (photosKey ? photosKey.split('\n').map((src) => encodeURI(src)) : []),
+    [photosKey],
   );
 
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
+  // Latest callbacks without restarting the timer when the parent re-renders
+  const onCompleteRef = useRef(onComplete);
+  const onFadeStartRef = useRef(onFadeStart);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+    onFadeStartRef.current = onFadeStart;
+  });
   const [fadeOut, setFadeOut] = useState(false);
   const [statusIndex, setStatusIndex] = useState(0);
 
@@ -156,14 +168,16 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     let fadeTimer: ReturnType<typeof setTimeout> | undefined;
     const t = setTimeout(() => {
       setFadeOut(true);
-      onFadeStart?.();
-      fadeTimer = setTimeout(onComplete, reduceMotion ? 200 : FADE_OUT_MS);
+      onFadeStartRef.current?.();
+      const fadeMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 200 : FADE_OUT_MS;
+      fadeTimer = setTimeout(() => onCompleteRef.current(), fadeMs);
     }, totalDurationMs);
     return () => {
       clearTimeout(t);
       clearTimeout(fadeTimer);
     };
-  }, [onComplete, onFadeStart, reduceMotion, totalDurationMs]);
+    // Runs once per mount — inputs are locked above
+  }, [totalDurationMs]);
 
   return (
     <div

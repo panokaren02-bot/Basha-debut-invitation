@@ -9,7 +9,7 @@ import type { AttireColor } from "@/content/site"
 import Image from "next/image"
 import localFont from "next/font/local"
 import { Cinzel } from "next/font/google"
-import { Shirt, Copy, Check, Navigation, Heart, MapPin, Route, Landmark } from "lucide-react"
+import { Shirt, Copy, Check, Navigation, Heart, MapPin, Route, Landmark, Expand } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
@@ -761,6 +761,8 @@ function EventVenueCard({
   )
 }
 
+type DirectionsImage = { src: string; alt: string; caption: string }
+
 type Directions = {
   title: string
   subtitle: string
@@ -768,17 +770,78 @@ type Directions = {
   landmarksLabel: string
   landmarks: readonly string[]
   address: string
-  mapButton: string
-  map: string
+  mapImage?: DirectionsImage
+  streetImage?: DirectionsImage
+  enlargeHint?: string
 }
 
-function DirectionsCard({
-  directions,
-  onOpenMaps,
+// Framed photo that opens full size in a new tab (pinch-zoom on phones)
+function DirectionsFigure({
+  image,
+  width,
+  height,
+  sizes,
+  hint,
+  priority = false,
 }: {
-  directions: Directions
-  onOpenMaps: (link: string) => void
+  image: DirectionsImage
+  width: number
+  height: number
+  sizes: string
+  hint?: string
+  priority?: boolean
 }) {
+  return (
+    <figure className="group/fig">
+      <a
+        href={image.src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative block overflow-hidden rounded-xl sm:rounded-2xl"
+        style={{
+          padding: 4,
+          background: C.light,
+          boxShadow: `inset 0 0 0 1px ${hairline}, 0 16px 30px -18px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)`,
+        }}
+        aria-label={`${image.caption} — open full size`}
+      >
+        <div className="relative overflow-hidden rounded-[0.6rem] sm:rounded-xl">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            width={width}
+            height={height}
+            sizes={sizes}
+            priority={priority}
+            className="h-auto w-full transition-transform duration-700 group-hover/fig:scale-[1.02]"
+          />
+          {hint ? (
+            <span
+              className={`${cinzel.className} absolute bottom-2 right-2 flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.12em] backdrop-blur-sm sm:text-[0.65rem]`}
+              style={{
+                color: "#fff",
+                background: "color-mix(in srgb, var(--color-motif-deep) 72%, transparent)",
+                boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)",
+              }}
+            >
+              <Expand className="h-3 w-3" aria-hidden />
+              {hint}
+            </span>
+          ) : null}
+        </div>
+      </a>
+      <figcaption
+        className={`${cinzel.className} ${ct.labelSm} mt-2.5 text-center font-semibold uppercase tracking-[0.18em]`}
+        style={{ color: C.label }}
+      >
+        {image.caption}
+      </figcaption>
+    </figure>
+  )
+}
+
+function DirectionsCard({ directions }: { directions: Directions }) {
+  const { mapImage, streetImage, enlargeHint } = directions
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]" style={cardStyle}>
       <div className="p-5 sm:p-7 md:p-9">
@@ -802,24 +865,78 @@ function DirectionsCard({
           <FadeRule className="mt-4" />
         </div>
 
-        <ol className="mx-auto mt-5 max-w-2xl space-y-4 sm:mt-6">
-          {directions.steps.map((step, i) => (
-            <li key={i} className="flex items-start gap-3 sm:gap-4">
-              <span
-                className={`${cinzel.className} flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8 sm:text-sm`}
-                style={{ background: C.light, color: C.accent, boxShadow: `inset 0 0 0 1px ${hairline}` }}
-              >
-                {i + 1}
-              </span>
-              <p className={`font-goudy-italic ${ct.body} pt-0.5 leading-relaxed`} style={{ color: C.body }}>
-                {step}
-              </p>
-            </li>
-          ))}
-        </ol>
+        {/* Illustrated route map — the whole way from the rotonda to the venue */}
+        {mapImage ? (
+          <div className="mx-auto mt-5 max-w-3xl sm:mt-6">
+            <DirectionsFigure
+              image={mapImage}
+              width={1408}
+              height={768}
+              sizes="(max-width: 768px) 92vw, 768px"
+              hint={enlargeHint}
+            />
+          </div>
+        ) : null}
+
+        {/* Steps beside the street-level photo (stacked on phones) */}
+        <div
+          className={`mx-auto mt-6 grid max-w-3xl items-center gap-6 sm:mt-8 ${
+            streetImage ? "md:grid-cols-[1fr_minmax(0,17rem)] md:gap-8" : ""
+          }`}
+        >
+          <ol className="relative">
+            {directions.steps.map((step, i) => {
+              const isLast = i === directions.steps.length - 1
+              return (
+                <li key={i} className="relative flex items-start gap-3 pb-5 last:pb-0 sm:gap-4">
+                  {/* Dotted gold line linking each step to the next */}
+                  {!isLast && (
+                    <span
+                      className="absolute left-[0.875rem] top-8 bottom-1 w-px sm:left-4 sm:top-9"
+                      style={{
+                        backgroundImage: "linear-gradient(to bottom, var(--color-welcome-gold) 50%, transparent 50%)",
+                        backgroundSize: "1px 6px",
+                      }}
+                      aria-hidden
+                    />
+                  )}
+                  <span
+                    className={`${cinzel.className} relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8 sm:text-sm`}
+                    style={
+                      isLast
+                        ? {
+                            background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
+                            color: "#fff",
+                            boxShadow: `inset 0 0 0 1px ${hairline}`,
+                          }
+                        : { background: C.light, color: C.accent, boxShadow: `inset 0 0 0 1px ${hairline}` }
+                    }
+                  >
+                    {isLast ? <MapPin className="h-3.5 w-3.5" aria-hidden /> : i + 1}
+                  </span>
+                  <p className={`font-goudy-italic ${ct.body} pt-0.5 leading-relaxed`} style={{ color: C.body }}>
+                    {step}
+                  </p>
+                </li>
+              )
+            })}
+          </ol>
+
+          {streetImage ? (
+            <div className="mx-auto w-full max-w-[17rem] sm:max-w-xs md:max-w-none">
+              <DirectionsFigure
+                image={streetImage}
+                width={992}
+                height={1081}
+                sizes="(max-width: 768px) 80vw, 272px"
+                hint={enlargeHint}
+              />
+            </div>
+          ) : null}
+        </div>
 
         {directions.landmarks?.length > 0 && (
-          <div className="mx-auto mt-6 max-w-2xl rounded-2xl border p-4 sm:p-5" style={softPanelStyle}>
+          <div className="mx-auto mt-6 max-w-3xl rounded-2xl border p-4 sm:mt-8 sm:p-5" style={softPanelStyle}>
             <p
               className={`${cinzel.className} ${ct.label} flex items-center gap-1.5 font-semibold uppercase tracking-[0.18em]`}
               style={{ color: C.label }}
@@ -846,23 +963,6 @@ function DirectionsCard({
             </p>
           </div>
         )}
-
-        {directions.map ? (
-          <button
-            type="button"
-            onClick={() => onOpenMaps(directions.map)}
-            className={`${cinzel.className} mx-auto mt-6 flex w-full max-w-sm items-center justify-center gap-2 rounded-full border px-5 py-3 font-semibold uppercase tracking-[0.12em] ${ct.btn} transition-all duration-300 hover:scale-[1.02] hover:brightness-110 active:scale-[0.98]`}
-            style={{
-              background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
-              borderColor: "color-mix(in srgb, var(--color-welcome-gold) 65%, transparent)",
-              color: "#fff",
-              boxShadow: "0 12px 24px -10px color-mix(in srgb, var(--color-coastal-deep) 65%, transparent)",
-            }}
-          >
-            <Navigation className="h-4 w-4" />
-            {directions.mapButton}
-          </button>
-        ) : null}
       </div>
     </div>
   )
@@ -1056,9 +1156,9 @@ export function Details() {
               labels={labels}
             />
           )}
-          {/* How to get there — numbered route, landmarks and the map button */}
+          {/* How to get there — route map, numbered steps, street photo and landmarks */}
           {directions?.steps?.length ? (
-            <DirectionsCard directions={directions} onOpenMaps={openInMaps} />
+            <DirectionsCard directions={directions} />
           ) : null}
         </div>
 

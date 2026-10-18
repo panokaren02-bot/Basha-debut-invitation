@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { motion, useReducedMotion } from "motion/react"
+import { motion } from "motion/react"
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion"
 import { Cinzel } from "next/font/google"
 import localFont from "next/font/local"
 import { withRomanNumerals } from "@/components/title-numerals"
@@ -269,7 +270,7 @@ export function Hero() {
   const backgroundPhotos = loading.backgroundPhotos ?? []
   const hero = siteConfig.hero ?? defaultSiteConfig.hero
   const fill = (text: string) => fillCelebrant(text, siteConfig)
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useHydratedReducedMotion()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {

@@ -34,6 +34,7 @@ import {
   ProposalMixedTextBlock,
   proposalMixedTextInter,
 } from "@/lib/proposal-mixed-text"
+import { ShareSheet } from "@/components/share-platforms"
 
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["500", "600"] })
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"] })
@@ -73,6 +74,7 @@ export function ProposalDashboard() {
   const [showSetupNote, setShowSetupNote] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [canShare, setCanShare] = useState(false)
+  const [showShareSheet, setShowShareSheet] = useState(false)
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function")
@@ -84,12 +86,15 @@ export function ProposalDashboard() {
   useEffect(() => {
     if (!selectedInviteRole) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeInviteModal()
+      if (e.key !== "Escape") return
+      // close the share panel first, then the invite sheet
+      if (showShareSheet) setShowShareSheet(false)
+      else closeInviteModal()
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedInviteRole])
+  }, [selectedInviteRole, showShareSheet])
 
   const getOrigin = () =>
     typeof window !== "undefined" ? window.location.origin : ""
@@ -123,6 +128,7 @@ export function ProposalDashboard() {
     setCopiedInviteText(false)
     setCopiedPersonalLink(false)
     setInviteNameError("")
+    setShowShareSheet(false)
   }
 
   const getInviteMessage = () => {
@@ -142,7 +148,8 @@ export function ProposalDashboard() {
 
 ${celebrant} has a personal debut invitation for you.
 
-She would love for you to open your special link, read her message, and let her know if you can be ${roleSingular.match(/^One of/i) ? roleSingular.replace(/^One of My/i, "one of her") : `her ${roleSingular}`}.
+She would love for you to please open your special link, read her message, and let her know if you can be ${roleSingular.match(/^One of/i) ? roleSingular.replace(/^One of My/i, "one of her") : `her ${roleSingular}`}?
+For your reply click the link, find the button at the digital invitation. Thanks!
 
 ${date} | ${day} | ${time}
 ${venue}
@@ -180,19 +187,13 @@ ${celebrant}`
     })
   }
 
-  /** Phones: open the system share sheet (Messenger, Viber, SMS…) with the full message. */
-  const handleShareInvite = async () => {
-    if (!selectedInviteRole) return
+  const openShareSheet = () => {
     if (!inviteeName.trim()) {
       setInviteNameError("Enter the guest's name first so the message greets them by name.")
       return
     }
     setInviteNameError("")
-    try {
-      await navigator.share({ text: getInviteMessage() })
-    } catch {
-      /* share cancelled — nothing to do */
-    }
+    setShowShareSheet(true)
   }
 
   const fetchSheetCounts = async () => {
@@ -326,7 +327,7 @@ ${celebrant}`
             <ol className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
               {[
                 { n: 1, title: "Personalize", text: "Pick a role and type the person's name." },
-                { n: 2, title: "Send", text: "Copy or share the message by Messenger, Viber or text." },
+                { n: 2, title: "Send", text: "Tap Messenger, Viber, WhatsApp, Telegram, email, text and more — or copy the message." },
                 { n: 3, title: "They say yes", text: "Their name fills the next open slot for that role." },
               ].map((step) => (
                 <li key={step.n} className="flex gap-2.5 rounded-lg bg-white/70 px-3 py-2.5 ring-1 ring-dash-border">
@@ -600,35 +601,45 @@ ${celebrant}`
 
             {/* Footer */}
             <div className="flex shrink-0 flex-col gap-2 border-t border-dash-border bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:justify-end sm:px-6 sm:py-4">
-              {canShare && (
-                <button
-                  type="button"
-                  onClick={() => void handleShareInvite()}
-                  className="flex h-11 items-center justify-center gap-2 rounded-full bg-dash-primary px-6 text-sm font-semibold text-white shadow-[0_10px_22px_-10px_color-mix(in_srgb,var(--color-dash-ink)_70%,transparent)] transition-all hover:brightness-110 active:scale-[0.99] sm:order-2"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share Invite
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={openShareSheet}
+                className="flex h-11 items-center justify-center gap-2 rounded-full bg-dash-primary px-6 text-sm font-semibold text-white shadow-[0_10px_22px_-10px_color-mix(in_srgb,var(--color-dash-ink)_70%,transparent)] transition-all hover:brightness-110 active:scale-[0.99] sm:order-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Share Invite
+              </button>
               <button
                 type="button"
                 onClick={handleCopyInviteText}
-                className={`flex h-11 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold transition-all active:scale-[0.99] sm:order-1 ${
-                  canShare
-                    ? copiedInviteText
-                      ? "border border-dash-accent bg-dash-accent text-white"
-                      : "border border-dash-border bg-white text-dash-ink hover:bg-dash-surface"
-                    : copiedInviteText
-                      ? "bg-dash-accent text-white"
-                      : "bg-dash-primary text-white shadow-[0_10px_22px_-10px_color-mix(in_srgb,var(--color-dash-ink)_70%,transparent)] hover:brightness-110"
+                className={`flex h-11 items-center justify-center gap-2 rounded-full border px-6 text-sm font-semibold transition-all active:scale-[0.99] sm:order-1 ${
+                  copiedInviteText
+                    ? "border-dash-accent bg-dash-accent text-white"
+                    : "border-dash-border bg-white text-dash-ink hover:bg-dash-surface"
                 }`}
               >
                 {copiedInviteText ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 {copiedInviteText ? "Message copied!" : "Copy Message"}
               </button>
             </div>
+
           </div>
         </div>
+      )}
+
+      {selectedInviteRole && (
+        <ShareSheet
+          open={showShareSheet}
+          onClose={() => setShowShareSheet(false)}
+          guestName={inviteeName.trim()}
+          roleTitle={selectedInviteRole.title}
+          canNativeShare={canShare}
+          payload={{
+            text: getInviteMessage(),
+            url: getProposalLink(selectedInviteRole.id, inviteeName.trim()),
+            subject: `${celebrantName(siteConfig)}'s Debut — A personal invitation for ${inviteeName.trim()}`,
+          }}
+        />
       )}
     </div>
   )

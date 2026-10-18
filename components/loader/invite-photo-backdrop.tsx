@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useReducedMotion } from 'motion/react';
+import { useHydratedReducedMotion } from '@/hooks/use-hydrated-reduced-motion';
 import {
   LOADING_BG_PHOTOS,
   MOBILE_BACKGROUND_PHOTOS,
@@ -91,13 +91,17 @@ export function PhotoMarquee({
     compact ? [...photos] : photos.slice(0, MARQUEE_SAMPLE_SIZE),
   );
 
+  // Reshuffle only when the photo list's contents change — a new array with the same
+  // photos (e.g. the remote site config arriving) must not swap the marquee mid-scroll
+  const photosKey = photos.join('\n');
   useEffect(() => {
+    const list = photosKey ? photosKey.split('\n') : [];
     if (compact) {
-      setSelected([...photos]);
+      setSelected(list);
       return;
     }
-    setSelected(pickRandomPhotos(photos, MARQUEE_SAMPLE_SIZE));
-  }, [photos, compact]);
+    setSelected(pickRandomPhotos(list, MARQUEE_SAMPLE_SIZE));
+  }, [photosKey, compact]);
 
   const [top, bottom] = compact
     ? [selected, [...selected].reverse()]
@@ -120,7 +124,7 @@ export function InvitePhotoBackdrop({
   className?: string;
   photos?: readonly string[];
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const copies = reduceMotion ? 1 : 2;
   const resolved =
     photos && photos.length > 0

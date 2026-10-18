@@ -234,13 +234,9 @@ const ATTIRE = {
     ladies: {
       label: "",
       details:
-        "Dress to IMPRESS\n" +
-        "This is a fashion gala, so treat the night as your runway. Gowns, cocktail dresses, sharp suits, tuxedos, barongs, or chic separates are all welcome — the dressier, the better.\n\n" +
-        "Bring your style. Own the spotlight.\n" +
-        "Sparkle, sequins, satin, and statement pieces are encouraged. Wear what makes you feel confident and ready for the camera.\n\n" +
-        "Wear any color except RED.\n" +
-        "Black, gold, silver, ivory, and every other shade are yours to choose — red is reserved for the debutante.",
-      highlight: "Dress to IMPRESS",
+        "Wear your most fabulous fashion dress and join us in style!\n\n" +
+        "You are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.",
+      highlight: "except for red",
     },
     gentlemen: {
       label: "",
@@ -419,7 +415,7 @@ export const siteConfig = {
     script: "to my eighteenth",
     paragraphs: [
       "Dear family and friends — eighteen years ago, my story began in your arms. Tonight, under a baroque sun and a silver moon, I step into a brand-new chapter, and there is no one I would rather have beside me than you.",
-      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come in silver or black — dressed in whatever makes you feel like yourself — and bring your warmest smile for a night of roses, pearls, and music.",
+      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come wearing your best — any style, any color except red — and bring your warmest smile for a night of roses, pearls, and music.",
       "Thank you for every lesson, every laugh, and every prayer that carried me here. Sharing this night with the people who shaped me is the most beautiful gift I could ask for.",
     ],
     signOff: "With all my love and gratitude,",
@@ -481,7 +477,7 @@ export const siteConfig = {
     },
     // Two numbered highlights, like a poster's "01 / 02" offers ([] hides the row)
     highlights: [
-      { label: "Dress Code", text: "Silver or black — any style" },
+      { label: "Dress Code", text: "Your best look — any color but red" },
       { label: "The Night", text: "Pearls, roses & gold" },
     ],
     // Bottom details row — {guestsTime}, {programTime}, {endTime}, {venue} are filled in
@@ -748,12 +744,12 @@ export const siteConfig = {
     },
     attire: {
       title: "Attire Guidelines",
-      description: "Bring your style and own the spotlight — wear any color except red.",
+      description: "It's a Fashion Gala birthday — come dressed to dazzle.",
       paletteTitle: "Dress Code Palette",
-      paletteSubtitle: "Silver or Black",
+      paletteSubtitle: "Any Color Except Red",
       colorGuideTitle: "Color Guide",
       colorGuideNote:
-        "Our motif is red, black, gold, and silver. Guests, please wear silver or black — how dressy you go is entirely up to you.",
+        "There is no set palette — every color is welcome except red, which is reserved for the debutante. How dressy you go is entirely up to you.",
       // Order and visibility come from ATTIRE.show (skips blanks, typos and repeats)
       groups: ATTIRE.show
         .filter((id, i, list) => ["sponsors", "entourage", "guests"].includes(id) && list.indexOf(id) === i)
@@ -768,8 +764,18 @@ export const siteConfig = {
       landmarksLabel: "Landmarks",
       landmarks: VENUE.landmarks,
       address: VENUE.address,
-      mapButton: "Open in Google Maps",
-      map: VENUE.map,
+      // Illustrated route map (wide) + street-level photo of the turn at UDMC
+      mapImage: {
+        src: "/Details/imagemapdirection.jpg",
+        alt: "Illustrated map from Welcome Rotonda along España Blvd., right onto N. Ramirez St. to Angelica's Catering",
+        caption: "Route Map",
+      },
+      streetImage: {
+        src: "/Details/imageDirection.jpg",
+        alt: "Street view on España Blvd. near Welcome Rotonda showing the right turn at UDMC Hospital onto N. Ramirez St.",
+        caption: "Turn right at UDMC Hospital",
+      },
+      enlargeHint: "Tap to enlarge",
     },
     reminders: {
       title: "Gentle Reminders",
@@ -789,8 +795,8 @@ export const siteConfig = {
           variant: "accent" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
-            "Dress to impress — bring your style and own the spotlight. Gowns, dresses, suits, or separates are all welcome.",
-            "Wear any color except red; it is reserved for the debutante.",
+            "Wear your most fabulous fashion dress and join us in style!",
+            "You are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.",
           ],
         },
         {
@@ -1183,7 +1189,7 @@ export const siteConfig = {
       {
         question: "What should I wear?",
         answer:
-          "Please dress in silver or black — stay in the palette and wear what feels right:\n\n• Dresses, gowns, suits, slacks, or separates\n• Pants or a dress — your choice\n• Short lengths are fine; pearls, lace, or a touch of gold are lovely accents\n\nKindly avoid red and white — those colors are reserved for the debutante.",
+          "Wear your most fabulous fashion dress and join us in style!\n\nYou are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.\n\nSee the [Attire Guidelines](#details) for inspiration.",
       },
       {
         question: "What time should I arrive?",
@@ -1581,13 +1587,13 @@ export const siteConfig = {
     guests: {
       title: "Guests",
       label: "Guests",
-      description: "Silver or black — any style; short lengths welcome.",
+      description: "Your best look — formal, semi-formal, or smart casual; any color except red.",
       image: "",
       palette: ["#C0C0C6", "#8E8E96", "#3A3A40", "#111013"],
     },
-    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: silver or black dress code (short length welcome).`,
+    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: wear your best in any color except red.`,
     closing: "Thank you for helping bring this regal night to life. I can't wait to celebrate with you!",
-    note: "Kindly dress in silver or black.",
+    note: "Kindly wear any color except red.",
   },
   narratives: {
     ourStory: "",

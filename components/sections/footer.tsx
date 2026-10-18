@@ -2,7 +2,8 @@
 
 import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useState, useEffect, useMemo, type ReactNode } from "react"
-import { motion, useReducedMotion, type Variants } from "motion/react"
+import { motion, type Variants } from "motion/react"
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion"
 import localFont from "next/font/local"
 import {
   Instagram,
@@ -193,7 +194,7 @@ function Label({ children }: { children: ReactNode }) {
 export function Footer() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.footer
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useHydratedReducedMotion()
   const year = new Date().getFullYear()
   const ceremonyDate = siteConfig.ceremony.date
 
