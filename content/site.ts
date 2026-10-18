@@ -280,7 +280,7 @@ const BRAND = {
   nameImage: "",
   seal: "/monogram/newseal.png", // envelope wax seal
   // Theme song — drop the MP3 into /public/background_music with this exact name
-  backgroundMusic: "/background_music/Sidewalks and Skeletons - GOTH (Lyrics) (1).mp3", // ⚠ check — file not added yet
+  backgroundMusic: "/background_music/Kylie Minogue - Lights Camera Action (Official Video).mp3", // ⚠ check — file not added yet
 }
 
 // Celebrant photos used in "photos" mode (loader, envelope, hero, reminders,
