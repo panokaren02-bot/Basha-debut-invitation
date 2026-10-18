@@ -31,6 +31,12 @@ type SharePlatform = {
   icon: ReactNode
   /** True when the app can't receive pre-filled text, so the guest's message must be pasted. */
   pasteOnly?: boolean
+  /**
+   * Phones: go through the system share menu instead of a deep link. Messenger's old
+   * `fb-messenger://share` link only opens the app's home screen now, while the share menu
+   * hands Messenger the full message and lets you pick the recipient.
+   */
+  nativeShareOnMobile?: boolean
   getHref: (payload: SharePayload, mobile: boolean) => string
   /** Shown if an app link (viber:, sms:, mailto:…) doesn't seem to open anything. */
   getFallback?: (payload: SharePayload, mobile: boolean) => { note: string; label?: string; href?: string }
@@ -54,6 +60,7 @@ export const SHARE_PLATFORMS: SharePlatform[] = [
     label: "Messenger",
     background: "linear-gradient(135deg, #0099FF 0%, #A033FF 60%, #FF5280 100%)",
     pasteOnly: true,
+    nativeShareOnMobile: true,
     icon: (
       <svg viewBox="0 0 24 24" className={ICON} aria-hidden="true">
         <path
@@ -289,7 +296,7 @@ type ShareSheetProps = {
   canNativeShare: boolean
 }
 
-type ShareStatus = { platformId: SharePlatformId | "copy" | "link"; notOpened?: boolean }
+type ShareStatus = { platformId: SharePlatformId | "copy" | "link"; notOpened?: boolean; viaShareMenu?: boolean }
 
 /** "Share invite" sheet: bottom sheet on phones, centered dialog on desktop. */
 export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNativeShare }: ShareSheetProps) {
@@ -316,6 +323,14 @@ export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNa
   }
 
   const handleApp = (platform: SharePlatformItem) => {
+    if (mobile && platform.nativeShareOnMobile && canNativeShare) {
+      copyTextNow(payload.text)
+      flash({ platformId: platform.id, viaShareMenu: true }, 15000)
+      navigator.share({ text: payload.text }).catch(() => {
+        /* share cancelled — nothing to do */
+      })
+      return
+    }
     flash({ platformId: platform.id })
     openSharePlatform(platform, payload, () => flash({ platformId: platform.id, notOpened: true }, 15000))
   }
@@ -457,7 +472,13 @@ export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNa
                       <span className="font-semibold text-dash-ink">Link copied!</span> Paste it anywhere.
                     </p>
                   )}
-                  {activePlatform && !fallback && (
+                  {activePlatform && status?.viaShareMenu && (
+                    <p>
+                      <span className="font-semibold text-dash-ink">Choose {activePlatform.label}</span> in the share
+                      menu, then pick {firstName} and send — the message is already filled in.
+                    </p>
+                  )}
+                  {activePlatform && !fallback && !status?.viaShareMenu && (
                     <p>
                       <span className="font-semibold text-dash-ink">Message copied!</span>{" "}
                       {activePlatform.pasteOnly
