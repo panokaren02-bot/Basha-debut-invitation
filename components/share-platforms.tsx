@@ -21,6 +21,18 @@ export type SharePayload = {
   url: string
   /** Email subject line. */
   subject: string
+  /** Guest's email — fills the "To" field when set. */
+  email?: string
+  /** Guest's mobile number — opens WhatsApp / Messages straight to their chat when set. */
+  phone?: string
+}
+
+/** Digits for wa.me (international, no "+"); assumes PH numbers like 0917… / 917…. */
+function toIntlPhone(phone?: string): string {
+  const digits = (phone ?? "").replace(/\D/g, "")
+  if (digits.length === 11 && digits.startsWith("09")) return `63${digits.slice(1)}`
+  if (digits.length === 10 && digits.startsWith("9")) return `63${digits}`
+  return digits.length >= 10 ? digits : ""
 }
 
 type SharePlatform = {
@@ -126,8 +138,12 @@ export const SHARE_PLATFORMS: SharePlatform[] = [
         />
       </svg>
     ),
-    getHref: ({ text }, mobile) =>
-      mobile ? `https://wa.me/?text=${enc(text)}` : `https://web.whatsapp.com/send?text=${enc(text)}`,
+    getHref: ({ text, phone }, mobile) => {
+      const to = toIntlPhone(phone)
+      return mobile
+        ? `https://wa.me/${to}?text=${enc(text)}`
+        : `https://web.whatsapp.com/send?${to ? `phone=${to}&` : ""}text=${enc(text)}`
+    },
   },
   {
     id: "instagram",
@@ -171,11 +187,11 @@ export const SHARE_PLATFORMS: SharePlatform[] = [
     label: "Email",
     background: "#EA4335",
     icon: <Mail className={`${ICON} text-white`} strokeWidth={2} />,
-    getHref: ({ text, subject }) => `mailto:?subject=${enc(subject)}&body=${enc(text)}`,
-    getFallback: ({ text, subject }) => ({
+    getHref: ({ text, subject, email }) => `mailto:${enc(email ?? "")}?subject=${enc(subject)}&body=${enc(text)}`,
+    getFallback: ({ text, subject, email }) => ({
       note: "No email app opened? Write it in Gmail instead — the message is filled in.",
       label: "Open Gmail",
-      href: `https://mail.google.com/mail/?view=cm&fs=1&su=${enc(subject)}&body=${enc(text)}`,
+      href: `https://mail.google.com/mail/?view=cm&fs=1${email ? `&to=${enc(email)}` : ""}&su=${enc(subject)}&body=${enc(text)}`,
     }),
   },
   {
@@ -184,7 +200,10 @@ export const SHARE_PLATFORMS: SharePlatform[] = [
     background: "#34C759",
     icon: <MessageSquare className={`${ICON} fill-white text-white`} strokeWidth={2} />,
     // iOS expects `sms:&body=`, Android expects `sms:?body=`
-    getHref: ({ text }) => (isIOS() ? `sms:&body=${enc(text)}` : `sms:?body=${enc(text)}`),
+    getHref: ({ text, phone }) => {
+      const to = (phone ?? "").replace(/[^\d+]/g, "")
+      return isIOS() ? `sms:${to}&body=${enc(text)}` : `sms:${to}?body=${enc(text)}`
+    },
     getFallback: (_, mobile) => ({
       note: mobile
         ? "Messages didn't open? Open your messaging app and paste the message."
@@ -350,7 +369,7 @@ export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNa
 
   const activePlatform = SHARE_PLATFORMS.find((p) => p.id === status?.platformId)
   const fallback = activePlatform && status?.notOpened ? activePlatform.getFallback?.(payload, mobile) : undefined
-  const firstName = guestName.split(/\s+/)[0] || guestName
+  const firstName = guestName.split(/\s+/)[0] || "your guest"
   const initials = guestName
     .split(/\s+/)
     .filter(Boolean)
@@ -364,7 +383,7 @@ export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNa
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={`Share invite with ${guestName}`}
+        aria-label={guestName ? `Share invite with ${guestName}` : "Share invite"}
         onClick={(e) => e.stopPropagation()}
         className="dash-share-panel relative flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-16px_40px_-20px_rgba(0,0,0,0.5)] sm:max-w-[30rem] sm:rounded-3xl sm:shadow-2xl"
       >
@@ -373,12 +392,18 @@ export function ShareSheet({ open, onClose, guestName, roleTitle, payload, canNa
         {/* Header */}
         <div className="flex shrink-0 items-center gap-3 px-5 pb-3 pt-3 sm:px-6 sm:pt-5">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-dash-primary text-sm font-semibold tracking-wide text-white">
-            {initials || "?"}
+            {initials || <Share2 className="h-4 w-4" />}
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[15px] font-semibold leading-tight text-dash-ink">Share invite</p>
             <p className="mt-0.5 truncate text-[12.5px] text-gray-500">
-              To <span className="font-medium text-dash-text">{guestName}</span> · {roleTitle}
+              {guestName ? (
+                <>
+                  To <span className="font-medium text-dash-text">{guestName}</span> · {roleTitle}
+                </>
+              ) : (
+                roleTitle
+              )}
             </p>
           </div>
           <button

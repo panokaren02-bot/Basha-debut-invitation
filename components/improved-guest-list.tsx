@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
-import { Plus, Search, Trash2, Edit2, Star, CheckCircle, XCircle, Clock, Users as UsersIcon, Download, RefreshCw, X, UserRound, CalendarCheck, Minus, Info, UserPlus, Check, MessageSquareText, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Trash2, Edit2, Star, CheckCircle, XCircle, Clock, Users as UsersIcon, Download, RefreshCw, X, UserRound, CalendarCheck, Minus, Info, UserPlus, Check, MessageSquareText, AlertTriangle, Share2 } from 'lucide-react';
+import { ShareInvitationModal, type ShareInvitationGuest } from '@/components/share-invitation-modal';
 import { Button } from '@/components/ui/button';
 import { Cinzel, Playfair_Display } from 'next/font/google';
 
@@ -87,6 +88,13 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
   const [formAddedBy, setFormAddedBy] = useState('');
   const [showHelp, setShowHelp] = useState(false);
   const [guestToDelete, setGuestToDelete] = useState<Guest | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareGuest, setShareGuest] = useState<ShareInvitationGuest | null>(null);
+
+  const openShare = (guest?: Guest) => {
+    setShareGuest(guest ? { name: guest.name, email: guest.email, contact: guest.contact, allowedGuests: guest.allowedGuests } : null);
+    setShareOpen(true);
+  };
 
   useBodyScrollLock(showModal || showSuccessModal || Boolean(guestToDelete));
 
@@ -297,6 +305,27 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Share the invitation page */}
+      <div className="flex items-center gap-3 rounded-2xl border border-dash-border bg-gradient-to-r from-dash-tint/70 to-white p-3 sm:p-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dash-primary text-white sm:h-11 sm:w-11">
+          <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-dash-ink">Share the invitation</p>
+          <p className="text-[11.5px] leading-snug text-gray-500 sm:text-xs">
+            Send it by Messenger, Viber, WhatsApp and more. Use the <Share2 className="inline h-3 w-3 align-[-1px]" /> on a guest to greet them by name.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => openShare()}
+          className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-dash-primary px-4 text-sm font-semibold text-white shadow-sm transition-all hover:brightness-110 active:scale-[0.98]"
+        >
+          <Share2 className="h-4 w-4" />
+          <span className="hidden min-[380px]:inline">Share</span>
+        </button>
+      </div>
+
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 lg:grid-cols-6">
         <div className="bg-white rounded-lg p-3 sm:p-4 border border-dash-border shadow-sm">
@@ -424,6 +453,13 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
 
               <div className="mt-3 flex gap-2 border-t border-dash-tint pt-3">
                 <button
+                  onClick={() => openShare(guest)}
+                  className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg bg-dash-primary text-sm font-medium text-white transition-colors active:brightness-110"
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </button>
+                <button
                   onClick={() => handleEdit(guest)}
                   className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-dash-border text-sm font-medium text-dash-ink transition-colors active:bg-dash-surface"
                 >
@@ -504,6 +540,14 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
                     </td>
                     <td className="px-3 py-3 sm:px-6 sm:py-4 text-right">
                       <div className="flex items-center justify-end space-x-3">
+                        <button 
+                          onClick={() => openShare(guest)} 
+                          className="text-dash-primary hover:text-dash-ink transition-colors"
+                          title="Share invitation"
+                          aria-label={`Share invitation with ${guest.name}`}
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
                         <button 
                           onClick={() => handleEdit(guest)} 
                           className="text-blue-500 hover:text-blue-700 transition-colors"
@@ -1041,6 +1085,7 @@ export const ImprovedGuestList: React.FC<ImprovedGuestListProps> = ({
           </div>
         </div>
       )}
+      <ShareInvitationModal open={shareOpen} onClose={() => setShareOpen(false)} guest={shareGuest} />
     </div>
   );
 };
