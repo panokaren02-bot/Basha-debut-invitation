@@ -207,7 +207,10 @@ export function BookOfGuests() {
   const [rsvpCount, setRsvpCount] = useState(0)
   const [confirmedGuests, setConfirmedGuests] = useState<Guest[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  // Set after the first fetch, never during render — a clock time in the server HTML
+  // (UTC on Vercel, frozen at build) never matches the guest's, and that hydration
+  // mismatch makes React rebuild the whole page, replaying the loading curtain
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const [showIncrease, setShowIncrease] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   // Cards whose full companion list is open
@@ -481,7 +484,7 @@ export function BookOfGuests() {
                 className={`${cinzel.className} ${ct.meta} mt-3 sm:mt-4 uppercase tracking-[0.14em]`}
                 style={{ color: TEAL_SOFT }}
               >
-                {copy.updatedLabel} {formatLastUpdate(lastUpdate)}
+                {copy.updatedLabel} {lastUpdate ? formatLastUpdate(lastUpdate) : "…"}
               </p>
             </div>
           </div>

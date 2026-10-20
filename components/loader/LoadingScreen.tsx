@@ -58,6 +58,16 @@ const FADE_OUT_MS = 1400;
 // otherwise restart every CSS animation — the curtains close and part a second time.
 let runStart: number | null = null;
 
+// Runs while the server HTML is parsed, i.e. when the curtains first paint. React never
+// executes it on a client render, so a rebuilt loader still finds the original paint time.
+const PAINT_MARK_SCRIPT = 'window.__galaPaintAt=performance.now()';
+
+declare global {
+  interface Window {
+    __galaPaintAt?: number;
+  }
+}
+
 // Entrance timeline (ms). CSS-delay driven so it plays from first paint, before hydration.
 // The velvet curtains part first; everything else enters as they open.
 const T = {
@@ -162,22 +172,23 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     };
   }, []);
 
-  // Before paint: anchor the run to first paint, or fast-forward a rebuilt DOM to it
+  // Before paint: anchor the run to first paint and, if this DOM was rebuilt after it
+  // (e.g. React discarding the server HTML on a hydration mismatch), fast-forward every
+  // animation to where the original one was instead of replaying the opening
   useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const animations = root.getAnimations({ subtree: true });
     const now = performance.now();
     if (runStart === null) {
-      // Server markup has been animating since first paint; fresh client markup starts now
-      const started = animations
-        .map((a) => a.startTime)
-        .filter((t): t is number => typeof t === 'number');
-      runStart = started.length > 0 ? Math.min(...started) : now;
-    } else {
-      elapsedRef.current = Math.max(0, now - runStart);
-      for (const a of animations) {
-        a.currentTime = (Number(a.currentTime) || 0) + elapsedRef.current;
+      runStart = window.__galaPaintAt ?? now;
+      delete window.__galaPaintAt; // a later run (client navigation back) starts fresh
+    }
+    elapsedRef.current = Math.max(0, now - runStart);
+    if (elapsedRef.current < 50) return;
+    for (const a of root.getAnimations({ subtree: true })) {
+      // Server HTML that hydrated cleanly is already there — only rebuilt nodes jump
+      if ((Number(a.currentTime) || 0) < elapsedRef.current - 50) {
+        a.currentTime = elapsedRef.current;
       }
     }
   }, []);
@@ -221,6 +232,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       aria-label="Loading invitation"
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
+      <script dangerouslySetInnerHTML={{ __html: PAINT_MARK_SCRIPT }} />
       {/* Same photo marquee as the envelope hero, softly blurred under a red-velvet tint */}
       {backgroundPhotos.length > 0 && (
         <div className="gala-marquee" aria-hidden="true">
