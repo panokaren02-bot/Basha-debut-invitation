@@ -173,6 +173,7 @@
   z-index: 10;
   overflow: hidden;
   pointer-events: none;
+  contain: strict;
   animation: gala-hide 0s linear 4.3s forwards;
 }
 .gala-curtain {
@@ -181,7 +182,9 @@
   bottom: 0;
   width: 50.5%;
   display: flex;
-  animation: gala-curtain-exit-left 0.9s cubic-bezier(0.5, 0, 0.75, 0) 3.3s forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation: gala-curtain-exit-left 0.95s cubic-bezier(0.55, 0, 0.7, 0.2) 3.3s forwards;
 }
 .gala-curtain--left {
   left: 0;
@@ -214,6 +217,7 @@
   box-shadow: -6px 0 14px rgba(0, 0, 0, 0.35);
   transform-origin: 0 0;
   will-change: transform;
+  backface-visibility: hidden;
   animation: gala-fold 2.7s cubic-bezier(0.6, 0, 0.22, 1) calc(550ms + var(--inner) * 55ms) forwards;
 }
 .gala-curtain--right .gala-curtain__fold {
@@ -853,14 +857,23 @@
     transform: translateX(var(--tx)) skewX(0deg) scaleX(0.55);
   }
 }
+/* Gathered drapes slide off into the wings and dissolve, so nothing pops when they hide */
 @keyframes gala-curtain-exit-left {
+  60% {
+    opacity: 1;
+  }
   to {
-    transform: translateX(-32%);
+    transform: translate3d(-32%, 0, 0);
+    opacity: 0;
   }
 }
 @keyframes gala-curtain-exit-right {
+  60% {
+    opacity: 1;
+  }
   to {
-    transform: translateX(32%);
+    transform: translate3d(32%, 0, 0);
+    opacity: 0;
   }
 }
 @keyframes gala-seam {

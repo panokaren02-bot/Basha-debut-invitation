@@ -95,6 +95,10 @@ function rgbToHex(rgb: string) {
   return `#${parts.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`
 }
 
+// Set once the loading screen has finished, so remounting the page in the same visit
+// (client navigation back to an invite route) doesn't replay it. A refresh resets it.
+let loaderPlayed = false
+
 type InvitationPageProps = {
   /** Which principal-sponsor sheet the entourage shows (googleAPI.sponsorsInviteOne / Two) */
   sponsorsList?: SponsorsList
@@ -107,6 +111,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
   // The flag is set by the "View Full Gallery" button and cleared immediately
   // here so a page refresh always replays the loading screen.
   const [appState, setAppState] = useState<AppState>(() => {
+    if (loaderPlayed) return AppState.DETAILS
     if (typeof window !== "undefined") {
       const returning = sessionStorage.getItem("returnFromGallery")
       if (returning === "true") {
@@ -146,6 +151,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
   }, [])
 
   const handleLoadingComplete = useCallback(() => {
+    loaderPlayed = true
     setAppState(AppState.LANDING)
     setLoadingOverlayVisible(false)
   }, [])

@@ -1,7 +1,7 @@
 'use client';
 
 import { fillCelebrant } from '@/lib/celebrant';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useHydratedReducedMotion } from '@/hooks/use-hydrated-reduced-motion';
 import { Cinzel, Cormorant_Garamond, Playfair_Display } from 'next/font/google';
@@ -52,6 +52,11 @@ interface LoadingScreenProps {
 }
 
 const FADE_OUT_MS = 1400;
+
+// When the current loading run first painted (performance.now() clock). Module-level so it
+// outlives a remount: a hydration fallback or parent re-render that rebuilds this DOM would
+// otherwise restart every CSS animation — the curtains close and part a second time.
+let runStart: number | null = null;
 
 // Entrance timeline (ms). CSS-delay driven so it plays from first paint, before hydration.
 // The velvet curtains part first; everything else enters as they open.
@@ -126,6 +131,9 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   });
   const [fadeOut, setFadeOut] = useState(false);
   const [statusIndex, setStatusIndex] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // Time already played before this mount (0 on a normal first load)
+  const elapsedRef = useRef(0);
 
   const eventDate = useMemo(() => new Date(siteConfig.wedding.date), [siteConfig.wedding.date]);
   const dateLabel = Number.isNaN(eventDate.getTime())
@@ -154,13 +162,35 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     };
   }, []);
 
+  // Before paint: anchor the run to first paint, or fast-forward a rebuilt DOM to it
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const animations = root.getAnimations({ subtree: true });
+    const now = performance.now();
+    if (runStart === null) {
+      // Server markup has been animating since first paint; fresh client markup starts now
+      const started = animations
+        .map((a) => a.startTime)
+        .filter((t): t is number => typeof t === 'number');
+      runStart = started.length > 0 ? Math.min(...started) : now;
+    } else {
+      elapsedRef.current = Math.max(0, now - runStart);
+      for (const a of animations) {
+        a.currentTime = (Number(a.currentTime) || 0) + elapsedRef.current;
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (statusMessages.length < 2) return;
     const step = totalDurationMs / statusMessages.length;
-    const t = setInterval(
-      () => setStatusIndex((i) => Math.min(i + 1, statusMessages.length - 1)),
-      step,
-    );
+    const tick = () =>
+      setStatusIndex(
+        Math.min(Math.floor((performance.now() - (runStart ?? 0)) / step), statusMessages.length - 1),
+      );
+    tick();
+    const t = setInterval(tick, 250);
     return () => clearInterval(t);
   }, [statusMessages.length, totalDurationMs]);
 
@@ -170,8 +200,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       setFadeOut(true);
       onFadeStartRef.current?.();
       const fadeMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 200 : FADE_OUT_MS;
-      fadeTimer = setTimeout(() => onCompleteRef.current(), fadeMs);
-    }, totalDurationMs);
+      fadeTimer = setTimeout(() => {
+        runStart = null; // the next loading run (e.g. client navigation back) starts fresh
+        onCompleteRef.current();
+      }, fadeMs);
+    }, Math.max(0, totalDurationMs - elapsedRef.current));
     return () => {
       clearTimeout(t);
       clearTimeout(fadeTimer);
@@ -181,6 +214,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
 
   return (
     <div
+      ref={rootRef}
       className={`gala-loader ${playfair.variable} ${cinzel.variable} ${cormorant.variable} ${theSeasons.variable} ${aboveTheBeyond.variable} fixed inset-0 z-50 overflow-hidden overscroll-none h-dvh max-h-dvh w-screen${fadeOut ? ' is-fading' : ''}${reduceMotion ? ' is-reduced-motion' : ''}`}
       aria-live="polite"
       aria-busy={!fadeOut}
