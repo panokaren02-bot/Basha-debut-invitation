@@ -652,6 +652,19 @@
   animation: gala-status-in 0.7s var(--gala-ease) both;
 }
 
+/* Until the loader mounts: hold the opening (curtains, poster, progress) on its first
+   frame. Paused animations keep their delays too, so the timeline resumes intact. */
+.gala-loader.is-waiting .gala-curtains,
+.gala-loader.is-waiting .gala-curtains *,
+.gala-loader.is-waiting .gala-curtains *::before,
+.gala-loader.is-waiting .gala-curtains *::after,
+.gala-loader.is-waiting .gala *,
+.gala-loader.is-waiting .gala *::before,
+.gala-loader.is-waiting .gala *::after,
+.gala-loader.is-waiting .gala-bg__spot {
+  animation-play-state: paused !important;
+}
+
 @media (min-width: 560px) {
   .gala {
     width: min(100%, 760px);

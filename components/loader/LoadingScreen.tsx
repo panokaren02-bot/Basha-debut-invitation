@@ -9,6 +9,7 @@ import localFont from 'next/font/local';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import { siteConfig as defaultSiteConfig } from '@/content/site';
 import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
+import { useAudio } from '@/contexts/audio-context';
 import './loading-screen.css';
 import './loading-screen-gala.css';
 
@@ -52,24 +53,17 @@ interface LoadingScreenProps {
 }
 
 const FADE_OUT_MS = 1400;
+// Music is triggered this long after the loader appears, as the curtains begin to part
+const MUSIC_DELAY_MS = 500;
 
-// When the current loading run first painted (performance.now() clock). Module-level so it
-// outlives a remount: a hydration fallback or parent re-render that rebuilds this DOM would
-// otherwise restart every CSS animation — the curtains close and part a second time.
+// When the curtains started opening (performance.now() clock); null before the loader mounts.
+// Module-level so it outlives a remount: a hydration fallback or parent re-render that
+// rebuilds this DOM would otherwise restart every CSS animation — the curtains close and
+// part a second time.
 let runStart: number | null = null;
 
-// Runs while the server HTML is parsed, i.e. when the curtains first paint. React never
-// executes it on a client render, so a rebuilt loader still finds the original paint time.
-const PAINT_MARK_SCRIPT = 'window.__galaPaintAt=performance.now()';
-
-declare global {
-  interface Window {
-    __galaPaintAt?: number;
-  }
-}
-
-// Entrance timeline (ms). CSS-delay driven so it plays from first paint, before hydration.
-// The velvet curtains part first; everything else enters as they open.
+// Entrance timeline (ms). CSS-delay driven; held on the first frame (.is-waiting) until the
+// loader mounts. The velvet curtains part first; everything else enters as they open.
 const T = {
   eyebrow: 900,
   topRule: 1050,
@@ -132,6 +126,10 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   );
 
   const reduceMotion = useHydratedReducedMotion();
+  const { audioRef } = useAudio();
+  // False only until the first client effect — the server HTML holds the opening on its
+  // first frame so it starts with the timer
+  const [started, setStarted] = useState(() => runStart !== null);
   // Latest callbacks without restarting the timer when the parent re-renders
   const onCompleteRef = useRef(onComplete);
   const onFadeStartRef = useRef(onFadeStart);
@@ -142,8 +140,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   const [fadeOut, setFadeOut] = useState(false);
   const [statusIndex, setStatusIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
-  // Time already played before this mount (0 on a normal first load)
-  const elapsedRef = useRef(0);
 
   const eventDate = useMemo(() => new Date(siteConfig.wedding.date), [siteConfig.wedding.date]);
   const dateLabel = Number.isNaN(eventDate.getTime())
@@ -172,29 +168,48 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     };
   }, []);
 
-  // Before paint: anchor the run to first paint and, if this DOM was rebuilt after it
-  // (e.g. React discarding the server HTML on a hydration mismatch), fast-forward every
-  // animation to where the original one was instead of replaying the opening
+  // Before paint: if this DOM was rebuilt after the curtains opened (e.g. a parent
+  // re-render remounting the loader), fast-forward every animation to where the original
+  // one was instead of replaying the opening
   useLayoutEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
-    const now = performance.now();
-    if (runStart === null) {
-      runStart = window.__galaPaintAt ?? now;
-      delete window.__galaPaintAt; // a later run (client navigation back) starts fresh
-    }
-    elapsedRef.current = Math.max(0, now - runStart);
-    if (elapsedRef.current < 50) return;
+    if (!root || runStart === null) return;
+    const elapsed = performance.now() - runStart;
+    if (elapsed < 50) return;
     for (const a of root.getAnimations({ subtree: true })) {
-      // Server HTML that hydrated cleanly is already there — only rebuilt nodes jump
-      if ((Number(a.currentTime) || 0) < elapsedRef.current - 50) {
-        a.currentTime = elapsedRef.current;
+      if ((Number(a.currentTime) || 0) < elapsed - 50) {
+        a.currentTime = elapsed;
       }
     }
   }, []);
 
+  // Start (or unmute) the music. Must run inside the gesture itself — Android/iOS only
+  // allow sound from a user gesture. BackgroundMusic listens on the document as a fallback.
+  const playMusic = () => {
+    const audioEl = audioRef.current;
+    if (!audioEl || (!audioEl.paused && !audioEl.muted)) return;
+    audioEl.muted = false;
+    if (audioEl.paused) {
+      audioEl.play().catch((error) => console.log('Playback blocked:', error));
+    }
+  };
+
+  // Curtains open on their own as soon as the loader mounts (the folds start parting at
+  // ~0.5s), then the music is triggered at 0.5s. Phones block sound without a gesture, so a
+  // tap anywhere on the loader still starts it if that attempt was refused.
   useEffect(() => {
-    if (statusMessages.length < 2) return;
+    if (runStart === null) {
+      runStart = performance.now();
+      setStarted(true);
+    }
+    const t = setTimeout(playMusic, MUSIC_DELAY_MS);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const handleLoaderTap = () => playMusic();
+
+  useEffect(() => {
+    if (!started || statusMessages.length < 2) return;
     const step = totalDurationMs / statusMessages.length;
     const tick = () =>
       setStatusIndex(
@@ -203,9 +218,10 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     tick();
     const t = setInterval(tick, 250);
     return () => clearInterval(t);
-  }, [statusMessages.length, totalDurationMs]);
+  }, [started, statusMessages.length, totalDurationMs]);
 
   useEffect(() => {
+    if (!started) return;
     let fadeTimer: ReturnType<typeof setTimeout> | undefined;
     const t = setTimeout(() => {
       setFadeOut(true);
@@ -215,24 +231,30 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         runStart = null; // the next loading run (e.g. client navigation back) starts fresh
         onCompleteRef.current();
       }, fadeMs);
-    }, Math.max(0, totalDurationMs - elapsedRef.current));
+    }, Math.max(0, totalDurationMs - (performance.now() - (runStart ?? 0))));
     return () => {
       clearTimeout(t);
       clearTimeout(fadeTimer);
     };
-    // Runs once per mount — inputs are locked above
-  }, [totalDurationMs]);
+    // Runs once per mount after the tap — inputs are locked above
+  }, [started, totalDurationMs]);
 
   return (
     <div
       ref={rootRef}
-      className={`gala-loader ${playfair.variable} ${cinzel.variable} ${cormorant.variable} ${theSeasons.variable} ${aboveTheBeyond.variable} fixed inset-0 z-50 overflow-hidden overscroll-none h-dvh max-h-dvh w-screen${fadeOut ? ' is-fading' : ''}${reduceMotion ? ' is-reduced-motion' : ''}`}
+      className={`gala-loader ${playfair.variable} ${cinzel.variable} ${cormorant.variable} ${theSeasons.variable} ${aboveTheBeyond.variable} fixed inset-0 z-50 overflow-hidden overscroll-none h-dvh max-h-dvh w-screen${started ? '' : ' is-waiting'}${fadeOut ? ' is-fading' : ''}${reduceMotion ? ' is-reduced-motion' : ''}`}
       aria-live="polite"
-      aria-busy={!fadeOut}
+      aria-busy={started && !fadeOut}
       aria-label="Loading invitation"
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
+      // Fallback for blocked autoplay: every gesture browsers accept as permission for sound
+      // (touch release, tap/click, mouse press, key press) — whichever fires first
+      onTouchEnd={handleLoaderTap}
+      onPointerUp={handleLoaderTap}
+      onClick={handleLoaderTap}
+      onMouseDown={handleLoaderTap}
+      onKeyDown={handleLoaderTap}
     >
-      <script dangerouslySetInnerHTML={{ __html: PAINT_MARK_SCRIPT }} />
       {/* Same photo marquee as the envelope hero, softly blurred under a red-velvet tint */}
       {backgroundPhotos.length > 0 && (
         <div className="gala-marquee" aria-hidden="true">
